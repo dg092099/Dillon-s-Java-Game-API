@@ -57,8 +57,6 @@ public class StateConfig implements Serializable {
 	 * This will apply the config to the engine.
 	 */
 	public synchronized void apply() {
-		CanvasController.blackout(Color.black, "Switching states...",
-				"Calibri", 20, Color.white);
 		if (background != null) {
 			CanvasController.setBackgroundImage(background);
 		}
@@ -95,7 +93,6 @@ public class StateConfig implements Serializable {
 		if (CanvasState != -1) {
 			CanvasController.setRenderMethod(CanvasState);
 		}
-		CanvasController.clearBlackout();
 	}
 
 	/**

@@ -1,3 +1,6 @@
+1.8:
+- Recreated gui system in separate classes.
+--------------------------------------------------------
 1.7:
 Tore apart and rebuilt event system for easier future support.
 Pushed to Github

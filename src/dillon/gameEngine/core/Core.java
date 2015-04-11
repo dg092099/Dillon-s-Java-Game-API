@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 
 import dillon.gameEngine.event.EventSystem;
 import dillon.gameEngine.event.ShutdownEvent;
+import dillon.gameEngine.gui.guiManager;
 import dillon.gameEngine.networking.NetworkConnection;
 import dillon.gameEngine.networking.NetworkServer;
 import dillon.gameEngine.scroller.Camera;
@@ -58,6 +59,7 @@ public class Core {
 		new TileManager();
 		new ScrollManager();
 		new Camera();
+		new guiManager();
 		CanvasController.setRenderMethod(mode);
 	}
 

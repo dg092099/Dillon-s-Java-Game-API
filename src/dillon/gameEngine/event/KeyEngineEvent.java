@@ -14,7 +14,7 @@ public class KeyEngineEvent extends EEvent {
 		return "Key";
 	}
 
-	public Object[] metadata = new Object[1];
+	public Object[] metadata = new Object[2];
 
 	@Override
 	public Object[] getMetadata() {
@@ -27,7 +27,11 @@ public class KeyEngineEvent extends EEvent {
 	 * @param evt
 	 *            The key event.
 	 */
-	public KeyEngineEvent(KeyEvent evt) {
+	public KeyEngineEvent(KeyEvent evt, int mode) {
 		metadata[0] = evt;
+		metadata[1] = mode;
 	}
+	public static final int KEY_PRESS = 0;
+	public static final int KEY_RELEASE = 1;
+	public static final int KEY_TYPED = 2;
 }
