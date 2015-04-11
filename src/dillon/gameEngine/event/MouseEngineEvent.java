@@ -19,8 +19,7 @@ public class MouseEngineEvent extends EEvent {
 
 	@Override
 	public Object[] getMetadata() {
-		// TODO Auto-generated method stub
-		return null;
+		return metadata;
 	}
 
 	public static final int MOUSE_CLICK = 0;
