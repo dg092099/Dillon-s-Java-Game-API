@@ -1,3 +1,5 @@
+1.8.1:
+- Fixed the severe glitch where the frame wasn't the right size.
 1.8:
 - Recreated gui system in separate classes.
 --------------------------------------------------------
