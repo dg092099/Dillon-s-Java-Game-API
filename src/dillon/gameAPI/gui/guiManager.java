@@ -15,8 +15,8 @@ import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EEvent;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.KeyEngineEvent;
+import dillon.gameAPI.event.PromptEvent;
 import dillon.gameAPI.event.RenderEvent;
-import dillon.gameAPI.utils.ThreadLocker;
 
 /**
  * This class is designed to show all of the gui set to display.
@@ -38,8 +38,10 @@ public class guiManager {
 	private static Font blackoutFont;
 	private static Color blackoutColor;
 	private static Image background;
+
 	/**
 	 * Returns if the manager is displaying something.
+	 * 
 	 * @return if this is displaying something.
 	 */
 	public static boolean getDisplaying() {
@@ -58,7 +60,9 @@ public class guiManager {
 						showDialog = false;
 					} else if (showDialog) {
 						if (evt2.getKeyCode() == KeyEvent.VK_ENTER) {
-							releaseLocker();
+							PromptEvent evt3 = new PromptEvent(
+									getPromptResponse(), lockerID);
+							EventSystem.broadcastMessage(evt3);
 							showingPrompt = false;
 							showDialog = false;
 						} else if (evt2.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
@@ -69,7 +73,7 @@ public class guiManager {
 						} else if (evt2.getKeyCode() == KeyEvent.VK_SHIFT) {
 							return;
 						} else {
-							if((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_TYPED)
+							if ((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_TYPED)
 								typedPrompt = typedPrompt + evt2.getKeyChar();
 						}
 					}
@@ -80,7 +84,8 @@ public class guiManager {
 			@Override
 			public void handle(EEvent T) {
 				if (T instanceof RenderEvent) {
-					Graphics2D graphics = (Graphics2D) (((RenderEvent) T).getMetadata()[0]);
+					Graphics2D graphics = (Graphics2D) (((RenderEvent) T)
+							.getMetadata()[0]);
 					if (blackoutActive == 1) {
 						graphics.drawImage(blackoutImage, 0, 0, null);
 						graphics.setFont(blackoutFont);
@@ -99,7 +104,7 @@ public class guiManager {
 					if (background != null) {
 						graphics.drawImage(background, 0, 0, null);
 					}
-					
+
 					if (showDialog) {
 						Font f = new Font("Courier", Font.PLAIN, dialogFontSize);
 						String[] lines = dialogText.split("\n");
@@ -116,7 +121,9 @@ public class guiManager {
 						graphics.setColor(dialogBorder);
 						int reqWidth, reqHeight;
 						reqWidth = metrics.stringWidth(lines[id]) + 15;
-						reqHeight = metrics.getHeight() * lines.length + 15; // 10 border; 5
+						reqHeight = metrics.getHeight() * lines.length + 15; // 10
+																				// border;
+																				// 5
 																				// padding
 						Stroke brushSize = graphics.getStroke();
 						graphics.setStroke(new BasicStroke(5));
@@ -125,18 +132,22 @@ public class guiManager {
 						graphics.drawRect(mx, my, reqWidth, reqHeight);
 						graphics.setStroke(brushSize);
 						graphics.setColor(Color.WHITE);
-						graphics.fillRect(mx + 3, my + 3, reqWidth - 5, reqHeight - 5);
+						graphics.fillRect(mx + 3, my + 3, reqWidth - 5,
+								reqHeight - 5);
 						graphics.setColor(Color.BLACK);
 						for (int i = 0; i < lines.length; i++) {
-							graphics.drawString(lines[i],
+							graphics.drawString(
+									lines[i],
 									(Core.getWidth() / 2)
 											- (metrics.stringWidth(lines[i]) / 2),
-									(Core.getHeight() / 2) - (metrics.getHeight() / 2)
+									(Core.getHeight() / 2)
+											- (metrics.getHeight() / 2)
 											+ (i * (dialogFontSize / 2 + 10)));
 						}
 						if (showingPrompt) {
 							int drx = Core.getWidth() / 2;
-							int dry = (Core.getHeight() / 2) - (metrics.getHeight() / 2)
+							int dry = (Core.getHeight() / 2)
+									- (metrics.getHeight() / 2)
 									+ (lines.length * (dialogFontSize / 2 + 10));
 							graphics.drawString(typedPrompt + "_", drx, dry);
 						}
@@ -144,10 +155,6 @@ public class guiManager {
 				}
 			}
 		});
-	}
-
-	public void releaseLocker() {
-		locker.unlock();
 	}
 
 	/**
@@ -260,17 +267,17 @@ public class guiManager {
 	 *            The color of the border.
 	 */
 	public static void showPrompt(String text, int size, Color border,
-			ThreadLocker l) {
+			long LockId) {
 		dialogBorder = border;
 		dialogFontSize = size;
 		dialogText = text;
 		showDialog = true;
 		showingPrompt = true;
 		typedPrompt = "";
-		locker = l;
+		lockerID = LockId;
 	}
 
-	private static ThreadLocker locker;
+	private static long lockerID;
 
 	/**
 	 * This will say if the engine is yielding on a prompt.

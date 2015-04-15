@@ -1,5 +1,9 @@
+1.8.2:
+- Fixed the thread locker from being used with events. Instead an event is invoked. See PromptEvent.
+--------------------------------------------------------
 1.8.1:
 - Fixed the severe glitch where the frame wasn't the right size.
+--------------------------------------------------------
 1.8:
 - Recreated gui system in separate classes.
 --------------------------------------------------------

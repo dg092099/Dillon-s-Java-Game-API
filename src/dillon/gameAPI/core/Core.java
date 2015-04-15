@@ -32,7 +32,7 @@ public class Core {
 	private static String TITLE;
 	private static Image ICON;
 	private static JFrame frame;
-	public static final String ENGINE_VERSION = "v1.8.1";
+	public static final String ENGINE_VERSION = "v1.8.2";
 
 	/**
 	 * This method starts the game with the specified background and fps.
@@ -60,6 +60,14 @@ public class Core {
 		new Camera();
 		new guiManager();
 		CanvasController.setRenderMethod(mode);
+	}
+
+	public static void pauseUpdate() {
+		controller.pauseUpdate();
+	}
+
+	public static void unpauseUpdate() {
+		controller.unpauseUpdate();
 	}
 
 	public static Color getBackColor() {

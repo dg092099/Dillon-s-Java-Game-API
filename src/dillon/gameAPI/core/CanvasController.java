@@ -20,7 +20,6 @@ import dillon.gameAPI.event.KeyEngineEvent;
 import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
-import dillon.gameAPI.gui.guiManager;
 import dillon.gameAPI.networking.NetworkServer;
 import dillon.gameAPI.utils.MainUtilities;
 
@@ -40,6 +39,7 @@ public class CanvasController extends Canvas implements Runnable {
 	private long startTime, endTime;
 	private static int FPS = 30;
 	private boolean running = false;
+	private volatile boolean paused = false;
 
 	/**
 	 * Preps the loop.
@@ -136,19 +136,22 @@ public class CanvasController extends Canvas implements Runnable {
 					if (arg0.isShiftDown()) {
 						Core.shutdown(true);
 					} else {
-						EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_PRESS));
+						EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
+								KeyEngineEvent.KEY_PRESS));
 					}
 				}
 			}
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_RELEASE));
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
+						KeyEngineEvent.KEY_RELEASE));
 			}
 
 			@Override
 			public void keyTyped(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_TYPED));
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
+						KeyEngineEvent.KEY_TYPED));
 			}
 		});
 		this.requestFocus();
@@ -175,16 +178,31 @@ public class CanvasController extends Canvas implements Runnable {
 	 * This ticks everything that happens.
 	 */
 	public void sendTick() {
-		if (!guiManager.getDisplaying()) {
-			EventSystem.broadcastMessage(new TickEvent());
-			MainUtilities.executeQueue();
-		}
+		if (paused)
+			return;
+		EventSystem.broadcastMessage(new TickEvent());
+		MainUtilities.executeQueue();
+	}
+
+	/**
+	 * This pauses the update on the engine.
+	 */
+	public void pauseUpdate() {
+		paused = true;
+	}
+
+	/**
+	 * This unpauses the game.
+	 */
+	public void unpauseUpdate() {
+		paused = false;
 	}
 
 	Graphics2D graphics;
 	private int splashCounter;
 	private Image Splash;
 	private static Image background;
+
 	/**
 	 * This function renders everything.
 	 */
@@ -198,11 +216,11 @@ public class CanvasController extends Canvas implements Runnable {
 		graphics.setColor(graphics.getBackground());
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
 		// Start Draw
-		if(background != null) {
+		if (background != null) {
 			graphics.drawImage(background, 0, 0, null);
 		}
 		EventSystem.broadcastMessage(new RenderEvent(graphics));
-		
+
 		if (showingSplash) {
 			splashCounter++;
 			if (splashCounter >= FPS * 2)
@@ -232,8 +250,6 @@ public class CanvasController extends Canvas implements Runnable {
 		getBufferStrategy().show();
 		graphics.dispose();
 	}
-
-	
 
 	/**
 	 * This sets the new background image.
@@ -282,7 +298,6 @@ public class CanvasController extends Canvas implements Runnable {
 		stop();
 	}
 
-	
 	private static int renderMethod = 0;
 	public static final int TILES = 1;
 	public static final int SIDESCROLLER = 2;
