@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import dillon.gameAPI.core.CanvasController;
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EEvent;
@@ -82,7 +81,7 @@ public class ScrollManager {
 	 */
 	public static void setLevel(Image img) {
 		try {
-			if (CanvasController.getRenderMethod() != CanvasController.SIDESCROLLER)
+			if (Core.getRenderMethod() != Core.SIDESCROLLER)
 				return;
 			bitMap = (BufferedImage) img;
 			fullMap = new BufferedImage(bitMap.getWidth() * width,
@@ -131,7 +130,7 @@ public class ScrollManager {
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
 			public void handle(EEvent T) {
-				if (CanvasController.getRenderMethod() != 2)
+				if (Core.getRenderMethod() != 2)
 					return;
 				Graphics2D graphics = (Graphics2D) ((RenderEvent) T)
 						.getMetadata()[0];

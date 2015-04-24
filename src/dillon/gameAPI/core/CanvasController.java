@@ -28,7 +28,7 @@ import dillon.gameAPI.utils.MainUtilities;
  * 
  * @author Dillon - Github dg092099
  */
-public class CanvasController extends Canvas implements Runnable {
+class CanvasController extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
 	public CanvasController() {
@@ -299,8 +299,6 @@ public class CanvasController extends Canvas implements Runnable {
 	}
 
 	private static int renderMethod = 0;
-	public static final int TILES = 1;
-	public static final int SIDESCROLLER = 2;
 
 	/**
 	 * This returns the games rendering method.

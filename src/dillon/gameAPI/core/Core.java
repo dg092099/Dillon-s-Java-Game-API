@@ -33,6 +33,8 @@ public class Core {
 	private static Image ICON;
 	private static JFrame frame;
 	public static final String ENGINE_VERSION = "v1.8.2";
+	public static final int TILES = 1;
+	public static final int SIDESCROLLER = 2;
 
 	/**
 	 * This method starts the game with the specified background and fps.
@@ -159,6 +161,7 @@ public class Core {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		new guiManager();
 	}
 
 	private static boolean fullscreen = false;
@@ -280,5 +283,25 @@ public class Core {
 	 */
 	public static String getVersion() {
 		return ENGINE_VERSION;
+	}
+
+	public static int getRenderMethod() {
+		return CanvasController.getRenderMethod();
+	}
+
+	public static Image getBackgroundImage() {
+		return CanvasController.getBackgroundImage();
+	}
+
+	public static int getFPS() {
+		return CanvasController.getFPS();
+	}
+
+	public static void setBackgroundImage(Image background) {
+		CanvasController.setBackgroundImage(background);
+	}
+
+	public static void setRenderMethod(int canvasState) {
+		CanvasController.setRenderMethod(canvasState);
 	}
 }

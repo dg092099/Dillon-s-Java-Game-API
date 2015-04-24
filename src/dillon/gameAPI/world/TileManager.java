@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import dillon.gameAPI.core.CanvasController;
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.errors.RenderingError;
 import dillon.gameAPI.event.EEHandler;
@@ -86,7 +85,7 @@ public class TileManager {
 	 *             Occurs when the engine is in the wrong mode.
 	 */
 	public static void loadMap(Image img) throws RenderingError {
-		if (CanvasController.getRenderMethod() != 1) {
+		if (Core.getRenderMethod() != 1) {
 			throw new RenderingError(
 					"The render method isn't appropriate for this, use the sidescroller module "
 							+ "for this.");

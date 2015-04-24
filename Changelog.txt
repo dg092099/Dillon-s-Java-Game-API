@@ -1,3 +1,8 @@
+1.8.3:
+- Fixed the characters glitching into the floor.
+- Fixed the gui showing text too high on screen.
+- Isolated CanvasController, use the Core instead.
+--------------------------------------------------------
 1.8.2:
 - Fixed the thread locker from being used with events. Instead an event is invoked. See PromptEvent.
 --------------------------------------------------------

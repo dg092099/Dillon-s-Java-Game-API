@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import dillon.gameAPI.core.CanvasController;
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.errors.RenderingError;
 import dillon.gameAPI.event.EEHandler;
@@ -36,9 +35,9 @@ public class StateConfig implements Serializable {
 	private int CanvasState = -1;
 
 	public synchronized void takeSnapshot() {
-		background = CanvasController.getBackgroundImage();
+		background = Core.getBackgroundImage();
 		backColor = Core.getBackColor();
-		FPS = CanvasController.getFPS();
+		FPS = Core.getFPS();
 		eventHandlers = EventSystem.getHandlers();
 		CamX = Camera.getXPos();
 		CamY = Camera.getYPos();
@@ -50,7 +49,7 @@ public class StateConfig implements Serializable {
 		tileManDistX = TileManager.getTileWidth();
 		tileManDistY = TileManager.getTileHeight();
 		tileManMap = TileManager.getMap();
-		CanvasState = CanvasController.getRenderMethod();
+		CanvasState = Core.getRenderMethod();
 	}
 
 	/**
@@ -58,7 +57,7 @@ public class StateConfig implements Serializable {
 	 */
 	public synchronized void apply() {
 		if (background != null) {
-			CanvasController.setBackgroundImage(background);
+			Core.setBackgroundImage(background);
 		}
 		if (backColor != null) {
 			Core.setBackColor(backColor);
@@ -91,7 +90,7 @@ public class StateConfig implements Serializable {
 			}
 		}
 		if (CanvasState != -1) {
-			CanvasController.setRenderMethod(CanvasState);
+			Core.setRenderMethod(CanvasState);
 		}
 	}
 

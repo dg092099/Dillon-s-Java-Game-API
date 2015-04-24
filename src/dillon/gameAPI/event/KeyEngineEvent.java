@@ -3,7 +3,7 @@ package dillon.gameAPI.event;
 import java.awt.event.KeyEvent;
 
 /**
- * Event for when a key is pressed. Only metadata: The raw java.awt mouse event.
+ * Event for when a key is pressed. Only metadata: The raw java.awt mouse event, and a mode.
  * 
  * @author Dillon - Github dg092099
  *

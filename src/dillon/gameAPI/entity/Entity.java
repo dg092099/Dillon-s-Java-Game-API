@@ -35,7 +35,6 @@ public class Entity implements Serializable {
 		y = 0;
 		dx = 0;
 		dy = 0;
-		// EventSystem.subscribeURHandler(this);
 		EventSystem.addHandler(new EEHandler<TickEvent>() {
 			@Override
 			public void handle(EEvent T) {
@@ -44,7 +43,7 @@ public class Entity implements Serializable {
 					y += dy;
 				}
 				if (gravity) {
-					if (!checkCollisionWithPos(x, y - fallspeed)) {
+					if (!checkCollisionWithPos(x, y + fallspeed)) {
 						if (!gravityOverride)
 							y += fallspeed;
 					} else {
@@ -59,7 +58,6 @@ public class Entity implements Serializable {
 						jumping = false;
 						jumpPixCount = 0;
 						setDirection(dx, 2);
-						System.out.println("Coming down");
 					} else {
 						jumpPixCount += 2;
 						y += 2;

@@ -58,7 +58,7 @@ public class guiManager {
 					if (evt2.getKeyCode() == KeyEvent.VK_ENTER && showDialog
 							&& !showingPrompt) {
 						showDialog = false;
-					} else if (showDialog) {
+					} else if (showingPrompt) {
 						if (evt2.getKeyCode() == KeyEvent.VK_ENTER) {
 							PromptEvent evt3 = new PromptEvent(
 									getPromptResponse(), lockerID);
@@ -73,8 +73,10 @@ public class guiManager {
 						} else if (evt2.getKeyCode() == KeyEvent.VK_SHIFT) {
 							return;
 						} else {
-							if ((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_TYPED)
-								typedPrompt = typedPrompt + evt2.getKeyChar();
+							if ((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_PRESS)
+								System.out.println("Got data: "
+										+ evt2.getKeyChar());
+							typedPrompt = typedPrompt + evt2.getKeyChar();
 						}
 					}
 				}
@@ -142,13 +144,15 @@ public class guiManager {
 											- (metrics.stringWidth(lines[i]) / 2),
 									(Core.getHeight() / 2)
 											- (metrics.getHeight() / 2)
-											+ (i * (dialogFontSize / 2 + 10)));
+											+ (i * (dialogFontSize / 2 + 10))
+											+ metrics.getHeight() / 2);
 						}
 						if (showingPrompt) {
 							int drx = Core.getWidth() / 2;
 							int dry = (Core.getHeight() / 2)
 									- (metrics.getHeight() / 2)
-									+ (lines.length * (dialogFontSize / 2 + 10));
+									+ (lines.length * (dialogFontSize / 2 + 10))
+									+ metrics.getHeight() / 2;
 							graphics.drawString(typedPrompt + "_", drx, dry);
 						}
 					}
