@@ -29,6 +29,7 @@ public class NetworkConnection {
 	 * @param port
 	 *            The port number of the server.
 	 * @throws NetworkingError
+	 * 			  Problems connecting
 	 */
 	public static void connect(String host, int port) throws NetworkingError {
 		try {

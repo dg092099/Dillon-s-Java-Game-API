@@ -135,11 +135,10 @@ class CanvasController extends Canvas implements Runnable {
 				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					if (arg0.isShiftDown()) {
 						Core.shutdown(true);
-					} else {
-						EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
-								KeyEngineEvent.KEY_PRESS));
 					}
 				}
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
+						KeyEngineEvent.KEY_PRESS));
 			}
 
 			@Override

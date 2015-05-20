@@ -26,6 +26,7 @@ public class ClientConnector {
 	 * @param s
 	 *            The client's socket.
 	 * @throws IOException
+	 * 			  When socket fails to connect.
 	 */
 	public ClientConnector(Socket s) throws IOException {
 		cc = this;

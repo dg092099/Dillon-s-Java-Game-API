@@ -123,7 +123,9 @@ public class Entity implements Serializable {
 	 * This sets the direction based on a velocity x and y.
 	 * 
 	 * @param DX
+	 *            Directional x
 	 * @param DY
+	 *            Directional Y
 	 */
 	public void setDirection(double DX, double DY) {
 		dx = DX;
@@ -134,6 +136,7 @@ public class Entity implements Serializable {
 	 * This sets the direction based on an angle.
 	 * 
 	 * @param angle
+	 *            The angle
 	 */
 	public void setDirection(double angle) {
 		dx = Math.sin(angle);

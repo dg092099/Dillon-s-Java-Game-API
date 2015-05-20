@@ -32,7 +32,7 @@ public class Core {
 	private static String TITLE;
 	private static Image ICON;
 	private static JFrame frame;
-	public static final String ENGINE_VERSION = "v1.8.2";
+	public static final String ENGINE_VERSION = "v1.8.3";
 	public static final int TILES = 1;
 	public static final int SIDESCROLLER = 2;
 
@@ -161,7 +161,6 @@ public class Core {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		new guiManager();
 	}
 
 	private static boolean fullscreen = false;

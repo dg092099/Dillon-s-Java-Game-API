@@ -27,6 +27,8 @@ public class NetworkServer {
 	 * @param port
 	 *            The port number to use.
 	 * @return The host's IP
+	 * @throws NetworkingError
+	 *            Thrown when it cannot connect to the port.
 	 */
 	public static String startServer(int port) throws NetworkingError {
 		try {

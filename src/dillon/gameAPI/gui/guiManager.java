@@ -55,6 +55,8 @@ public class guiManager {
 				if (T instanceof KeyEngineEvent) {
 					KeyEngineEvent evt = (KeyEngineEvent) T;
 					KeyEvent evt2 = (KeyEvent) evt.getMetadata()[0];
+					if ((int) evt.getMetadata()[1] != KeyEngineEvent.KEY_PRESS)
+						return;
 					if (evt2.getKeyCode() == KeyEvent.VK_ENTER && showDialog
 							&& !showingPrompt) {
 						showDialog = false;
@@ -74,9 +76,7 @@ public class guiManager {
 							return;
 						} else {
 							if ((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_PRESS)
-								System.out.println("Got data: "
-										+ evt2.getKeyChar());
-							typedPrompt = typedPrompt + evt2.getKeyChar();
+								typedPrompt = typedPrompt + evt2.getKeyChar();
 						}
 					}
 				}
@@ -269,6 +269,8 @@ public class guiManager {
 	 *            The size of the border.
 	 * @param border
 	 *            The color of the border.
+	 * @param LockId
+	 *            The number to use when the event fires.
 	 */
 	public static void showPrompt(String text, int size, Color border,
 			long LockId) {
