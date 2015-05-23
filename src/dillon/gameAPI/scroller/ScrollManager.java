@@ -22,7 +22,7 @@ public class ScrollManager {
 
 	private static BufferedImage[][] tiles;
 	private static int width, height;
-	private static Image tilesheet;
+	private static BufferedImage tilesheet;
 
 	/**
 	 * This method will register the tile sheet to use.
@@ -34,7 +34,7 @@ public class ScrollManager {
 	 * @param height
 	 *            The height of each tile.
 	 */
-	public static void regsterTiles(Image img, int width, int height) {
+	public static void regsterTiles(BufferedImage img, int width, int height) {
 		tilesheet = img;
 		ScrollManager.width = width;
 		ScrollManager.height = height;
@@ -175,7 +175,7 @@ public class ScrollManager {
 	 * 
 	 * @return tilesheet
 	 */
-	public static Image getTiles() {
+	public static BufferedImage getTiles() {
 		return tilesheet;
 	}
 
@@ -192,7 +192,7 @@ public class ScrollManager {
 		return height;
 	}
 
-	public static Image getMap() {
+	public static BufferedImage getMap() {
 		return bitMap;
 	}
 }

@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ public class Core {
 	private static String TITLE;
 	private static Image ICON;
 	private static JFrame frame;
-	public static final String ENGINE_VERSION = "v1.8.3";
+	public static final String ENGINE_VERSION = "v1.8.5";
 	public static final int TILES = 1;
 	public static final int SIDESCROLLER = 2;
 
@@ -42,13 +43,12 @@ public class Core {
 	 * @param FPS
 	 *            The maximum frames per second to use.
 	 * @param background
-	 *            The default background image. Use
-	 *            {@link dillon.gameAPI.core.CanvasController#setBackgroundImage(Image img)}
+	 *            The default background image.
 	 *            to change it.
 	 * @param mode
 	 *            This sets the rendering mode.
 	 */
-	public static void startGame(int FPS, Image background, int mode) {
+	public static void startGame(int FPS, BufferedImage background, int mode) {
 		Logger.getLogger("Core").info("Starting game.");
 		controller.start();
 		controller.setFps(FPS);
@@ -288,7 +288,7 @@ public class Core {
 		return CanvasController.getRenderMethod();
 	}
 
-	public static Image getBackgroundImage() {
+	public static BufferedImage getBackgroundImage() {
 		return CanvasController.getBackgroundImage();
 	}
 
@@ -296,7 +296,7 @@ public class Core {
 		return CanvasController.getFPS();
 	}
 
-	public static void setBackgroundImage(Image background) {
+	public static void setBackgroundImage(BufferedImage background) {
 		CanvasController.setBackgroundImage(background);
 	}
 

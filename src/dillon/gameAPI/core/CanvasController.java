@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -256,7 +257,7 @@ class CanvasController extends Canvas implements Runnable {
 	 * @param img
 	 *            The new image to put in the background.
 	 */
-	public static void setBackgroundImage(Image img) {
+	public static void setBackgroundImage(BufferedImage img) {
 		background = img;
 	}
 
@@ -265,8 +266,8 @@ class CanvasController extends Canvas implements Runnable {
 	 * 
 	 * @return The background image.
 	 */
-	public static Image getBackgroundImage() {
-		return background;
+	public static BufferedImage getBackgroundImage() {
+		return (BufferedImage) background;
 	}
 
 	/**

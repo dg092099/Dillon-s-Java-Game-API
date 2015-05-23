@@ -218,7 +218,7 @@ public class TileManager {
 		return colliding;
 	}
 
-	public static Image getTilesheet() {
+	public static BufferedImage getTilesheet() {
 		return tileSheet;
 	}
 
@@ -230,7 +230,7 @@ public class TileManager {
 		return hgth;
 	}
 
-	public static Image getMap() {
+	public static BufferedImage getMap() {
 		return map;
 	}
 }

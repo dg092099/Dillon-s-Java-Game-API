@@ -1,14 +1,19 @@
 package dillon.gameAPI.States;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.errors.RenderingError;
-import dillon.gameAPI.event.EEHandler;
-import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.scroller.Camera;
 import dillon.gameAPI.scroller.ScrollManager;
 import dillon.gameAPI.world.TileManager;
@@ -21,24 +26,22 @@ import dillon.gameAPI.world.TileManager;
  */
 public class StateConfig implements Serializable {
 	private static final long serialVersionUID = -2971917949105802923L;
-	private Image background;
-	private Color backColor;
-	private int FPS;
-	private ArrayList<EEHandler<?>> eventHandlers = new ArrayList<EEHandler<?>>();
-	private int CamX, CamY;
-	private Image ScrollManTiles;
-	private int scrollManDistX, scrollManDistY;
-	private Image scrollManMap;
-	private Image tileManTiles;
+	private transient BufferedImage background; // Check
+	private Color backColor; // Check
+	private int FPS; // Check
+	private int CamX, CamY; // Check
+	private transient BufferedImage ScrollManTiles; // Check
+	private int scrollManDistX, scrollManDistY; // Check
+	private transient BufferedImage scrollManMap;// Check
+	private transient BufferedImage tileManTiles;
 	private int tileManDistX, tileManDistY;
-	private Image tileManMap;
-	private int CanvasState = -1;
+	private transient BufferedImage tileManMap;
+	private int CanvasState = -1; // Check
 
 	public synchronized void takeSnapshot() {
 		background = Core.getBackgroundImage();
 		backColor = Core.getBackColor();
 		FPS = Core.getFPS();
-		eventHandlers = EventSystem.getHandlers();
 		CamX = Camera.getXPos();
 		CamY = Camera.getYPos();
 		ScrollManTiles = ScrollManager.getTiles();
@@ -64,9 +67,6 @@ public class StateConfig implements Serializable {
 		}
 		if (FPS > 0) {
 			Core.setFPS(FPS);
-		}
-		if (eventHandlers != null) {
-			EventSystem.setHandlers(eventHandlers);
 		}
 		if (CamX >= 0) {
 			Camera.setX(CamX);
@@ -114,26 +114,6 @@ public class StateConfig implements Serializable {
 	}
 
 	/**
-	 * Adds a handler to the state.
-	 * 
-	 * @param m
-	 *            The handler
-	 */
-	public void addEventHandler(EEHandler<?> m) {
-		eventHandlers.add(m);
-	}
-
-	/**
-	 * Removes the handler.
-	 * 
-	 * @param m
-	 *            the handler object.
-	 */
-	public void removeEventHandler(EEHandler<?> m) {
-		eventHandlers.remove(m);
-	}
-
-	/**
 	 * @return the background
 	 */
 	public Image getBackground() {
@@ -144,7 +124,7 @@ public class StateConfig implements Serializable {
 	 * @param background
 	 *            the background to set
 	 */
-	public void setBackground(Image background) {
+	public void setBackground(BufferedImage background) {
 		this.background = background;
 	}
 
@@ -219,7 +199,7 @@ public class StateConfig implements Serializable {
 	 * @param scrollManTiles
 	 *            the scrollManTiles to set
 	 */
-	public void setScrollManTiles(Image scrollManTiles) {
+	public void setScrollManTiles(BufferedImage scrollManTiles) {
 		ScrollManTiles = scrollManTiles;
 	}
 
@@ -264,7 +244,7 @@ public class StateConfig implements Serializable {
 	 * @param scrollManMap
 	 *            the scrollManMap to set
 	 */
-	public void setScrollManMap(Image scrollManMap) {
+	public void setScrollManMap(BufferedImage scrollManMap) {
 		this.scrollManMap = scrollManMap;
 	}
 
@@ -279,7 +259,7 @@ public class StateConfig implements Serializable {
 	 * @param tileManTiles
 	 *            the tileManTiles to set
 	 */
-	public void setTileManTiles(Image tileManTiles) {
+	public void setTileManTiles(BufferedImage tileManTiles) {
 		this.tileManTiles = tileManTiles;
 	}
 
@@ -324,7 +304,61 @@ public class StateConfig implements Serializable {
 	 * @param tileManMap
 	 *            the tileManMap to set
 	 */
-	public void setTileManMap(Image tileManMap) {
+	public void setTileManMap(BufferedImage tileManMap) {
 		this.tileManMap = tileManMap;
+	}
+
+	private void writeObject(ObjectOutputStream oos) {
+		try {
+			oos.defaultWriteObject();
+			BufferedImage nonImage = new BufferedImage(1, 1,
+					BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = nonImage.createGraphics();
+			g.setColor(new Color(5, 10, 15));
+			g.drawRect(0, 0, 1, 1);
+			ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+			images.add(background != null ? background : nonImage);
+			images.add(ScrollManTiles != null ? ScrollManTiles : nonImage);
+			images.add(scrollManMap != null ? scrollManMap : nonImage);
+			images.add(tileManTiles != null ? tileManTiles : nonImage);
+			images.add(tileManMap != null ? tileManMap : nonImage);
+			oos.writeInt(images.size());
+			for (BufferedImage i : images) {
+				ImageIO.write(i, "png", oos);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException,
+			ClassNotFoundException {
+		ois.defaultReadObject();
+		final int count = ois.readInt();
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		for (int i = 0; i < count; i++) {
+			images.add(ImageIO.read(ois));
+		}
+		background = images.get(0);
+		if (background == null
+				|| (background.getHeight() == 1 && background.getWidth() == 1))
+			background = null;
+		ScrollManTiles = images.get(1);
+		if (ScrollManTiles == null
+				|| (ScrollManTiles.getHeight() == 1 && ScrollManTiles
+						.getWidth() == 1))
+			ScrollManTiles = null;
+		scrollManMap = images.get(2);
+		if (scrollManMap == null
+				|| (scrollManMap.getHeight() == 1 && scrollManMap.getWidth() == 1))
+			scrollManMap = null;
+		tileManTiles = images.get(3);
+		if (tileManTiles == null
+				|| (tileManTiles.getHeight() == 1 && tileManTiles.getWidth() == 1))
+			tileManTiles = null;
+		tileManMap = images.get(4);
+		if (tileManMap == null
+				|| (tileManMap.getHeight() == 1 && tileManMap.getWidth() == 1))
+			tileManMap = null;
 	}
 }

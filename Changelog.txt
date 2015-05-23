@@ -1,3 +1,9 @@
+1.8.5:
+- Fixed States
+--------------------------------------------------------
+1.8.4:
+- Fixed Dialog problems
+--------------------------------------------------------
 1.8.3:
 - Fixed the characters glitching into the floor.
 - Fixed the gui showing text too high on screen.
