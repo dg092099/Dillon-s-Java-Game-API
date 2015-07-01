@@ -13,10 +13,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import dillon.gameAPI.core.Core;
-import dillon.gameAPI.errors.RenderingError;
 import dillon.gameAPI.scroller.Camera;
 import dillon.gameAPI.scroller.ScrollManager;
-import dillon.gameAPI.world.TileManager;
 
 /**
  * This class holds a snapshot of the engine.
@@ -48,10 +46,6 @@ public class StateConfig implements Serializable {
 		scrollManDistX = ScrollManager.getTileWidth();
 		scrollManDistY = ScrollManager.getTileHeight();
 		scrollManMap = ScrollManager.getMap();
-		tileManTiles = TileManager.getTilesheet();
-		tileManDistX = TileManager.getTileWidth();
-		tileManDistY = TileManager.getTileHeight();
-		tileManMap = TileManager.getMap();
 		CanvasState = Core.getRenderMethod();
 	}
 
@@ -78,16 +72,6 @@ public class StateConfig implements Serializable {
 		}
 		if (scrollManMap != null) {
 			ScrollManager.setLevel(scrollManMap);
-		}
-		if (tileManTiles != null) {
-			TileManager.setTileImage(tileManTiles, tileManDistX, tileManDistY);
-		}
-		if (tileManMap != null) {
-			try {
-				TileManager.loadMap(tileManMap);
-			} catch (RenderingError e) {
-				e.printStackTrace();
-			}
 		}
 		if (CanvasState != -1) {
 			Core.setRenderMethod(CanvasState);

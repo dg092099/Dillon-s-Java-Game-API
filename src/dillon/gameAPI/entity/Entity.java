@@ -12,7 +12,6 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
 import dillon.gameAPI.scroller.ScrollManager;
-import dillon.gameAPI.world.TileManager;
 
 /**
  * This class stores the position, direction and sprite of each entity.
@@ -235,17 +234,13 @@ public class Entity implements Serializable {
 	 * @return if it is colliding with something
 	 */
 	public boolean checkCollision() {
-		return TileManager.getCollisionAny(x, y, spr.getWidth(),
-				spr.getHeight())
-				|| ScrollManager.getCollisionAny(x, y, spr.getWidth(),
-						spr.getHeight());
+		return ScrollManager.getCollisionAny(x, y, spr.getWidth(),
+				spr.getHeight());
 	}
 
 	private boolean checkCollisionWithPos(double posx, double posy) {
-		return TileManager.getCollisionAny(posx, posy, spr.getWidth(),
-				spr.getHeight())
-				|| ScrollManager.getCollisionAny(posx, posy, spr.getWidth(),
-						spr.getHeight());
+		return ScrollManager.getCollisionAny(posx, posy, spr.getWidth(),
+				spr.getHeight());
 	}
 
 	private boolean gravity = false;

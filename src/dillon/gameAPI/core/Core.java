@@ -17,11 +17,11 @@ import javax.swing.JFrame;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.ShutdownEvent;
 import dillon.gameAPI.gui.guiManager;
+import dillon.gameAPI.modding.ModdingCore;
 import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
 import dillon.gameAPI.scroller.Camera;
 import dillon.gameAPI.scroller.ScrollManager;
-import dillon.gameAPI.world.TileManager;
 
 /**
  * Core file that has starting and stopping methods. A policy file should be
@@ -33,7 +33,7 @@ public class Core {
 	private static String TITLE;
 	private static Image ICON;
 	private static JFrame frame;
-	public static final String ENGINE_VERSION = "v1.8.5";
+	public static final String ENGINE_VERSION = "v1.9";
 	public static final int TILES = 1;
 	public static final int SIDESCROLLER = 2;
 
@@ -43,8 +43,7 @@ public class Core {
 	 * @param FPS
 	 *            The maximum frames per second to use.
 	 * @param background
-	 *            The default background image.
-	 *            to change it.
+	 *            The default background image. to change it.
 	 * @param mode
 	 *            This sets the rendering mode.
 	 */
@@ -57,21 +56,32 @@ public class Core {
 		if (background != null) {
 			CanvasController.setBackgroundImage(background);
 		}
-		new TileManager();
 		new ScrollManager();
 		new Camera();
 		new guiManager();
 		CanvasController.setRenderMethod(mode);
+		ModdingCore.sendPostStart();
 	}
 
+	/**
+	 * Pauses the game.
+	 */
 	public static void pauseUpdate() {
 		controller.pauseUpdate();
 	}
 
+	/**
+	 * Unpauses the game.
+	 */
 	public static void unpauseUpdate() {
 		controller.unpauseUpdate();
 	}
 
+	/**
+	 * The background color.
+	 * 
+	 * @return The background color.
+	 */
 	public static Color getBackColor() {
 		return controller.getBackground();
 	}
@@ -160,6 +170,7 @@ public class Core {
 		frame.add(controller);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
+		ModdingCore.sendInit();
 		frame.setVisible(true);
 	}
 

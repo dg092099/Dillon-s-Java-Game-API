@@ -2,6 +2,8 @@ package dillon.gameAPI.event;
 
 import java.util.ArrayList;
 
+import dillon.gameAPI.modding.ModdingCore;
+
 /**
  * This is the hub for all handlers and event broadcasting.
  * 
@@ -63,6 +65,7 @@ public class EventSystem {
 			} catch (Exception e2) {
 			}
 		}
+		ModdingCore.sendEvent(e);
 	}
 
 	/**
