@@ -12,8 +12,8 @@ public interface EEHandler<T extends EEvent> {
 	/**
 	 * Fires when an event occurs depending on your situation.
 	 * 
-	 * @param T
+	 * @param evt
 	 *            Event
 	 */
-	public abstract void handle(EEvent T);
+	public void handle(T evt);
 }

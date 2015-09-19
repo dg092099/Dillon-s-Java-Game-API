@@ -3,7 +3,7 @@ package dillon.gameAPI.errors;
 /**
  * This method is called if there is a problem with the tile or scroll manager.
  * 
- * @author Dillon Geier
+ * @author Dillon - Github dg092099
  *
  */
 public class RenderingError extends Exception {

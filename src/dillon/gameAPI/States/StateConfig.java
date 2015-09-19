@@ -67,8 +67,7 @@ public class StateConfig implements Serializable {
 			Camera.setY(CamY);
 		}
 		if (ScrollManTiles != null) {
-			ScrollManager.regsterTiles(ScrollManTiles, scrollManDistX,
-					scrollManDistY);
+			ScrollManager.regsterTiles(ScrollManTiles, scrollManDistX, scrollManDistY);
 		}
 		if (scrollManMap != null) {
 			ScrollManager.setLevel(scrollManMap);
@@ -292,11 +291,16 @@ public class StateConfig implements Serializable {
 		this.tileManMap = tileManMap;
 	}
 
+	/**
+	 * Writes the object to a file.
+	 * 
+	 * @param oos
+	 *            The output stream.
+	 */
 	private void writeObject(ObjectOutputStream oos) {
 		try {
 			oos.defaultWriteObject();
-			BufferedImage nonImage = new BufferedImage(1, 1,
-					BufferedImage.TYPE_INT_RGB);
+			BufferedImage nonImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 			Graphics2D g = nonImage.createGraphics();
 			g.setColor(new Color(5, 10, 15));
 			g.drawRect(0, 0, 1, 1);
@@ -315,8 +319,17 @@ public class StateConfig implements Serializable {
 		}
 	}
 
-	private void readObject(ObjectInputStream ois) throws IOException,
-			ClassNotFoundException {
+	/**
+	 * Reads the object from a file.
+	 * 
+	 * @param ois
+	 *            The input stream.
+	 * @throws IOException
+	 *             Not able to read.
+	 * @throws ClassNotFoundException
+	 *             File is corrupted.
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		final int count = ois.readInt();
 		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
@@ -324,25 +337,19 @@ public class StateConfig implements Serializable {
 			images.add(ImageIO.read(ois));
 		}
 		background = images.get(0);
-		if (background == null
-				|| (background.getHeight() == 1 && background.getWidth() == 1))
+		if (background == null || (background.getHeight() == 1 && background.getWidth() == 1))
 			background = null;
 		ScrollManTiles = images.get(1);
-		if (ScrollManTiles == null
-				|| (ScrollManTiles.getHeight() == 1 && ScrollManTiles
-						.getWidth() == 1))
+		if (ScrollManTiles == null || (ScrollManTiles.getHeight() == 1 && ScrollManTiles.getWidth() == 1))
 			ScrollManTiles = null;
 		scrollManMap = images.get(2);
-		if (scrollManMap == null
-				|| (scrollManMap.getHeight() == 1 && scrollManMap.getWidth() == 1))
+		if (scrollManMap == null || (scrollManMap.getHeight() == 1 && scrollManMap.getWidth() == 1))
 			scrollManMap = null;
 		tileManTiles = images.get(3);
-		if (tileManTiles == null
-				|| (tileManTiles.getHeight() == 1 && tileManTiles.getWidth() == 1))
+		if (tileManTiles == null || (tileManTiles.getHeight() == 1 && tileManTiles.getWidth() == 1))
 			tileManTiles = null;
 		tileManMap = images.get(4);
-		if (tileManMap == null
-				|| (tileManMap.getHeight() == 1 && tileManMap.getWidth() == 1))
+		if (tileManMap == null || (tileManMap.getHeight() == 1 && tileManMap.getWidth() == 1))
 			tileManMap = null;
 	}
 }

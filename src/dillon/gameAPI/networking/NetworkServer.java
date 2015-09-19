@@ -18,8 +18,9 @@ import dillon.gameAPI.event.NetworkEvent;
  *
  */
 public class NetworkServer {
-	private static volatile boolean runServer = false;
-	private static ServerSocket server;
+	private static volatile boolean runServer = false; // Whether if the server
+														// should be running.
+	private static ServerSocket server; // The server socket itself.
 
 	/**
 	 * Starts a server.
@@ -28,7 +29,7 @@ public class NetworkServer {
 	 *            The port number to use.
 	 * @return The host's IP
 	 * @throws NetworkingError
-	 *            Thrown when it cannot connect to the port.
+	 *             Thrown when it cannot connect to the port.
 	 */
 	public static String startServer(int port) throws NetworkingError {
 		try {
@@ -56,26 +57,31 @@ public class NetworkServer {
 		return runServer;
 	}
 
+	/**
+	 * Class for running the server.
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
 	static class server implements Runnable {
 		@Override
 		public void run() {
 			while (runServer) {
 				try {
 					Socket s = server.accept();
-					Logger.getLogger("Networking").info(
-							"Got client, "
-									+ s.getRemoteSocketAddress().toString());
+					Logger.getLogger("Networking").info("Got client, " + s.getRemoteSocketAddress().toString());
 					ClientConnector cc = new ClientConnector(s);
 					connectors.add(cc);
-					EventSystem.broadcastMessage(new NetworkEvent(
-							NetworkEvent.CONNECT, cc, null));
+					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.CONNECT, cc, null), NetworkEvent.class);
 				} catch (IOException e) {
 				}
 			}
 		}
 	}
 
-	private static ArrayList<ClientConnector> connectors = new ArrayList<ClientConnector>();
+	private static ArrayList<ClientConnector> connectors = new ArrayList<ClientConnector>(); // The
+																								// connected
+																								// clients.
 
 	/**
 	 * Gets the arraylist of connectors.
@@ -100,10 +106,40 @@ public class NetworkServer {
 	}
 
 	/**
-	 * Attempts to shutdown the server.
+	 * Attempts to shutdown the server. Called automatically while game shuts
+	 * down.
 	 */
 	public static void stopServer() {
 		runServer = false;
 		shutdown();
+	}
+
+	/**
+	 * Enables server discovery.
+	 * 
+	 * @param name
+	 *            Game name
+	 * @param version
+	 *            Game version
+	 * @param useCode
+	 *            If the server should use a code.
+	 * @param port
+	 *            The port the game's on. Not what port it uses to allow
+	 *            discovery.
+	 * @return The code if one is asked for, if not, null is returned.
+	 */
+	public static String enableDiscovery(String name, String version, boolean useCode, int port) {
+		String code = Discovery.start(name, version, useCode, port);
+		if (code != null) {
+			return code;
+		}
+		return null;
+	}
+
+	/**
+	 * Stops server discovery.
+	 */
+	public static void disableDiscovery() {
+		Discovery.stop();
 	}
 }

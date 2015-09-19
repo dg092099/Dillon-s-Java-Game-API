@@ -11,9 +11,9 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
 	private static final long serialVersionUID = -5648651L;
-	private String message;
-	private String originator;
-	private transient String originIP;
+	private String message; // The message.
+	private String originator; // Where it came from.
+	private transient String originIP; // The ip it came from.
 
 	/**
 	 * This creates a message

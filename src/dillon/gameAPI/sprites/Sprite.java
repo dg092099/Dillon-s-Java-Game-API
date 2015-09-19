@@ -9,12 +9,13 @@ import java.io.Serializable;
  * This class should be used to make sprites to use similar to entities.
  * 
  * @author Dillon - Github dg092099
+ * @deprecated Use entity instead.
  */
 public class Sprite implements Serializable {
 	private static final long serialVersionUID = -7928142513950423682L;
-	private BufferedImage img;
-	private int x, y, w, h;
-	private int dx, dy;
+	private BufferedImage img; // The sprite image.
+	private int x, y, w, h; // The position, width, and height of the sprite
+	private int dx, dy; // The velocity of the sprite.
 
 	/**
 	 * You should use the sprite manager instead of executing this from the
@@ -149,7 +150,7 @@ public class Sprite implements Serializable {
 		y += dy;
 	}
 
-	boolean visible = true;
+	boolean visible = true; // If the sprite should appear.
 
 	/**
 	 * Returns if the sprite is being rendered. NOT if it is on the screen or
@@ -171,7 +172,7 @@ public class Sprite implements Serializable {
 		visible = b;
 	}
 
-	private boolean collidable = true;
+	private boolean collidable = true; // If this sprite can be collided with.
 
 	/**
 	 * This tells if the sprite is to be collidable with.
@@ -192,6 +193,11 @@ public class Sprite implements Serializable {
 		collidable = b;
 	}
 
+	/**
+	 * Gets the sprite.
+	 * 
+	 * @return The sprite image.
+	 */
 	public Image getSprite() {
 		return img;
 	}

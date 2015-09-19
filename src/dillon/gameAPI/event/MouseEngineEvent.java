@@ -15,7 +15,8 @@ public class MouseEngineEvent extends EEvent {
 		return "Mouse";
 	}
 
-	private Object[] metadata = new Object[4];
+	private Object[] metadata = new Object[4]; // What happened, which button,
+												// and where the mouse is.
 
 	@Override
 	public Object[] getMetadata() {

@@ -30,17 +30,18 @@ import dillon.gameAPI.utils.MainUtilities;
  * @author Dillon - Github dg092099
  */
 class CanvasController extends Canvas implements Runnable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3207927320425492600L;
 
 	public CanvasController() {
 		this.setSize(new Dimension(Core.getWidth(), Core.getHeight()));
 		this.setBackground(Color.BLACK);
 	}
 
-	private long startTime, endTime;
-	private static int FPS = 30;
-	private boolean running = false;
-	private volatile boolean paused = false;
+	private long startTime, endTime; // Time when loop starts, ends.
+	private static int FPS = 30; // The target fps, defaults to 30.
+	private boolean running = false; // Tells if the loop should keep running.
+	private volatile boolean paused = false; // Tells if the update method
+												// should occur.
 
 	/**
 	 * Preps the loop.
@@ -84,49 +85,45 @@ class CanvasController extends Canvas implements Runnable {
 		return graphics;
 	}
 
-	private boolean showingSplash = true;
+	private boolean showingSplash = true; // Determines if a splash screen
+											// should still be displayed.
 
 	@Override
 	public void run() {
 		this.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(),
-						MouseEngineEvent.MOUSE_CLICK, evt.getX(), evt.getY(),
-						null);
-				EventSystem.broadcastMessage(e);
+				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_CLICK, evt.getX(),
+						evt.getY(), null);
+				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(),
-						MouseEngineEvent.MOUSE_ENTER, evt.getX(), evt.getY(),
-						null);
-				EventSystem.broadcastMessage(e);
+				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_ENTER, evt.getX(),
+						evt.getY(), null);
+				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
 			}
 
 			@Override
 			public void mouseExited(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(),
-						MouseEngineEvent.MOUSE_LEAVE, evt.getX(), evt.getY(),
-						null);
-				EventSystem.broadcastMessage(e);
+				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_LEAVE, evt.getX(),
+						evt.getY(), null);
+				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
 			}
 
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(),
-						MouseEngineEvent.MOUSE_HOLD, evt.getX(), evt.getY(),
-						null);
-				EventSystem.broadcastMessage(e);
+				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_HOLD, evt.getX(),
+						evt.getY(), null);
+				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(),
-						MouseEngineEvent.MOUSE_RELEASE, evt.getX(), evt.getY(),
-						null);
-				EventSystem.broadcastMessage(e);
+				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_RELEASE, evt.getX(),
+						evt.getY(), null);
+				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
 			}
 		});
 		this.addKeyListener(new KeyListener() {
@@ -138,34 +135,34 @@ class CanvasController extends Canvas implements Runnable {
 						Core.shutdown(true);
 					}
 				}
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
-						KeyEngineEvent.KEY_PRESS));
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_PRESS), KeyEngineEvent.class);
 			}
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
-						KeyEngineEvent.KEY_RELEASE));
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_RELEASE),
+						KeyEngineEvent.class);
 			}
 
 			@Override
 			public void keyTyped(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0,
-						KeyEngineEvent.KEY_TYPED));
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_TYPED), KeyEngineEvent.class);
 			}
 		});
 		this.requestFocus();
 		while (running) {
-			int framesInSecond = 1000 / FPS;
-			startTime = System.currentTimeMillis();
+			int framesInSecond = 1000 / FPS; // The amount of frames in a
+												// second.
+			startTime = System.currentTimeMillis(); // The starting time in the
+													// loop.
 			sendTick();
 			sendRender();
-			endTime = System.currentTimeMillis();
+			endTime = System.currentTimeMillis(); // The ending time in the loop
 			long diff = endTime - startTime;
-			long delta = framesInSecond - diff;
+			long delta = framesInSecond - diff; // The calculated delta in the
+												// time.
 			if (delta < -50) {
-				Logger.getLogger("Core").warning(
-						"The game is behind by " + Math.abs(delta) + " ticks.");
+				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " ticks.");
 			}
 			try {
 				Thread.sleep(delta);
@@ -180,7 +177,7 @@ class CanvasController extends Canvas implements Runnable {
 	public void sendTick() {
 		if (paused)
 			return;
-		EventSystem.broadcastMessage(new TickEvent());
+		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class);
 		MainUtilities.executeQueue();
 	}
 
@@ -198,17 +195,19 @@ class CanvasController extends Canvas implements Runnable {
 		paused = false;
 	}
 
-	Graphics2D graphics;
-	private int splashCounter;
-	private Image Splash;
-	private static Image background;
+	Graphics2D graphics; // The graphics for the canvas.
+	private int splashCounter; // The counter to determine how long the splash
+								// was on.
+	private Image Splash; // The splash itself.
+	private static Image background; // The background image.
 
 	/**
 	 * This function renders everything.
 	 */
 	public void sendRender() {
-		BufferStrategy bs = getBufferStrategy();
-		if (bs == null) {
+		BufferStrategy buffer = getBufferStrategy(); // The buffer system in the
+														// rendering system.
+		if (buffer == null) {
 			createBufferStrategy(2);
 			return;
 		}
@@ -219,7 +218,7 @@ class CanvasController extends Canvas implements Runnable {
 		if (background != null) {
 			graphics.drawImage(background, 0, 0, null);
 		}
-		EventSystem.broadcastMessage(new RenderEvent(graphics));
+		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class);
 
 		if (showingSplash) {
 			splashCounter++;
@@ -227,20 +226,16 @@ class CanvasController extends Canvas implements Runnable {
 				showingSplash = false;
 			try {
 				if (Splash == null) {
-					Splash = ImageIO.read(getClass().getResourceAsStream(
-							"splash.png"));
+					Splash = ImageIO.read(getClass().getResourceAsStream("splash.png"));
 				}
-				graphics.drawImage((Image) Splash, Core.getWidth() - 100,
-						Core.getHeight() - 50, null);
+				graphics.drawImage((Image) Splash, Core.getWidth() - 100, Core.getHeight() - 50, null);
 			} catch (Exception e) {
 			}
 		}
 		if (NetworkServer.getServerRunning()) {
 			try {
-				graphics.drawImage(
-						ImageIO.read(getClass().getResourceAsStream(
-								"ServerImage.png")), Core.getWidth() - 30, 5,
-						null);
+				graphics.drawImage(ImageIO.read(getClass().getResourceAsStream("ServerImage.png")),
+						Core.getWidth() - 30, 5, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Core.crash(e);
@@ -288,17 +283,15 @@ class CanvasController extends Canvas implements Runnable {
 		this.getGraphics().drawString("An error has occured.", 15, 15);
 		this.getGraphics().drawString(e.getMessage(), 15, 30);
 		StackTraceElement[] lines = e.getStackTrace();
-		String formatted;
+		String formatted; // The formatted version of the stacktrace.
 		for (int i = 0; i < lines.length; i++) {
-			formatted = lines[i].getClassName() + "#"
-					+ lines[i].getMethodName() + " Line: "
-					+ lines[i].getLineNumber();
+			formatted = lines[i].getClassName() + "#" + lines[i].getMethodName() + " Line: " + lines[i].getLineNumber();
 			this.getGraphics().drawString(formatted, 15, i * 15 + 45);
 		}
 		stop();
 	}
 
-	private static int renderMethod = 0;
+	private static int renderMethod = 0; // The current rendering method.
 
 	/**
 	 * This returns the games rendering method.
@@ -319,6 +312,11 @@ class CanvasController extends Canvas implements Runnable {
 		renderMethod = i;
 	}
 
+	/**
+	 * Gets the current FPS
+	 * 
+	 * @return FPS
+	 */
 	public static int getFPS() {
 		return FPS;
 	}

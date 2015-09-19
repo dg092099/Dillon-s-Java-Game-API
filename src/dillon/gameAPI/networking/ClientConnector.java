@@ -10,15 +10,16 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.NetworkEvent;
 
 /**
- * This class bridges the gap between the central server and the client.
+ * This class bridges the gap between the central server and the client, from
+ * the server to client.
  * 
  * @author Dillon - Github dg092099
  *
  */
 public class ClientConnector {
-	private Socket remote;
-	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	private Socket remote; // The client socket.
+	private ObjectInputStream ois; // The socket's input stream.
+	private ObjectOutputStream oos; // The socket's output stream.
 
 	/**
 	 * Creates a client connector with the specified socket.
@@ -26,7 +27,7 @@ public class ClientConnector {
 	 * @param s
 	 *            The client's socket.
 	 * @throws IOException
-	 * 			  When socket fails to connect.
+	 *             When socket fails to connect.
 	 */
 	public ClientConnector(Socket s) throws IOException {
 		cc = this;
@@ -62,8 +63,7 @@ public class ClientConnector {
 			remote.close();
 		} catch (IOException e) {
 		}
-		EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.DISCONNECT,
-				this, null));
+		EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.DISCONNECT, this, null), NetworkEvent.class);
 	}
 
 	/**
@@ -81,9 +81,16 @@ public class ClientConnector {
 		}
 	}
 
-	private volatile boolean continueListen = false;
-	private ClientConnector cc;
+	private volatile boolean continueListen = false; // Tells whether to
+														// continue listening.
+	private ClientConnector cc; // The instance.
 
+	/**
+	 * The class for a separate thread to listen for messages.
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
 	class listener implements Runnable {
 		@Override
 		public void run() {
@@ -98,8 +105,7 @@ public class ClientConnector {
 						return;
 					}
 					rec.setIP(remote.getRemoteSocketAddress().toString());
-					EventSystem.broadcastMessage(new NetworkEvent(
-							NetworkEvent.MESSAGE, cc, rec));
+					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.MESSAGE, cc, rec), NetworkEvent.class);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

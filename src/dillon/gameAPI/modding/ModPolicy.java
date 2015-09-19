@@ -18,9 +18,7 @@ public class ModPolicy extends Policy {
 		if (d.getClassLoader() instanceof SandboxedLoader) {
 			SandboxedLoader s = (SandboxedLoader) d.getClassLoader();
 			String modname = ModdingCore.getNameFromLoader(s);
-			Logger.getLogger("ModSecurity").severe(
-					"Mod: \"" + modname
-							+ "\" attempted a security check and failed.");
+			Logger.getLogger("ModSecurity").severe("Mod: \"" + modname + "\" attempted a security check and failed.");
 			return new Permissions();
 		} else {
 			Permissions p = new Permissions();

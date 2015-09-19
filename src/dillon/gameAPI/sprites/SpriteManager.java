@@ -8,9 +8,14 @@ import java.util.HashMap;
  * This allows the program to be able to house many sprites.
  * 
  * @author Dillon - Github dg092099
+ * @deprecated No replacement.
  */
 public class SpriteManager {
-	private static HashMap<String, Sprite> sprites = new HashMap<String, Sprite>();
+	private static HashMap<String, Sprite> sprites = new HashMap<String, Sprite>(); // The
+																					// sprites
+																					// in
+																					// the
+																					// game.
 
 	/**
 	 * Creates a sprite.

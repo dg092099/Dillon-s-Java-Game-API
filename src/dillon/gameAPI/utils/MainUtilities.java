@@ -2,8 +2,10 @@ package dillon.gameAPI.utils;
 
 import java.util.ArrayList;
 
+import dillon.gameAPI.errors.GeneralRuntimeException;
+
 /**
- * This class contains miscelanious methods that are more or less utilities for
+ * This class contains miscellaneous methods that are more or less utilities for
  * the engine.
  * 
  * @author Dillon - Github dg092099
@@ -28,7 +30,14 @@ public class MainUtilities {
 		return half + diff;
 	}
 
-	private static final ArrayList<Runnable> queue = new ArrayList<Runnable>();
+	private static final ArrayList<Runnable> queue = new ArrayList<Runnable>(); // Things
+																				// to
+																				// run
+																				// in
+																				// sync
+																				// with
+																				// the
+																				// engine.
 
 	/**
 	 * Sets the action to run on time with the game engine.
@@ -41,10 +50,13 @@ public class MainUtilities {
 	}
 
 	/**
-	 * To be used by the engine only. Violation will result in multiple queue
-	 * executions or unsynchronized actions.
+	 * Executes the queue. Only works when invoked by the canvas controller.
 	 */
 	public static synchronized void executeQueue() {
+		if (!(new Throwable().getStackTrace()[1].getClassName()
+				.equalsIgnoreCase("dillon.gameapi.core.canvascontroller"))) {
+			throw new GeneralRuntimeException("Illegal access, must be done with the canvas controller.");
+		}
 		if (queue.size() == 0)
 			return;
 		for (int i = 0; i < queue.size(); i++) {

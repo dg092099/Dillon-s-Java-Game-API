@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.event.EEHandler;
-import dillon.gameAPI.event.EEvent;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.utils.MainUtilities;
@@ -20,9 +19,9 @@ import dillon.gameAPI.utils.MainUtilities;
  */
 public class ScrollManager {
 
-	private static BufferedImage[][] tiles;
-	private static int width, height;
-	private static BufferedImage tilesheet;
+	private static BufferedImage[][] tiles; // The individual tiles.
+	private static int width, height; // The width and height of the tiles.
+	private static BufferedImage tilesheet; // The complete tilesheet.
 
 	/**
 	 * This method will register the tile sheet to use.
@@ -48,8 +47,9 @@ public class ScrollManager {
 		}
 		ScrollManager.width = width;
 		ScrollManager.height = height;
-		int tilesX = img.getWidth(null) / width;
-		int tilesY = img.getHeight(null) / height;
+		int tilesX = img.getWidth(null) / width; // How many tiles across.
+		int tilesY = img.getHeight(null) / height; // How many tiles up and
+													// down.
 		tiles = new BufferedImage[tilesX][tilesY];
 		for (int x = 0; x < tilesX; x++) {
 			for (int y = 0; y < tilesY; y++) {
@@ -58,8 +58,7 @@ public class ScrollManager {
 					System.out.println("Unable to cast.");
 					return;
 				}
-				BufferedImage tile = img2.getSubimage(width * x, height * y,
-						width, height);
+				BufferedImage tile = img2.getSubimage(width * x, height * y, width, height);
 				if (tile == null) {
 					System.out.println("Tile is null.");
 				}
@@ -69,8 +68,8 @@ public class ScrollManager {
 		}
 	}
 
-	private static BufferedImage fullMap;
-	private static BufferedImage bitMap;
+	private static BufferedImage fullMap; // The full map image, the overlay.
+	private static BufferedImage bitMap; // The data map image.
 
 	/**
 	 * The method to set the level.
@@ -84,8 +83,8 @@ public class ScrollManager {
 			if (Core.getRenderMethod() != Core.SIDESCROLLER)
 				return;
 			bitMap = (BufferedImage) img;
-			fullMap = new BufferedImage(bitMap.getWidth() * width,
-					bitMap.getHeight() * height, BufferedImage.TYPE_INT_ARGB);
+			fullMap = new BufferedImage(bitMap.getWidth() * width, bitMap.getHeight() * height,
+					BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < bitMap.getWidth(); x++) {
 				for (int y = 0; y < bitMap.getHeight(); y++) {
 					int red, blue;
@@ -93,9 +92,7 @@ public class ScrollManager {
 					blue = MainUtilities.getBlue(bitMap.getRGB(x, y));
 					if (red >= 255)
 						continue;
-					fullMap.getGraphics().drawImage(
-							getTile(red / 10, blue / 10), x * width,
-							y * height, null);
+					fullMap.getGraphics().drawImage(getTile(red / 10, blue / 10), x * width, y * height, null);
 				}
 			}
 		} catch (Exception e) {
@@ -129,19 +126,29 @@ public class ScrollManager {
 	public ScrollManager() {
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
-			public void handle(EEvent T) {
+			public void handle(RenderEvent evt) {
 				if (Core.getRenderMethod() != 2)
 					return;
-				Graphics2D graphics = (Graphics2D) ((RenderEvent) T)
-						.getMetadata()[0];
-				graphics.drawImage(fullMap, 0 - Camera.getXPos(),
-						0 - Camera.getYPos(), null);
+				Graphics2D graphics = (Graphics2D) evt.getMetadata()[0];
+				graphics.drawImage(fullMap, 0 - Camera.getXPos(), 0 - Camera.getYPos(), null);
 			}
 		});
 	}
 
-	public static boolean getCollisionAny(double x2, double y2, int width2,
-			int height2) {
+	/**
+	 * If the given information results in a collision with a tile.
+	 * 
+	 * @param x2
+	 *            X position
+	 * @param y2
+	 *            Y position
+	 * @param width2
+	 *            width of area.
+	 * @param height2
+	 *            height of area.
+	 * @return colliding
+	 */
+	public static boolean getCollisionAny(double x2, double y2, int width2, int height2) {
 		boolean colliding = false;
 		if (fullMap == null) {
 			return false;
@@ -188,10 +195,20 @@ public class ScrollManager {
 		return width;
 	}
 
+	/**
+	 * Gets the tile's height.
+	 * 
+	 * @return Tile height.
+	 */
 	public static int getTileHeight() {
 		return height;
 	}
 
+	/**
+	 * Gets the map image.
+	 * 
+	 * @return The map.
+	 */
 	public static BufferedImage getMap() {
 		return bitMap;
 	}

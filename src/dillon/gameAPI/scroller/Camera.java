@@ -7,8 +7,8 @@ package dillon.gameAPI.scroller;
  * @author Dillon - Github dg092099
  */
 public class Camera {
-	private static int xPos = 5;
-	private static int yPos = 5;
+	private static int xPos = 5; // The x position of the camera.
+	private static int yPos = 5; // The y position of the camera.
 
 	/**
 	 * This method sets the x value for the camera.

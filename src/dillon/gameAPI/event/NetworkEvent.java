@@ -16,7 +16,8 @@ public class NetworkEvent extends EEvent {
 		return "Network";
 	}
 
-	private Object[] metadata = new Object[3];
+	private Object[] metadata = new Object[3]; // What happened, the connector,
+												// the message.
 
 	@Override
 	public Object[] getMetadata() {

@@ -1,5 +1,6 @@
 package dillon.gameAPI.event;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import dillon.gameAPI.modding.ModdingCore;
@@ -11,7 +12,11 @@ import dillon.gameAPI.modding.ModdingCore;
  *
  */
 public class EventSystem {
-	private static ArrayList<EEHandler<?>> handlers = new ArrayList<EEHandler<?>>();
+	private static ArrayList<EEHandler<?>> handlers = new ArrayList<EEHandler<?>>(); // The
+																						// handlers
+																						// for
+																						// the
+																						// events.
 
 	/**
 	 * Adds a handler to get events.
@@ -57,11 +62,15 @@ public class EventSystem {
 	 * 
 	 * @param e
 	 *            The event.
+	 * @param c
+	 *            The event class.
 	 */
-	public static void broadcastMessage(EEvent e) {
+	public static void broadcastMessage(EEvent e, Class<? extends EEvent> c) {
 		for (int i = 0; i < handlers.size(); i++) {
 			try {
-				handlers.get(i).handle(e);
+				Method m = handlers.get(i).getClass().getDeclaredMethod("handle", c);
+				m.setAccessible(true);
+				m.invoke(handlers.get(i), e);
 			} catch (Exception e2) {
 			}
 		}

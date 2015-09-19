@@ -15,7 +15,8 @@ public class KeyEngineEvent extends EEvent {
 		return "Key";
 	}
 
-	public Object[] metadata = new Object[2];
+	public Object[] metadata = new Object[2]; // The raw key event and an int
+												// representing what happened.
 
 	@Override
 	public Object[] getMetadata() {
@@ -35,7 +36,7 @@ public class KeyEngineEvent extends EEvent {
 		metadata[1] = mode;
 	}
 
-	public static final int KEY_PRESS = 0;
-	public static final int KEY_RELEASE = 1;
-	public static final int KEY_TYPED = 2;
+	public static final int KEY_PRESS = 0; // Constant: key type, pressed.
+	public static final int KEY_RELEASE = 1; // Constant: key type, released.
+	public static final int KEY_TYPED = 2; // Constant: key type, typed.
 }

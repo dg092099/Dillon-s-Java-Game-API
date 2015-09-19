@@ -15,7 +15,7 @@ public class RenderEvent extends EEvent {
 		return "Render";
 	}
 
-	private Graphics2D g;
+	private Graphics2D g; // The graphics object to write to.
 
 	@Override
 	public Object[] getMetadata() {

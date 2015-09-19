@@ -19,12 +19,12 @@ public @interface Modification {
 	 * 
 	 * @return Mod name
 	 */
-	public String name() default "";
+	public String name();
 
 	/**
 	 * Version
 	 * 
 	 * @return Version
 	 */
-	public String version() default "-1";
+	public String version();
 }

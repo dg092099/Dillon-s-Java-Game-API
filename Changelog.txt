@@ -1,3 +1,8 @@
+1.10:
+-Fixed event system so it works the way it's intended.
+-Added server discovery.
+-Deprecated sprites
+--------------------------------------------------------
 1.9:
 -Added Modding module
 --------------------------------------------------------

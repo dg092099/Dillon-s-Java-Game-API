@@ -19,6 +19,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import dillon.gameAPI.event.EEvent;
+import dillon.gameAPI.event.ShutdownEvent;
 
 /**
  * The central class for modding.
@@ -27,10 +28,22 @@ import dillon.gameAPI.event.EEvent;
  *
  */
 public final class ModdingCore {
-	private static final HashMap<String, SandboxedLoader> loaders = new HashMap<String, SandboxedLoader>();
-	private static final HashMap<String, Class<?>> modClasses = new HashMap<String, Class<?>>();
-	private static final HashMap<String, Object> modClassObjects = new HashMap<String, Object>();
-	public static final ArrayList<Class<?>> eventHandlers = new ArrayList<Class<?>>();
+	private static final HashMap<String, SandboxedLoader> loaders = new HashMap<String, SandboxedLoader>(); // The
+																											// sandboxed
+																											// classloaders.
+	private static final HashMap<String, Class<?>> modClasses = new HashMap<String, Class<?>>(); // The
+																									// mod
+																									// classes.
+	private static final HashMap<String, Object> modClassObjects = new HashMap<String, Object>(); // The
+																									// instances
+																									// of
+																									// the
+																									// mod
+																									// classes.
+	public static final ArrayList<Class<?>> eventHandlers = new ArrayList<Class<?>>(); // The
+																						// event
+																						// handlers
+																						// classes.
 
 	/**
 	 * Mod classes
@@ -64,37 +77,26 @@ public final class ModdingCore {
 			for (File f2 : f.listFiles()) {
 				if (f2.getName().endsWith(".jar")) {
 					try {
-						SandboxedLoader l = new SandboxedLoader(new URL[] { f2
-								.toURI().toURL() });
+						SandboxedLoader l = new SandboxedLoader(new URL[] { f2.toURI().toURL() });
 						ArrayList<String> classNames = new ArrayList<String>();
-						ZipInputStream zis = new ZipInputStream(
-								new FileInputStream(f2));
+						ZipInputStream zis = new ZipInputStream(new FileInputStream(f2));
 						ZipEntry ze;
 						while ((ze = zis.getNextEntry()) != null) {
-							if (ze.getName().endsWith(".class")
-									&& !ze.getName().contains("$")) {
-								classNames.add(ze
-										.getName()
-										.replaceAll("/", ".")
-										.substring(
-												0,
-												ze.getName().length()
-														- ".class".length()));
+							if (ze.getName().endsWith(".class") && !ze.getName().contains("$")) {
+								classNames.add(ze.getName().replaceAll("/", ".").substring(0,
+										ze.getName().length() - ".class".length()));
 							}
 							zis.closeEntry();
 						}
 						zis.close();
 						if (classNames.size() == 0) {
-							System.out
-									.println("There are no files in the jar.");
+							System.out.println("There are no files in the jar.");
 							continue;
 						}
 						for (String s : classNames) {
 							Class<?> c = l.loadClass(s);
 							if (c.getAnnotationsByType(Modification.class)[0] != null) {
-								String ModName = c
-										.getAnnotationsByType(Modification.class)[0]
-										.name();
+								String ModName = c.getAnnotationsByType(Modification.class)[0].name();
 								loaders.put(ModName, l);
 								modClasses.put(ModName, c);
 								modClassObjects.put(ModName, c.newInstance());
@@ -147,8 +149,7 @@ public final class ModdingCore {
 				if (m.getName().equals("init")) {
 					try {
 						m.invoke(modClassObjects.get(s));
-					} catch (IllegalAccessException | IllegalArgumentException
-							| InvocationTargetException e) {
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -168,8 +169,7 @@ public final class ModdingCore {
 				if (m.getName().equals("postStart")) {
 					try {
 						m.invoke(modClassObjects.get(s));
-					} catch (IllegalAccessException | IllegalArgumentException
-							| InvocationTargetException e) {
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -181,6 +181,7 @@ public final class ModdingCore {
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface EventHandler {
+		public Class<? extends EEvent>type() default ShutdownEvent.class;
 	}
 
 	/**
@@ -195,9 +196,11 @@ public final class ModdingCore {
 			for (Method m : methods) {
 				if (m.isAnnotationPresent(EventHandler.class)) {
 					try {
-						m.invoke(c.newInstance(), e);
-					} catch (IllegalAccessException | IllegalArgumentException
-							| InvocationTargetException
+						Class<? extends EEvent> eventType = m.getAnnotation(EventHandler.class).type();
+						if (e.getClass() == eventType) {
+							m.invoke(c.newInstance(), e);
+						}
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 							| InstantiationException e1) {
 					}
 				}
@@ -225,7 +228,8 @@ public final class ModdingCore {
 	 * Registers a class to receive events. Methods that take in events must be
 	 * annotated with ModdingCore.EventHandler.
 	 * 
-	 * @param c The class, not an object.
+	 * @param c
+	 *            The class, not an object.
 	 */
 	public static void registerHandler(Class<?> c) {
 		eventHandlers.add(c);

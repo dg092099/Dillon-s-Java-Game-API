@@ -30,12 +30,14 @@ import dillon.gameAPI.scroller.ScrollManager;
  * @author Dillon - Github dg092099
  */
 public class Core {
-	private static String TITLE;
-	private static Image ICON;
-	private static JFrame frame;
-	public static final String ENGINE_VERSION = "v1.9";
-	public static final int TILES = 1;
-	public static final int SIDESCROLLER = 2;
+	private static String TITLE; // The game's title.
+	private static Image ICON; // The icon for the game.
+	private static JFrame frame; // The JFrame window.
+	public static final String ENGINE_VERSION = "v1.10"; // The engine's
+															// version.
+	public static final int TILES = 1; // Constant: Render method, tile.
+	public static final int SIDESCROLLER = 2; // Constant: render method,
+												// sidescroller.
 
 	/**
 	 * This method starts the game with the specified background and fps.
@@ -51,7 +53,9 @@ public class Core {
 		Logger.getLogger("Core").info("Starting game.");
 		controller.start();
 		controller.setFps(FPS);
-		Thread t = new Thread(controller);
+		Thread t = new Thread(controller); // So that the game loop can't
+											// interfere with other programming.
+		t.setName("Canvas Controller");
 		t.start();
 		if (background != null) {
 			CanvasController.setBackgroundImage(background);
@@ -120,8 +124,7 @@ public class Core {
 	 *             Results because the icon that you specified couldn't be
 	 *             found.
 	 */
-	public static void setup(int width, int height, String title, Image icon)
-			throws IOException {
+	public static void setup(int width, int height, String title, Image icon) throws IOException {
 		TITLE = title;
 		ICON = icon;
 		Logger.getLogger("Core").info("Setting up...");
@@ -133,8 +136,7 @@ public class Core {
 		if (icon != null) {
 			frame.setIconImage(icon);
 		} else {
-			frame.setIconImage(ImageIO.read(Core.class
-					.getResourceAsStream("logo.png")));
+			frame.setIconImage(ImageIO.read(Core.class.getResourceAsStream("logo.png")));
 		}
 		frame.addWindowListener(new WindowListener() {
 			@Override
@@ -183,8 +185,7 @@ public class Core {
 	 *            Weather or not it should be fullscreen.
 	 */
 	public static void setFullScreen(boolean b) {
-		GraphicsDevice[] devices = GraphicsEnvironment
-				.getLocalGraphicsEnvironment().getScreenDevices();
+		GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		if (devices[0].isFullScreenSupported()) {
 			fullscreen = b;
 			devices[0].setFullScreenWindow(fullscreen ? frame : null);
@@ -253,14 +254,16 @@ public class Core {
 			Logger.getLogger("Core").severe("Engine Shutting down...");
 			NetworkServer.stopServer();
 			NetworkConnection.disconnect();
+			NetworkServer.disableDiscovery();
 			System.exit(0);
 		} else {
 			Logger.getLogger("Core").severe("Engine Shutting down...");
-			EventSystem.broadcastMessage(new ShutdownEvent());
+			EventSystem.broadcastMessage(new ShutdownEvent(), ShutdownEvent.class);
 			controller.stop();
 			Logger.getLogger("Core").severe("Stopping server...");
 			NetworkServer.stopServer();
 			NetworkConnection.disconnect();
+			NetworkServer.disableDiscovery();
 			System.exit(0);
 		}
 	}
@@ -295,22 +298,49 @@ public class Core {
 		return ENGINE_VERSION;
 	}
 
+	/**
+	 * Gets the render method.
+	 * 
+	 * @return The render method
+	 */
 	public static int getRenderMethod() {
 		return CanvasController.getRenderMethod();
 	}
 
+	/**
+	 * Gets the background image.
+	 * 
+	 * @return The background image.
+	 */
 	public static BufferedImage getBackgroundImage() {
 		return CanvasController.getBackgroundImage();
 	}
 
+	/**
+	 * Gets the current fps.
+	 * 
+	 * @return FPS
+	 */
 	public static int getFPS() {
 		return CanvasController.getFPS();
 	}
 
+	/**
+	 * Sets the background image
+	 * 
+	 * @param background
+	 *            The image
+	 */
 	public static void setBackgroundImage(BufferedImage background) {
 		CanvasController.setBackgroundImage(background);
 	}
 
+	/**
+	 * Sets the render method.
+	 * 
+	 * @param canvasState
+	 *            The method number.
+	 */
 	public static void setRenderMethod(int canvasState) {
 		CanvasController.setRenderMethod(canvasState);
 	}

@@ -12,8 +12,8 @@ public class PromptEvent extends EEvent {
 		return "Prompt finished";
 	}
 
-	private final String msg;
-	private final long id;
+	private final String msg; // The data given.
+	private final long id; // The id of the prompt.
 
 	/**
 	 * Initializes a prompt event.

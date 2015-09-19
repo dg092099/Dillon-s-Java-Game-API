@@ -3,7 +3,7 @@ package dillon.gameAPI.errors;
 /**
  * Occurs when there is a problem connecting to or setting up a network.
  * 
- * @author Dillon Geier
+ * @author Dillon - Github dg092099
  *
  */
 public class NetworkingError extends Exception {
