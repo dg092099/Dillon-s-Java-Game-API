@@ -93,37 +93,94 @@ class CanvasController extends Canvas implements Runnable {
 		this.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_CLICK, evt.getX(),
-						evt.getY(), null);
-				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
+				switch (evt.getButton()) {
+				case MouseEvent.BUTTON1:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON2:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON3:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				}
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_ENTER, evt.getX(),
-						evt.getY(), null);
-				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
+				switch (evt.getButton()) {
+				case MouseEvent.BUTTON1:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON2:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON3:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_LEAVE, evt.getX(),
-						evt.getY(), null);
-				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
+				switch (evt.getButton()) {
+				case MouseEvent.BUTTON1:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON2:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON3:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				}
 			}
 
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_HOLD, evt.getX(),
-						evt.getY(), null);
-				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
+				switch (evt.getButton()) {
+				case MouseEvent.BUTTON1:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON2:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON3:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
-				MouseEngineEvent e = new MouseEngineEvent(evt.getButton(), MouseEngineEvent.MOUSE_RELEASE, evt.getX(),
-						evt.getY(), null);
-				EventSystem.broadcastMessage(e, MouseEngineEvent.class);
+				switch (evt.getButton()) {
+				case MouseEvent.BUTTON1:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+							MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON2:
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+							MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					break;
+				case MouseEvent.BUTTON3:
+					EventSystem.broadcastMessage(
+							new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+									MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0),
+							MouseEngineEvent.class);
+					break;
+				}
 			}
 		});
 		this.addKeyListener(new KeyListener() {
@@ -135,18 +192,20 @@ class CanvasController extends Canvas implements Runnable {
 						Core.shutdown(true);
 					}
 				}
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_PRESS), KeyEngineEvent.class);
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_PRESS),
+						KeyEngineEvent.class);
 			}
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_RELEASE),
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_RELEASE),
 						KeyEngineEvent.class);
 			}
 
 			@Override
 			public void keyTyped(KeyEvent arg0) {
-				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KEY_TYPED), KeyEngineEvent.class);
+				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_TYPED),
+						KeyEngineEvent.class);
 			}
 		});
 		this.requestFocus();

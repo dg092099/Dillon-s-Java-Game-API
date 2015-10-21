@@ -181,7 +181,7 @@ public final class ModdingCore {
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface EventHandler {
-		public Class<? extends EEvent>type() default ShutdownEvent.class;
+		public Class<? extends EEvent> type() default ShutdownEvent.class;
 	}
 
 	/**

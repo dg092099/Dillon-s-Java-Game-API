@@ -139,7 +139,8 @@ public class NetworkConnection {
 	}
 
 	/**
-	 * Tries to disconnect from the server. Automatically executes on game shutdown.
+	 * Tries to disconnect from the server. Automatically executes on game
+	 * shutdown.
 	 */
 	public static void disconnect() {
 		try {
@@ -185,7 +186,8 @@ public class NetworkConnection {
 						return;
 					}
 					rec.setIP(sock.getRemoteSocketAddress().toString());
-					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.MESSAGE, null, rec), NetworkEvent.class);
+					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.MESSAGE, null, rec),
+							NetworkEvent.class);
 				} catch (ClassNotFoundException | IOException e) {
 				}
 			}

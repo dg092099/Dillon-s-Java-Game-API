@@ -72,7 +72,8 @@ public class NetworkServer {
 					Logger.getLogger("Networking").info("Got client, " + s.getRemoteSocketAddress().toString());
 					ClientConnector cc = new ClientConnector(s);
 					connectors.add(cc);
-					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.CONNECT, cc, null), NetworkEvent.class);
+					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.CONNECT, cc, null),
+							NetworkEvent.class);
 				} catch (IOException e) {
 				}
 			}

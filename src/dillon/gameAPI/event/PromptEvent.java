@@ -16,6 +16,20 @@ public class PromptEvent extends EEvent {
 	private final long id; // The id of the prompt.
 
 	/**
+	 * @return the msg
+	 */
+	public String getMsg() {
+		return msg;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
 	 * Initializes a prompt event.
 	 * 
 	 * @param msg
@@ -28,8 +42,4 @@ public class PromptEvent extends EEvent {
 		this.id = id;
 	}
 
-	@Override
-	public Object[] getMetadata() {
-		return new Object[] { msg, id };
-	}
 }

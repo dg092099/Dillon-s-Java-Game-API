@@ -18,10 +18,10 @@ import dillon.gameAPI.event.PromptEvent;
 import dillon.gameAPI.event.RenderEvent;
 
 /**
- * This class is designed to show all of the gui set to display.
+ * Use the GuiSystem class instead.
  * 
  * @author Dillon - Github dg092099
- *
+ * @deprecated
  */
 public class guiManager {
 	private static boolean guiDisplaying = false; // If anything is on screen.
@@ -51,8 +51,8 @@ public class guiManager {
 		EventSystem.addHandler(new EEHandler<KeyEngineEvent>() {
 			@Override
 			public void handle(KeyEngineEvent evt) {
-				KeyEvent evt2 = (KeyEvent) evt.getMetadata()[0];
-				if ((int) evt.getMetadata()[1] != KeyEngineEvent.KEY_PRESS)
+				KeyEvent evt2 = evt.getKeyEvent();
+				if (evt.getMode() != KeyEngineEvent.KeyMode.KEY_PRESS)
 					return;
 				if (evt2.getKeyCode() == KeyEvent.VK_ENTER && showDialog && !showingPrompt) {
 					showDialog = false;
@@ -69,7 +69,7 @@ public class guiManager {
 					} else if (evt2.getKeyCode() == KeyEvent.VK_SHIFT) {
 						return;
 					} else {
-						if ((int) evt.getMetadata()[1] == KeyEngineEvent.KEY_PRESS)
+						if (evt.getMode() == KeyEngineEvent.KeyMode.KEY_PRESS)
 							typedPrompt = typedPrompt + evt2.getKeyChar();
 					}
 				}
@@ -78,7 +78,7 @@ public class guiManager {
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
 			public void handle(RenderEvent evt) {
-				Graphics2D graphics = (Graphics2D) evt.getMetadata()[0];
+				Graphics2D graphics = evt.getGraphics();
 				if (blackoutActive == 1) {
 					graphics.drawImage(blackoutImage, 0, 0, null);
 					graphics.setFont(blackoutFont);
@@ -167,7 +167,7 @@ public class guiManager {
 		gph.setColor(bck);
 		gph.fillRect(0, 0, blackoutImage.getWidth(), blackoutImage.getHeight());
 		blackoutActive = 1;
-		System.out.println("Activated Blackout");
+		System.out.println("Activated BlackoutText");
 	}
 
 	/**

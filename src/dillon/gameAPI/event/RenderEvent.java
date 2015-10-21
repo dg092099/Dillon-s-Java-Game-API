@@ -15,11 +15,13 @@ public class RenderEvent extends EEvent {
 		return "Render";
 	}
 
-	private Graphics2D g; // The graphics object to write to.
+	private final Graphics2D graphics;
 
-	@Override
-	public Object[] getMetadata() {
-		return new Object[] { g };
+	/**
+	 * @return the graphics
+	 */
+	public Graphics2D getGraphics() {
+		return graphics;
 	}
 
 	/**
@@ -29,7 +31,7 @@ public class RenderEvent extends EEvent {
 	 *            The graphics object
 	 */
 	public RenderEvent(Graphics2D g2) {
-		g = g2;
+		graphics = g2;
 	}
 
 }

@@ -13,9 +13,4 @@ public class TickEvent extends EEvent {
 		return "Tick";
 	}
 
-	@Override
-	public Object[] getMetadata() {
-		return null;
-	}
-
 }

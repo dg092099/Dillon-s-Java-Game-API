@@ -63,7 +63,8 @@ public class ClientConnector {
 			remote.close();
 		} catch (IOException e) {
 		}
-		EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.DISCONNECT, this, null), NetworkEvent.class);
+		EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.DISCONNECT, this, null),
+				NetworkEvent.class);
 	}
 
 	/**
@@ -105,7 +106,8 @@ public class ClientConnector {
 						return;
 					}
 					rec.setIP(remote.getRemoteSocketAddress().toString());
-					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.MESSAGE, cc, rec), NetworkEvent.class);
+					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.MESSAGE, cc, rec),
+							NetworkEvent.class);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

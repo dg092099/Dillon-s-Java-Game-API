@@ -14,10 +14,4 @@ public abstract class EEvent {
 	 */
 	public abstract String getType();
 
-	/**
-	 * Returns any metadata
-	 * 
-	 * @return metadata.
-	 */
-	public abstract Object[] getMetadata();
 }

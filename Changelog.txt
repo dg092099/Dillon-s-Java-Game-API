@@ -1,3 +1,8 @@
+1.11:
+-Redone gui system.
+-Depricated GuiManager, use GuiSystem instead.
+-Redone event system, now instead of using getMetadata(), it now has methods to get all parameters by name. See javadoc.
+--------------------------------------------------------
 1.10:
 -Fixed event system so it works the way it's intended.
 -Added server discovery.

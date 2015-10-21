@@ -129,7 +129,7 @@ public class ScrollManager {
 			public void handle(RenderEvent evt) {
 				if (Core.getRenderMethod() != 2)
 					return;
-				Graphics2D graphics = (Graphics2D) evt.getMetadata()[0];
+				Graphics2D graphics = evt.getGraphics();
 				graphics.drawImage(fullMap, 0 - Camera.getXPos(), 0 - Camera.getYPos(), null);
 			}
 		});

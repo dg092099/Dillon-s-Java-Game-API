@@ -15,24 +15,38 @@ public class MouseEngineEvent extends EEvent {
 		return "Mouse";
 	}
 
-	private Object[] metadata = new Object[4]; // What happened, which button,
-												// and where the mouse is.
+	private final MouseButton mouseButton;
+	private final MouseMode mouseMode;
+	private final Point location;
+	private final int scrollAmount;
 
-	@Override
-	public Object[] getMetadata() {
-		return metadata;
+	/**
+	 * @return the mouseButton
+	 */
+	public MouseButton getMouseButton() {
+		return mouseButton;
 	}
 
-	public static final int MOUSE_CLICK = 0;
-	public static final int MOUSE_RELEASE = 1;
-	public static final int MOUSE_HOLD = 2;
-	public static final int MOUSE_ENTER = 3;
-	public static final int MOUSE_LEAVE = 4;
+	/**
+	 * @return the mouseMode
+	 */
+	public MouseMode getMouseMode() {
+		return mouseMode;
+	}
 
-	public static final int LEFT = 0;
-	public static final int RIGHT = 1;
-	public static final int MIDDLE = 2;
-	public static final int SCROLL = 3;
+	/**
+	 * @return the location
+	 */
+	public Point getLocation() {
+		return location;
+	}
+
+	/**
+	 * @return the scrollAmount
+	 */
+	public int getScrollAmount() {
+		return scrollAmount;
+	}
 
 	/**
 	 * Instantates a mouse event.
@@ -48,12 +62,18 @@ public class MouseEngineEvent extends EEvent {
 	 * @param scrollAmt
 	 *            unused.
 	 */
-	public MouseEngineEvent(int button, int mode, int x, int y, String scrollAmt) {
-		Point p = new Point(x, y);
-		metadata[0] = mode;
-		metadata[1] = button;
-		metadata[2] = p;
-		if (scrollAmt != null)
-			metadata[3] = scrollAmt;
+	public MouseEngineEvent(MouseButton button, MouseMode mode, int x, int y, int scrollAmt) {
+		mouseButton = button;
+		mouseMode = mode;
+		location = new Point(x, y);
+		this.scrollAmount = scrollAmt;
+	}
+
+	public static enum MouseButton {
+		LEFT, RIGHT, MIDDLE, SCROLL
+	}
+
+	public static enum MouseMode {
+		CLICK, RELEASE, HOLD, ENTER, LEAVE
 	}
 }

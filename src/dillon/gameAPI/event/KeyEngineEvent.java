@@ -3,7 +3,7 @@ package dillon.gameAPI.event;
 import java.awt.event.KeyEvent;
 
 /**
- * Event for when a key is pressed. Only metadata: The raw java.awt mouse event,
+ * Event for when a key is pressed. Only metadata: The raw java.awt key event,
  * and a mode.
  * 
  * @author Dillon - Github dg092099
@@ -15,12 +15,19 @@ public class KeyEngineEvent extends EEvent {
 		return "Key";
 	}
 
-	public Object[] metadata = new Object[2]; // The raw key event and an int
-												// representing what happened.
+	private final KeyEvent evt;
+	private final KeyMode mode;
 
-	@Override
-	public Object[] getMetadata() {
-		return metadata;
+	public KeyEvent getKeyEvent() {
+		return evt;
+	}
+
+	public static enum KeyMode {
+		KEY_PRESS, KEY_RELEASE, KEY_TYPED
+	}
+
+	public KeyMode getMode() {
+		return mode;
 	}
 
 	/**
@@ -31,12 +38,8 @@ public class KeyEngineEvent extends EEvent {
 	 * @param mode
 	 *            The type of event.
 	 */
-	public KeyEngineEvent(KeyEvent evt, int mode) {
-		metadata[0] = evt;
-		metadata[1] = mode;
+	public KeyEngineEvent(KeyEvent evt, KeyMode mode) {
+		this.evt = evt;
+		this.mode = mode;
 	}
-
-	public static final int KEY_PRESS = 0; // Constant: key type, pressed.
-	public static final int KEY_RELEASE = 1; // Constant: key type, released.
-	public static final int KEY_TYPED = 2; // Constant: key type, typed.
 }

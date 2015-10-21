@@ -80,7 +80,7 @@ public class Entity implements Serializable {
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
 			public void handle(RenderEvent evt) {
-				Graphics2D graphics = (Graphics2D) evt.getMetadata()[0];
+				Graphics2D graphics = evt.getGraphics();
 				graphics.drawImage(spr, (int) x, (int) y, null);
 				if (showHealth) {
 					graphics.setColor(Color.RED);
@@ -348,5 +348,38 @@ public class Entity implements Serializable {
 		jumpHeight = height;
 		jumping = true;
 		setGravityJumpOverride();
+	}
+
+	/**
+	 * Finds the distance between this entity and another entity.
+	 * 
+	 * @param e
+	 *            The other entity
+	 * @return The distance.
+	 */
+	public double getDistanceFrom(Entity e) {
+		int diffX = (int) Math.abs(getX() - e.getX());
+		int diffY = (int) Math.abs(getY() - e.getY());
+		double xs = Math.pow(diffX, 2);
+		double ys = Math.pow(diffY, 2);
+		double sum = xs + ys;
+		return Math.sqrt(sum);
+	}
+
+	/**
+	 * Finds the distance from this entity and a point.
+	 * 
+	 * @param x
+	 *            The x
+	 * @param y
+	 *            The y
+	 * @return The distance
+	 */
+	public double getDistanceFrom(int x, int y) {
+		int diffX = (int) Math.abs(getX() - x);
+		int diffY = (int) Math.abs(getY() - y);
+		double xs = Math.pow(diffX, 2);
+		double ys = Math.pow(diffY, 2);
+		return Math.sqrt(xs + ys);
 	}
 }

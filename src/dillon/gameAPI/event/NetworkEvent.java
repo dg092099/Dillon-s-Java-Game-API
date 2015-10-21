@@ -16,17 +16,30 @@ public class NetworkEvent extends EEvent {
 		return "Network";
 	}
 
-	private Object[] metadata = new Object[3]; // What happened, the connector,
-												// the message.
+	private final NetworkMode mode;
+	private final ClientConnector connector;
+	private final Message message;
 
-	@Override
-	public Object[] getMetadata() {
-		return metadata;
+	/**
+	 * @return the mode
+	 */
+	public NetworkMode getMode() {
+		return mode;
 	}
 
-	public static final int DISCONNECT = 0;
-	public static final int CONNECT = 1;
-	public static final int MESSAGE = 2;
+	/**
+	 * @return the connector
+	 */
+	public ClientConnector getConnector() {
+		return connector;
+	}
+
+	/**
+	 * @return the message
+	 */
+	public Message getMessage() {
+		return message;
+	}
 
 	/**
 	 * Instantates a network event.
@@ -38,9 +51,13 @@ public class NetworkEvent extends EEvent {
 	 * @param msg
 	 *            The message
 	 */
-	public NetworkEvent(int Mode, ClientConnector cnct, Message msg) {
-		metadata[0] = Mode;
-		metadata[1] = cnct;
-		metadata[2] = msg;
+	public NetworkEvent(NetworkMode Mode, ClientConnector cnct, Message msg) {
+		mode = Mode;
+		connector = cnct;
+		message = msg;
+	}
+
+	public static enum NetworkMode {
+		DISCONNECT, CONNECT, MESSAGE
 	}
 }

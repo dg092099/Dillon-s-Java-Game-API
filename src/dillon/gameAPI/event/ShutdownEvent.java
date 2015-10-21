@@ -12,9 +12,4 @@ public class ShutdownEvent extends EEvent {
 		return "Shutdown";
 	}
 
-	@Override
-	public Object[] getMetadata() {
-		return null;
-	}
-
 }
