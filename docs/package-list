@@ -7,5 +7,4 @@ dillon.gameAPI.gui
 dillon.gameAPI.modding
 dillon.gameAPI.networking
 dillon.gameAPI.scroller
-dillon.gameAPI.sprites
 dillon.gameAPI.utils
