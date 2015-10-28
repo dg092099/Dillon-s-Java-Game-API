@@ -51,7 +51,6 @@ public class NetworkConnection {
 			throw new NetworkingError("Trouble when connecting to server.");
 		}
 	}
-
 	/**
 	 * Connects to a server, using the Inet socket address.
 	 * 

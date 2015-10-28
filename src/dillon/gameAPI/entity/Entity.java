@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
@@ -19,13 +20,14 @@ import dillon.gameAPI.scroller.ScrollManager;
  */
 public class Entity implements Serializable {
 	private static final long serialVersionUID = 1176042239171972455L;
-	private static BufferedImage spr; // The sprite object for this entity.
+	private BufferedImage spr; // The sprite object for this entity.
 
 	/**
 	 * This method creates an entity.
 	 * 
 	 * @param sprite
 	 *            The image to use.
+	 * 
 	 */
 	public Entity(Image sprite) {
 		spr = (BufferedImage) sprite;
@@ -75,6 +77,12 @@ public class Entity implements Serializable {
 						counter--;
 					}
 				}
+				calculateZones();
+			}
+
+			@Override
+			public Class<TickEvent> getEventType() {
+				return TickEvent.class;
 			}
 		});
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
@@ -89,6 +97,11 @@ public class Entity implements Serializable {
 					graphics.fillRect((int) x - 30, (int) y - 20, (int) (health / MaxHealth * 100), 5);
 				}
 			}
+
+			@Override
+			public Class<RenderEvent> getEventType() {
+				return RenderEvent.class;
+			}
 		});
 	}
 
@@ -102,7 +115,9 @@ public class Entity implements Serializable {
 	 *            the position
 	 */
 	public void setX(int X) {
+		System.out.println("Setting x");
 		x = X;
+		calculateZones();
 	}
 
 	/**
@@ -121,7 +136,19 @@ public class Entity implements Serializable {
 	 *            The y position
 	 */
 	public void setY(int Y) {
+		System.out.println("Setting y");
 		y = Y;
+		calculateZones();
+	}
+
+	private void calculateZones() {
+		for (EntityZoneEvent evt : zoneEvents) {
+			if (x >= evt.getTopLeft()[0] && y >= evt.getTopLeft()[1]
+					&& x <= (evt.getTopLeft()[0] + evt.getWidthAndHeight()[0])
+					&& y <= (evt.getTopLeft()[0] + evt.getWidthAndHeight()[1])) {
+				evt.onAction();
+			}
+		}
 	}
 
 	/**
@@ -381,5 +408,87 @@ public class Entity implements Serializable {
 		double xs = Math.pow(diffX, 2);
 		double ys = Math.pow(diffY, 2);
 		return Math.sqrt(xs + ys);
+	}
+
+	/**
+	 * Determines if the two entiites are the same.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Entity))
+			return false;
+		Entity e = (Entity) o;
+		if (this.getX() != e.getX()) {
+			return false;
+		}
+		if (this.getY() != e.getY()) {
+			return false;
+		}
+		if (this.getHealth() != e.getHealth())
+			return false;
+		if (this.getMaxHealth() != e.getMaxHealth())
+			return false;
+		if (!this.spr.equals(e.spr)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Sends out the debugging string.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\ndillon.gameAPI.entity.Entity Dump: Entity code " + hashCode() + "\n");
+		sb.append("Sprite: " + spr.toString());
+		sb.append("\nX: " + x + " Y: " + y);
+		sb.append("\nDirection: " + dx + ", " + dy);
+		sb.append("\nAutopilot mode: " + autoMode);
+		sb.append("\nTarget code: " + target != null ? target.hashCode() : "none");
+		sb.append("\nAutopilot limit: " + autoLimit);
+		sb.append("\nAutopilot multiplier: " + autoMultiplier);
+		sb.append("\nHealth: " + health + "/" + MaxHealth);
+		sb.append("\nShowing Health: " + showHealth);
+		sb.append("\nGravity Active: " + gravity);
+		sb.append("\nFall speed: " + fallspeed);
+		sb.append("\nJumping: " + jumping);
+		return sb.toString();
+	}
+
+	/**
+	 * A zone event.
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
+	public static abstract class EntityZoneEvent {
+		public abstract int[] getTopLeft();
+
+		public abstract int[] getWidthAndHeight();
+
+		public abstract void onAction();
+	}
+
+	public ArrayList<EntityZoneEvent> zoneEvents = new ArrayList<>();
+
+	/**
+	 * Adds an event handler.
+	 * 
+	 * @param e
+	 *            Event handler
+	 */
+	public void addEvent(EntityZoneEvent e) {
+		zoneEvents.add(e);
+	}
+
+	/**
+	 * Removes an event handler.
+	 * 
+	 * @param e
+	 *            Event handler
+	 */
+	public void removeEvent(EntityZoneEvent e) {
+		zoneEvents.remove(e);
 	}
 }

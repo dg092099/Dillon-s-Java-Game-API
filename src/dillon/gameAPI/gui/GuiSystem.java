@@ -71,6 +71,10 @@ public class GuiSystem {
 					comp.render(g);
 				}
 			}
+			@Override
+			public Class<RenderEvent> getEventType() {
+				return RenderEvent.class;
+			}
 		});
 		EventSystem.addHandler(new EEHandler<TickEvent>() {
 			@Override
@@ -78,6 +82,10 @@ public class GuiSystem {
 				for (GuiComponent comp : components) {
 					comp.onUpdate();
 				}
+			}
+			@Override
+			public Class<TickEvent> getEventType() {
+				return TickEvent.class;
 			}
 		});
 		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
@@ -115,6 +123,11 @@ public class GuiSystem {
 					activeGuiComponent = -1;
 				}
 			}
+
+			@Override
+			public Class<MouseEngineEvent> getEventType() {
+				return MouseEngineEvent.class;
+			}
 		});
 		EventSystem.addHandler(new EEHandler<KeyEngineEvent>() {
 			@Override
@@ -125,6 +138,11 @@ public class GuiSystem {
 				if (activeGuiComponent != -1) {
 					components.get(activeGuiComponent).onKeyPress(e);
 				}
+			}
+
+			@Override
+			public Class<KeyEngineEvent> getEventType() {
+				return KeyEngineEvent.class;
 			}
 		});
 	}

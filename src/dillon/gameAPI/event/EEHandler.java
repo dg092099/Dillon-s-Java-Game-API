@@ -16,4 +16,5 @@ public interface EEHandler<T extends EEvent> {
 	 *            Event
 	 */
 	public void handle(T evt);
+	public Class<T> getEventType();
 }

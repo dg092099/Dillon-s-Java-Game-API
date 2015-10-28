@@ -67,6 +67,7 @@ public class ClientConnector {
 				NetworkEvent.class);
 	}
 
+
 	/**
 	 * Sends a message to this client.
 	 * 

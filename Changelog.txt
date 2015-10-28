@@ -1,3 +1,8 @@
+1.12
+-Removed GuiManager
+-Changed how scroll manager detects collisions.
+-Added Scheduling to utils
+--------------------------------------------------------
 1.11:
 -Redone gui system.
 -Depricated GuiManager, use GuiSystem instead.

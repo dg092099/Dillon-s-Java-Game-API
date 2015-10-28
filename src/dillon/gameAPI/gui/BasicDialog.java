@@ -182,4 +182,17 @@ public class BasicDialog implements GuiComponent {
 	public void slide(int x, int y) {
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\ndillon.gameAPI.gui.BasicDialog Dump: Code " + hashCode());
+		sb.append("\nPrompt: " + prompt);
+		sb.append("\nBorder color: " + borderColor.getRGB());
+		sb.append("\nForeground color: " + foregroundColor.getRGB());
+		sb.append("\nText Color: " + textColor.getRGB());
+		sb.append("\nText Font: " + textFont.getFontName() + " size " + textFont.getSize());
+		sb.append("\nAlways at front: " + alwaysAtFront);
+		return sb.toString();
+	}
+
 }

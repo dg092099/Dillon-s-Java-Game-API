@@ -67,7 +67,7 @@ public class StateConfig implements Serializable {
 			Camera.setY(CamY);
 		}
 		if (ScrollManTiles != null) {
-			ScrollManager.regsterTiles(ScrollManTiles, scrollManDistX, scrollManDistY);
+			ScrollManager.registerTiles(ScrollManTiles, scrollManDistX, scrollManDistY);
 		}
 		if (scrollManMap != null) {
 			ScrollManager.setLevel(scrollManMap);

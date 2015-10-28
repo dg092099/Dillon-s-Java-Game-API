@@ -58,6 +58,6 @@ public class NetworkEvent extends EEvent {
 	}
 
 	public static enum NetworkMode {
-		DISCONNECT, CONNECT, MESSAGE
+		DISCONNECT, CONNECT, MESSAGE, DEBUG_ENABLE
 	}
 }

@@ -82,4 +82,9 @@ public class BlackoutImage implements GuiComponent {
 	public void slide(int x, int y) {
 
 	}
+
+	@Override
+	public String toString() {
+		return "Closable: " + closable + "\nImage: " + img.toString();
+	}
 }

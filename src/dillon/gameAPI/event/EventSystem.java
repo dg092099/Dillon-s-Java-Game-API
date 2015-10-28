@@ -84,4 +84,18 @@ public class EventSystem {
 	public static void override() {
 		handlers.clear();
 	}
+
+	/**
+	 * Returns the Debugging string for the event system.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\n dillon.gameAPI.event.EventSystem Dump:\n");
+		for (EEHandler<?> h : handlers) {
+			sb.append("Event handler code: " + h.hashCode());
+			sb.append("Handled event: " + h.getEventType().getClass().getName());
+		}
+		return sb.toString();
+	}
 }

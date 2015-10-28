@@ -331,6 +331,7 @@ class CanvasController extends Canvas implements Runnable {
 	 *            This is the exception that will be displayed.
 	 */
 	public void crash(Exception e) {
+		stop();
 		Logger.getLogger("Core").severe("Crashing...");
 		Font f = new Font("Courier", Font.BOLD, 18);
 		this.setFont(f);
@@ -347,7 +348,6 @@ class CanvasController extends Canvas implements Runnable {
 			formatted = lines[i].getClassName() + "#" + lines[i].getMethodName() + " Line: " + lines[i].getLineNumber();
 			this.getGraphics().drawString(formatted, 15, i * 15 + 45);
 		}
-		stop();
 	}
 
 	private static int renderMethod = 0; // The current rendering method.
@@ -378,5 +378,36 @@ class CanvasController extends Canvas implements Runnable {
 	 */
 	public static int getFPS() {
 		return FPS;
+	}
+
+	/**
+	 * Used for debugging a crash.
+	 * 
+	 * @return Debug string.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\ndillon.gameAPI.core.CanvasController Dump:\n");
+		sb.append("Start Time: " + startTime);
+		sb.append("\n");
+		sb.append("End Time:" + endTime);
+		sb.append("\n");
+		sb.append("FPS: " + FPS);
+		sb.append("\n");
+		sb.append("Running: " + running);
+		sb.append("\n");
+		sb.append("Paused: " + paused);
+		sb.append("\n");
+		sb.append("Showing spalsh: " + showingSplash);
+		sb.append("\n");
+		sb.append("Splash Counter: " + splashCounter);
+		sb.append("\n");
+		sb.append("Splash: " + Splash.toString());
+		sb.append("\n");
+		sb.append("Background: " + background.toString());
+		sb.append("\n");
+		sb.append("Render Method: " + renderMethod);
+		return sb.toString();
 	}
 }

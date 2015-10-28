@@ -17,7 +17,6 @@ import javax.swing.JFrame;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.ShutdownEvent;
 import dillon.gameAPI.gui.GuiSystem;
-import dillon.gameAPI.gui.guiManager;
 import dillon.gameAPI.modding.ModdingCore;
 import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
@@ -30,20 +29,19 @@ import dillon.gameAPI.scroller.ScrollManager;
  * 
  * @author Dillon - Github dg092099
  */
-@SuppressWarnings("deprecation")
 public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v1.11"; // The engine's
+	public static final String ENGINE_VERSION = "v1.12"; // The engine's
 															// version.
 	public static final int TILES = 1; // Constant: Render method, tile.
 	public static final int SIDESCROLLER = 2; // Constant: render method,
 												// sidescroller.
 
 	/**
-	 * This method starts the game with the specified background and fps.
-	 * <b>Use setup method before this method.</b>
+	 * This method starts the game with the specified background and fps. <b>Use
+	 * setup method before this method.</b>
 	 * 
 	 * @param FPS
 	 *            The maximum frames per second to use.
@@ -65,7 +63,6 @@ public class Core {
 		}
 		new ScrollManager();
 		new Camera();
-		new guiManager();
 		new GuiSystem();
 		CanvasController.setRenderMethod(mode);
 		ModdingCore.sendPostStart();
@@ -347,5 +344,25 @@ public class Core {
 	 */
 	public static void setRenderMethod(int canvasState) {
 		CanvasController.setRenderMethod(canvasState);
+	}
+
+	/**
+	 * Used for debugging a crash.
+	 * 
+	 * @return Debugging string
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n\ndillon.gameAPI.core.Core Dump:\n");
+		sb.append("Title: " + TITLE);
+		sb.append("\n");
+		sb.append("Icon: " + ICON.toString());
+		sb.append("\n");
+		sb.append("Frame: " + frame.toString());
+		sb.append("\n");
+		sb.append("Fullscreen: " + fullscreen);
+		sb.append("\n");
+		return sb.toString();
 	}
 }

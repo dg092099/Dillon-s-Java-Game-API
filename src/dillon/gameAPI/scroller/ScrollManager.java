@@ -33,7 +33,7 @@ public class ScrollManager {
 	 * @param height
 	 *            The height of each tile.
 	 */
-	public static void regsterTiles(BufferedImage img, int width, int height) {
+	public static void registerTiles(BufferedImage img, int width, int height) {
 		tilesheet = img;
 		ScrollManager.width = width;
 		ScrollManager.height = height;
@@ -62,7 +62,6 @@ public class ScrollManager {
 				if (tile == null) {
 					System.out.println("Tile is null.");
 				}
-				System.out.println("Setting tile: " + x + " " + y);
 				tiles[x][y] = tile;
 			}
 		}
@@ -132,6 +131,11 @@ public class ScrollManager {
 				Graphics2D graphics = evt.getGraphics();
 				graphics.drawImage(fullMap, 0 - Camera.getXPos(), 0 - Camera.getYPos(), null);
 			}
+
+			@Override
+			public Class<RenderEvent> getEventType() {
+				return RenderEvent.class;
+			}
 		});
 	}
 
@@ -149,32 +153,24 @@ public class ScrollManager {
 	 * @return colliding
 	 */
 	public static boolean getCollisionAny(double x2, double y2, int width2, int height2) {
-		boolean colliding = false;
 		if (fullMap == null) {
 			return false;
 		}
-		Rectangle rect1 = new Rectangle();
-		rect1.setBounds((int) x2, (int) y2, width2, height2);
+		Rectangle r1 = new Rectangle((int) x2, (int) y2, width2, height2);
 		for (int x = 0; x < bitMap.getWidth(); x++) {
 			for (int y = 0; y < bitMap.getHeight(); y++) {
-				if (bitMap.getRGB(x, y) == java.awt.Color.WHITE.getRGB()) {
-					continue;
-				}
-				Rectangle rect2 = new Rectangle();
-				int tx = width * x;
-				int ty = height * y;
-				int tex = tx + width;
-				int tey = ty + height;
-				rect2.setBounds(tx, ty, tex, tey);
-				if (rect1.intersects(rect2)) {
-					colliding = true;
-					if (MainUtilities.getGreen(bitMap.getRGB(x, y)) > 127) {
-						colliding = false;
+				int rgb = bitMap.getRGB(x, y);
+				if (MainUtilities.getGreen(rgb) < 128) {
+					int xPos = getTileWidth() * x;
+					int yPos = getTileHeight() * y;
+					Rectangle r2 = new Rectangle(xPos, yPos, getTileWidth(), getTileHeight());
+					if (r2.intersects(r1)) {
+						return true;
 					}
 				}
 			}
 		}
-		return colliding;
+		return false;
 	}
 
 	/**
