@@ -15,13 +15,15 @@ import javax.imageio.ImageIO;
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.scroller.Camera;
 import dillon.gameAPI.scroller.ScrollManager;
+import dillon.gameAPI.security.SecurityKey;
 
 /**
- * This class holds a snapshot of the engine.
- * 
- * @author Dillon - Github dg092099
+ * This class holds a snapshot of the engine. Deprecated since V1.13
  *
+ * @author Dillon - Github dg092099
+ * @deprecated
  */
+@Deprecated
 public class StateConfig implements Serializable {
 	private static final long serialVersionUID = -2971917949105802923L;
 	private transient BufferedImage background; // Check
@@ -35,6 +37,11 @@ public class StateConfig implements Serializable {
 	private int tileManDistX, tileManDistY;
 	private transient BufferedImage tileManMap;
 	private int CanvasState = -1; // Check
+	private SecurityKey k;
+
+	public StateConfig(SecurityKey k) {
+		this.k = k;
+	}
 
 	public synchronized void takeSnapshot() {
 		background = Core.getBackgroundImage();
@@ -46,40 +53,30 @@ public class StateConfig implements Serializable {
 		scrollManDistX = ScrollManager.getTileWidth();
 		scrollManDistY = ScrollManager.getTileHeight();
 		scrollManMap = ScrollManager.getMap();
-		CanvasState = Core.getRenderMethod();
 	}
 
 	/**
 	 * This will apply the config to the engine.
 	 */
 	public synchronized void apply() {
-		if (background != null) {
-			Core.setBackgroundImage(background);
-		}
-		if (backColor != null) {
-			Core.setBackColor(backColor);
-		}
-		if (FPS > 0) {
-			Core.setFPS(FPS);
-		}
+		if (background != null)
+			Core.setBackgroundImage(background, k);
+		if (backColor != null)
+			Core.setBackColor(backColor, k);
+		if (FPS > 0)
+			Core.setFPS(FPS, k);
 		if (CamX >= 0) {
-			Camera.setX(CamX);
-			Camera.setY(CamY);
+			// Camera.setX(CamX);
+			// Camera.setY(CamY);
 		}
-		if (ScrollManTiles != null) {
-			ScrollManager.registerTiles(ScrollManTiles, scrollManDistX, scrollManDistY);
-		}
-		if (scrollManMap != null) {
-			ScrollManager.setLevel(scrollManMap);
-		}
-		if (CanvasState != -1) {
-			Core.setRenderMethod(CanvasState);
-		}
+		// ScrollManager.registerTiles(ScrollManTiles, scrollManDistX,
+		// scrollManDistY);
+		// ScrollManager.setLevel(scrollManMap);
 	}
 
 	/**
 	 * Sets the cached canvas state.
-	 * 
+	 *
 	 * @param c
 	 *            state
 	 */
@@ -89,7 +86,7 @@ public class StateConfig implements Serializable {
 
 	/**
 	 * Gets the cached canvas state.
-	 * 
+	 *
 	 * @return The state.
 	 */
 	public int getCanvasState() {
@@ -293,7 +290,7 @@ public class StateConfig implements Serializable {
 
 	/**
 	 * Writes the object to a file.
-	 * 
+	 *
 	 * @param oos
 	 *            The output stream.
 	 */
@@ -311,9 +308,8 @@ public class StateConfig implements Serializable {
 			images.add(tileManTiles != null ? tileManTiles : nonImage);
 			images.add(tileManMap != null ? tileManMap : nonImage);
 			oos.writeInt(images.size());
-			for (BufferedImage i : images) {
+			for (BufferedImage i : images)
 				ImageIO.write(i, "png", oos);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -321,7 +317,7 @@ public class StateConfig implements Serializable {
 
 	/**
 	 * Reads the object from a file.
-	 * 
+	 *
 	 * @param ois
 	 *            The input stream.
 	 * @throws IOException
@@ -333,23 +329,22 @@ public class StateConfig implements Serializable {
 		ois.defaultReadObject();
 		final int count = ois.readInt();
 		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++)
 			images.add(ImageIO.read(ois));
-		}
 		background = images.get(0);
-		if (background == null || (background.getHeight() == 1 && background.getWidth() == 1))
+		if (background == null || background.getHeight() == 1 && background.getWidth() == 1)
 			background = null;
 		ScrollManTiles = images.get(1);
-		if (ScrollManTiles == null || (ScrollManTiles.getHeight() == 1 && ScrollManTiles.getWidth() == 1))
+		if (ScrollManTiles == null || ScrollManTiles.getHeight() == 1 && ScrollManTiles.getWidth() == 1)
 			ScrollManTiles = null;
 		scrollManMap = images.get(2);
-		if (scrollManMap == null || (scrollManMap.getHeight() == 1 && scrollManMap.getWidth() == 1))
+		if (scrollManMap == null || scrollManMap.getHeight() == 1 && scrollManMap.getWidth() == 1)
 			scrollManMap = null;
 		tileManTiles = images.get(3);
-		if (tileManTiles == null || (tileManTiles.getHeight() == 1 && tileManTiles.getWidth() == 1))
+		if (tileManTiles == null || tileManTiles.getHeight() == 1 && tileManTiles.getWidth() == 1)
 			tileManTiles = null;
 		tileManMap = images.get(4);
-		if (tileManMap == null || (tileManMap.getHeight() == 1 && tileManMap.getWidth() == 1))
+		if (tileManMap == null || tileManMap.getHeight() == 1 && tileManMap.getWidth() == 1)
 			tileManMap = null;
 	}
 }

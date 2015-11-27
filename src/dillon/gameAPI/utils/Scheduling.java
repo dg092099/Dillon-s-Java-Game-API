@@ -3,16 +3,20 @@ package dillon.gameAPI.utils;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import dillon.gameAPI.security.RequestedAction;
+import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
+
 /**
  * This class implements a timed execution of runnable objects.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
 public class Scheduling {
 	/**
 	 * This class will do the actual waiting.
-	 * 
+	 *
 	 * @author Dillon - Github dg092099
 	 *
 	 */
@@ -24,7 +28,7 @@ public class Scheduling {
 
 		/**
 		 * This will create the waiter and will set it up.
-		 * 
+		 *
 		 * @param unit
 		 *            The time unit.
 		 * @param time
@@ -62,22 +66,25 @@ public class Scheduling {
 
 	/**
 	 * This method schedules something to happen.
-	 * 
+	 *
 	 * @param unit
 	 *            The unit of time to wait.
 	 * @param time
 	 *            The time to wait.
 	 * @param run
 	 *            The runnable to run after the time out.
+	 * @param k
+	 *            The security key
 	 */
-	public static void scheduleWaiting(TimeUnit unit, long time, Runnable run) {
+	public static void scheduleWaiting(TimeUnit unit, long time, Runnable run, SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.SCHEDULE_WAIT);
 		Waiter w = new Waiter(unit, time, run);
 		waiters.add(w);
 	}
 
 	/**
 	 * Schedules a runnable to repeat.
-	 * 
+	 *
 	 * @param unit
 	 *            The time unit.
 	 * @param time
@@ -86,30 +93,35 @@ public class Scheduling {
 	 *            The amount of times to do it.
 	 * @param run
 	 *            The runnable to run.
+	 * @param k
+	 *            The security key
 	 */
-	public static void scheduleRepeating(TimeUnit unit, long time, int times, Runnable run) {
+	public static void scheduleRepeating(TimeUnit unit, long time, int times, Runnable run, SecurityKey k) {
 		Repeater r = new Repeater(unit, time, times, run);
 		repeaters.add(r);
 	}
 
 	/**
-	 * Schedules a runnable to repeat infinatly.
-	 * 
+	 * Schedules a runnable to repeat infinitely.
+	 *
 	 * @param unit
 	 *            The unit of time.
 	 * @param time
 	 *            The amount of time.
 	 * @param run
 	 *            The runnable.
+	 * @param k
+	 *            The security key
 	 */
-	public static void scheduleRepeating(TimeUnit unit, long time, Runnable run) {
+	public static void scheduleRepeating(TimeUnit unit, long time, Runnable run, SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.SCHEDULE_REPEAT);
 		Repeater r = new Repeater(unit, time, run);
 		repeaters.add(r);
 	}
 
 	/**
 	 * A utility class to repeat runnables.
-	 * 
+	 *
 	 * @author Dillon - Github dg092099
 	 *
 	 */
@@ -142,17 +154,16 @@ public class Scheduling {
 
 		@Override
 		public void run() {
-			if (timesToRepeat == -1) {
-				while (true) {
+			if (timesToRepeat == -1)
+				while (true)
 					try {
 						waitUnit.sleep(waitTime);
 						run.run();
 					} catch (InterruptedException e) {
 						System.out.println("Schedule interupted " + run.hashCode());
 					}
-				}
-			} else {
-				for (int counter = 0; counter < timesToRepeat; counter++) {
+			else
+				for (int counter = 0; counter < timesToRepeat; counter++)
 					try {
 						waitUnit.sleep(waitTime);
 						run.run();
@@ -160,8 +171,6 @@ public class Scheduling {
 						System.out.println("Schedule interupted " + run.hashCode());
 						return;
 					}
-				}
-			}
 			repeaters.remove(this);
 		}
 	}

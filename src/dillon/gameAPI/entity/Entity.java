@@ -12,24 +12,31 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
 import dillon.gameAPI.scroller.ScrollManager;
+import dillon.gameAPI.security.RequestedAction;
+import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
 
 /**
  * This class stores the position, direction and sprite of each entity.
- * 
+ *
  * @author Dillon - Github dg092099
  */
 public class Entity implements Serializable {
 	private static final long serialVersionUID = 1176042239171972455L;
 	private BufferedImage spr; // The sprite object for this entity.
+	private SecurityKey key;
 
 	/**
 	 * This method creates an entity.
-	 * 
+	 *
 	 * @param sprite
 	 *            The image to use.
-	 * 
+	 * @param k
+	 *            The security key.
 	 */
-	public Entity(Image sprite) {
+	public Entity(Image sprite, SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.INSTANTIATE_ENTITY);
+		key = k;
 		spr = (BufferedImage) sprite;
 		x = 0;
 		y = 0;
@@ -42,15 +49,12 @@ public class Entity implements Serializable {
 					x += dx;
 					y += dy;
 				}
-				if (gravity) {
+				if (gravity)
 					if (!checkCollisionWithPos(x, y + fallspeed)) {
 						if (!gravityOverride)
 							y += fallspeed;
-					} else {
-						if (gravityOverride)
-							gravityOverride = false;
-					}
-				}
+					} else if (gravityOverride)
+						gravityOverride = false;
 				if (jumping) {
 					System.out.println("Jump pix count: " + jumpPixCount);
 					System.out.println("Max Jump Height: " + jumpHeight);
@@ -63,7 +67,7 @@ public class Entity implements Serializable {
 						y += 2;
 					}
 				}
-				if (autoMode == 1) { // Auto pilot is on.
+				if (autoMode == 1)
 					if (counter == 0) { // Limiter
 						counter = autoLimit;
 						double diffX = x - target.x; // The difference between
@@ -73,18 +77,11 @@ public class Entity implements Serializable {
 						double angle = Math.atan2(diffX, diffY);
 						dx = Math.sin(angle * autoMultiplier);
 						dy = Math.cos(angle * autoMultiplier);
-					} else {
+					} else
 						counter--;
-					}
-				}
 				calculateZones();
 			}
-
-			@Override
-			public Class<TickEvent> getEventType() {
-				return TickEvent.class;
-			}
-		});
+		}, key);
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
 			public void handle(RenderEvent evt) {
@@ -97,12 +94,7 @@ public class Entity implements Serializable {
 					graphics.fillRect((int) x - 30, (int) y - 20, (int) (health / MaxHealth * 100), 5);
 				}
 			}
-
-			@Override
-			public Class<RenderEvent> getEventType() {
-				return RenderEvent.class;
-			}
-		});
+		}, key);
 	}
 
 	private double x, y; // The entity's position values.
@@ -110,7 +102,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the x position of the entity.
-	 * 
+	 *
 	 * @param X
 	 *            the position
 	 */
@@ -122,7 +114,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Gets the x position.
-	 * 
+	 *
 	 * @return X
 	 */
 	public double getX() {
@@ -131,7 +123,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the Y position.
-	 * 
+	 *
 	 * @param Y
 	 *            The y position
 	 */
@@ -142,18 +134,16 @@ public class Entity implements Serializable {
 	}
 
 	private void calculateZones() {
-		for (EntityZoneEvent evt : zoneEvents) {
+		for (EntityZoneEvent evt : zoneEvents)
 			if (x >= evt.getTopLeft()[0] && y >= evt.getTopLeft()[1]
-					&& x <= (evt.getTopLeft()[0] + evt.getWidthAndHeight()[0])
-					&& y <= (evt.getTopLeft()[0] + evt.getWidthAndHeight()[1])) {
+					&& x <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[0]
+					&& y <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[1])
 				evt.onAction();
-			}
-		}
 	}
 
 	/**
 	 * Gets the Y position.
-	 * 
+	 *
 	 * @return Y
 	 */
 	public double getY() {
@@ -162,7 +152,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This sets the direction based on a velocity x and y.
-	 * 
+	 *
 	 * @param DX
 	 *            Directional x
 	 * @param DY
@@ -175,7 +165,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This sets the direction based on an angle.
-	 * 
+	 *
 	 * @param angle
 	 *            The angle
 	 */
@@ -186,7 +176,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Gets the current direction.
-	 * 
+	 *
 	 * @return array: [x direction, y direction]
 	 */
 	public int[] getDirection() {
@@ -195,7 +185,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the current sprite
-	 * 
+	 *
 	 * @param img
 	 *            The sprite.
 	 */
@@ -213,7 +203,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the sprite to target and follow an entity
-	 * 
+	 *
 	 * @param mode
 	 *            How it should move
 	 * @param target
@@ -242,7 +232,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the current health of an entity.
-	 * 
+	 *
 	 * @param h
 	 *            health.
 	 */
@@ -252,7 +242,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Gets the current health.
-	 * 
+	 *
 	 * @return health
 	 */
 	public Double getHealth() {
@@ -263,7 +253,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets the maximum health.
-	 * 
+	 *
 	 * @param max
 	 *            Maximum health.
 	 */
@@ -273,7 +263,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Gets the maximum health.
-	 * 
+	 *
 	 * @return The maximum health.
 	 */
 	public int getMaxHealth() {
@@ -282,7 +272,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Makes the entity take damage.
-	 * 
+	 *
 	 * @param dm
 	 *            The damage.
 	 */
@@ -297,7 +287,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Sets if the health bar should be rendered.
-	 * 
+	 *
 	 * @param b
 	 *            Health bar
 	 */
@@ -307,7 +297,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This method will check if the player is colliding with anything.
-	 * 
+	 *
 	 * @return if it is colliding with something
 	 */
 	public boolean checkCollision() {
@@ -316,7 +306,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Finds if the entity is colliding with a tile.
-	 * 
+	 *
 	 * @param posx
 	 *            tile's x position
 	 * @param posy
@@ -331,7 +321,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This method will set weather gravity should operate on entity.
-	 * 
+	 *
 	 * @param g
 	 *            whether it should or not.
 	 */
@@ -343,7 +333,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This is for the gravity, it sets how fast the entity falls.
-	 * 
+	 *
 	 * @param speed
 	 *            the speed.
 	 */
@@ -367,7 +357,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * This method will send the entity upwards.
-	 * 
+	 *
 	 * @param height
 	 *            How high to move the entity.
 	 */
@@ -379,7 +369,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Finds the distance between this entity and another entity.
-	 * 
+	 *
 	 * @param e
 	 *            The other entity
 	 * @return The distance.
@@ -395,7 +385,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Finds the distance from this entity and a point.
-	 * 
+	 *
 	 * @param x
 	 *            The x
 	 * @param y
@@ -418,19 +408,16 @@ public class Entity implements Serializable {
 		if (!(o instanceof Entity))
 			return false;
 		Entity e = (Entity) o;
-		if (this.getX() != e.getX()) {
+		if (this.getX() != e.getX())
 			return false;
-		}
-		if (this.getY() != e.getY()) {
+		if (this.getY() != e.getY())
 			return false;
-		}
 		if (this.getHealth() != e.getHealth())
 			return false;
 		if (this.getMaxHealth() != e.getMaxHealth())
 			return false;
-		if (!this.spr.equals(e.spr)) {
+		if (!this.spr.equals(e.spr))
 			return false;
-		}
 		return true;
 	}
 
@@ -458,7 +445,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * A zone event.
-	 * 
+	 *
 	 * @author Dillon - Github dg092099
 	 *
 	 */
@@ -474,7 +461,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Adds an event handler.
-	 * 
+	 *
 	 * @param e
 	 *            Event handler
 	 */
@@ -484,7 +471,7 @@ public class Entity implements Serializable {
 
 	/**
 	 * Removes an event handler.
-	 * 
+	 *
 	 * @param e
 	 *            Event handler
 	 */

@@ -14,10 +14,13 @@ import java.util.logging.Logger;
 import dillon.gameAPI.errors.NetworkingError;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.NetworkEvent;
+import dillon.gameAPI.security.RequestedAction;
+import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
 
 /**
  * This handles a connection to a server, from client to server.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -25,18 +28,23 @@ public class NetworkConnection {
 	private static Socket sock; // The connection.
 	private static ObjectInputStream ois; // Input stream.
 	private static ObjectOutputStream oos; // output stream.
+	private static SecurityKey key;
 
 	/**
 	 * Tells the engine to connect to a server.
-	 * 
+	 *
 	 * @param host
 	 *            The ip address of the server.
 	 * @param port
 	 *            The port number of the server.
+	 * @param k
+	 *            The security key.
 	 * @throws NetworkingError
 	 *             Problems connecting
 	 */
-	public static void connect(String host, int port) throws NetworkingError {
+	public static void connect(String host, int port, SecurityKey k) throws NetworkingError {
+		SecuritySystem.checkPermission(k, RequestedAction.CONNECT);
+		key = k;
 		try {
 			sock = new Socket(host, port);
 			oos = new ObjectOutputStream(sock.getOutputStream());
@@ -51,16 +59,19 @@ public class NetworkConnection {
 			throw new NetworkingError("Trouble when connecting to server.");
 		}
 	}
+
 	/**
 	 * Connects to a server, using the Inet socket address.
-	 * 
+	 *
 	 * @param add
 	 *            The socket address.
+	 * @param k
+	 *            The security key
 	 * @throws NetworkingError
 	 *             If connecting fails.
 	 */
-	public static void connect(InetSocketAddress add) throws NetworkingError {
-		connect(add.getHostName(), add.getPort());
+	public static void connect(InetSocketAddress add, SecurityKey k) throws NetworkingError {
+		connect(add.getHostName(), add.getPort(), k);
 	}
 
 	static boolean keepSearching = false; // If the system should keep looking
@@ -68,7 +79,7 @@ public class NetworkConnection {
 
 	/**
 	 * A utility class to search for servers using discovery.
-	 * 
+	 *
 	 * @author Dillon - Github dg092099
 	 *
 	 */
@@ -76,7 +87,7 @@ public class NetworkConnection {
 		@Override
 		public void run() {
 			System.out.println("Now listening");
-			while (keepSearching) {
+			while (keepSearching)
 				try {
 					byte[] data = new byte[2048];
 					pack = new DatagramPacket(data, data.length);
@@ -85,7 +96,6 @@ public class NetworkConnection {
 					addresses.add(new InetSocketAddress(ip.split(":")[0], Integer.parseInt(ip.split(":")[1])));
 				} catch (Exception e) {
 				}
-			}
 		}
 
 		DatagramSocket socket; // The socket to look on.
@@ -103,7 +113,7 @@ public class NetworkConnection {
 
 	/**
 	 * Finds all of the servers using the given information.
-	 * 
+	 *
 	 * @param gameName
 	 *            The game's name.
 	 * @param version
@@ -140,8 +150,12 @@ public class NetworkConnection {
 	/**
 	 * Tries to disconnect from the server. Automatically executes on game
 	 * shutdown.
+	 *
+	 * @param k
+	 *            The security key.
 	 */
-	public static void disconnect() {
+	public static void disconnect(SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.DISCONNECT);
 		try {
 			running = false;
 			Message msg = new Message("SHUTDOWN", "Client");
@@ -156,7 +170,7 @@ public class NetworkConnection {
 
 	/**
 	 * Returns if the connection is alive.
-	 * 
+	 *
 	 * @return alive.
 	 */
 	public static boolean getRunning() {
@@ -168,34 +182,33 @@ public class NetworkConnection {
 
 	/**
 	 * A class to listen for messages.
-	 * 
+	 *
 	 * @author Dillon - Github dg092099
 	 *
 	 */
 	static class listener implements Runnable {
 		@Override
 		public void run() {
-			while (running) {
+			while (running)
 				try {
 					Message rec = (Message) ois.readObject();
 					if (rec == null)
 						continue;
 					if (rec.getMessage().equals("SHUTDOWN")) {
-						disconnect();
+						disconnect(key);
 						return;
 					}
 					rec.setIP(sock.getRemoteSocketAddress().toString());
 					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.MESSAGE, null, rec),
-							NetworkEvent.class);
+							NetworkEvent.class, key);
 				} catch (ClassNotFoundException | IOException e) {
 				}
-			}
 		}
 	}
 
 	/**
 	 * Sends a message to the server.
-	 * 
+	 *
 	 * @param msg
 	 *            The message to be sent.
 	 */

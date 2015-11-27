@@ -8,11 +8,14 @@ import java.net.SocketException;
 import java.security.SecureRandom;
 
 import dillon.gameAPI.errors.GeneralRuntimeException;
+import dillon.gameAPI.security.RequestedAction;
+import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
 
 /**
  * A utility class used to find servers running a specific game. Uses port 9518,
  * immutable.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -25,7 +28,7 @@ class Discovery implements Runnable {
 
 	/**
 	 * Puts this server on for discovery.
-	 * 
+	 *
 	 * @param gameName
 	 *            The game name.
 	 * @param versionName
@@ -34,9 +37,12 @@ class Discovery implements Runnable {
 	 *            If a code should be used.
 	 * @param port
 	 *            The port the game is on.
+	 * @param key
+	 *            The security key.
 	 * @return The code if one is being used, otherwise null.
 	 */
-	public static String start(String gameName, String versionName, boolean useCode, int port) {
+	public static String start(String gameName, String versionName, boolean useCode, int port, SecurityKey key) {
+		SecuritySystem.checkPermission(key, RequestedAction.ENABLE_DISCOVERY);
 		if (run)
 			return "Already started.";
 		name = gameName;
@@ -55,8 +61,12 @@ class Discovery implements Runnable {
 
 	/**
 	 * Turns off discovery for the server.
+	 *
+	 * @param k
+	 *            The security key
 	 */
-	public static void stop() {
+	public static void stop(SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.DISABLE_DISCOVERY);
 		if (!run)
 			return;
 		run = false;
@@ -77,24 +87,21 @@ class Discovery implements Runnable {
 		} catch (SocketException e) {
 			throw new GeneralRuntimeException("Unable to establish lock on port 9518.");
 		}
-		while (run) {
+		while (run)
 			try {
 				byte[] packet = new byte[2048];
 				DatagramPacket pack = new DatagramPacket(packet, packet.length);
 				socket.receive(pack);
 				String s = new String(packet, "UTF-8");
 				s = s.trim();
-				if (!s.split(":")[0].equals(name)) {
+				if (!s.split(":")[0].equals(name))
 					continue;
-				}
-				if (!s.split(":")[1].equals(version)) {
+				if (!s.split(":")[1].equals(version))
 					continue;
-				}
 				if (code != null) {
 				}
-				if (code != null && !s.split(":")[2].equals(code)) {
+				if (code != null && !s.split(":")[2].equals(code))
 					continue;
-				}
 				packet = ("OK-" + InetAddress.getLocalHost().getHostAddress() + ":" + port).getBytes("UTF-8");
 				DatagramPacket response = new DatagramPacket(packet, packet.length, pack.getAddress(), pack.getPort());
 				socket.send(response);
@@ -105,6 +112,5 @@ class Discovery implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 	}
 }

@@ -5,11 +5,12 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 
 import dillon.gameAPI.core.Core;
+import dillon.gameAPI.security.SecurityKey;
 
 /**
  * This is a replacement for the old gui system's blackout method using an
  * image.
- * 
+ *
  * @since 1.11
  * @author Dillon - Github dg092099
  *
@@ -22,8 +23,9 @@ public class BlackoutImage implements GuiComponent {
 
 	private boolean closable;
 	private Image img;
+	private SecurityKey key;
 
-	public BlackoutImage(boolean cl, Image i) {
+	public BlackoutImage(boolean cl, Image i, SecurityKey k) {
 		closable = cl;
 		img = i;
 	}
@@ -56,11 +58,9 @@ public class BlackoutImage implements GuiComponent {
 	@Override
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
-		if (closable) {
-			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE) {
-				GuiSystem.removeGui(this);
-			}
-		}
+		if (closable)
+			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE)
+				GuiSystem.removeGui(this, key);
 	}
 
 	@Override

@@ -7,11 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import dillon.gameAPI.core.Core;
+import dillon.gameAPI.security.SecurityKey;
 
 /**
  * This is a class that makes a dialog similar to the old gui system's show
  * dialog method.
- * 
+ *
  * @since 1.11
  * @author Dillon - Github dg092099
  *
@@ -44,8 +45,11 @@ public class BasicDialog implements GuiComponent {
 	private Color textColor;
 	private Font textFont;
 	private boolean alwaysAtFront;
+	private SecurityKey key;
 
-	public BasicDialog(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront) {
+	public BasicDialog(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront,
+			SecurityKey k) {
+		key = k;
 		this.prompt = prompt;
 		textFont = f;
 		borderColor = bor;
@@ -64,7 +68,7 @@ public class BasicDialog implements GuiComponent {
 
 	/**
 	 * This method finds the dimensions for the two boxes.
-	 * 
+	 *
 	 * @param g
 	 *            Graphics
 	 */
@@ -77,9 +81,8 @@ public class BasicDialog implements GuiComponent {
 		String[] lines = prompt.split("\n");
 		for (String s : lines) {
 			int lineWidth = fm.stringWidth(s);
-			if (lineWidth > longestLine) {
+			if (lineWidth > longestLine)
 				longestLine = lineWidth;
-			}
 		} // Gets the longest line metrically
 		lineSpace = (int) (fm.getHeight() * 0.7);
 
@@ -144,7 +147,7 @@ public class BasicDialog implements GuiComponent {
 		g.setFont(textFont);
 		int num = 1;
 		for (String s : prompt.split("\n")) {
-			g.drawString(s, textX, textY + (lineSpace * num));
+			g.drawString(s, textX, textY + lineSpace * num);
 			num++;
 		}
 	}
@@ -159,9 +162,8 @@ public class BasicDialog implements GuiComponent {
 
 	@Override
 	public void onKeyPress(KeyEvent evt) {
-		if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-			GuiSystem.removeGui(this);
-		}
+		if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+			GuiSystem.removeGui(this, key);
 	}
 
 	@Override

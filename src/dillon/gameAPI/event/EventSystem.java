@@ -4,10 +4,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import dillon.gameAPI.modding.ModdingCore;
+import dillon.gameAPI.security.RequestedAction;
+import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
 
 /**
  * This is the hub for all handlers and event broadcasting.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -20,17 +23,20 @@ public class EventSystem {
 
 	/**
 	 * Adds a handler to get events.
-	 * 
+	 *
 	 * @param h
 	 *            The handler.
+	 * @param k
+	 *            The security key.
 	 */
-	public static void addHandler(EEHandler<? extends EEvent> h) {
+	public static void addHandler(EEHandler<? extends EEvent> h, SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.RECEIVE_EVENT);
 		handlers.add(h);
 	}
 
 	/**
 	 * Removes the handler.
-	 * 
+	 *
 	 * @param h
 	 *            The handler
 	 */
@@ -40,7 +46,7 @@ public class EventSystem {
 
 	/**
 	 * Sets the array of handlers. Internal use only.
-	 * 
+	 *
 	 * @param s
 	 *            Handler arraylist
 	 */
@@ -50,7 +56,7 @@ public class EventSystem {
 
 	/**
 	 * Gets the array list of handlers.
-	 * 
+	 *
 	 * @return The handlers.
 	 */
 	public static ArrayList<EEHandler<?>> getHandlers() {
@@ -59,21 +65,23 @@ public class EventSystem {
 
 	/**
 	 * This will broadcast a message through all handlers.
-	 * 
+	 *
 	 * @param e
 	 *            The event.
 	 * @param c
 	 *            The event class.
+	 * @param k
+	 *            The security key.
 	 */
-	public static void broadcastMessage(EEvent e, Class<? extends EEvent> c) {
-		for (int i = 0; i < handlers.size(); i++) {
+	public static void broadcastMessage(EEvent e, Class<? extends EEvent> c, SecurityKey k) {
+		SecuritySystem.checkPermission(k, RequestedAction.POST_EVENT);
+		for (EEHandler<?> h : handlers)
 			try {
-				Method m = handlers.get(i).getClass().getDeclaredMethod("handle", c);
+				Method m = h.getClass().getMethod("handle", e.getClass());
 				m.setAccessible(true);
-				m.invoke(handlers.get(i), e);
-			} catch (Exception e2) {
+				m.invoke(h, e);
+			} catch (Exception ex) {
 			}
-		}
 		ModdingCore.sendEvent(e);
 	}
 
@@ -94,7 +102,7 @@ public class EventSystem {
 		sb.append("\n\n dillon.gameAPI.event.EventSystem Dump:\n");
 		for (EEHandler<?> h : handlers) {
 			sb.append("Event handler code: " + h.hashCode());
-			sb.append("Handled event: " + h.getEventType().getClass().getName());
+			sb.append("Handled event: " + h.getClass());
 		}
 		return sb.toString();
 	}

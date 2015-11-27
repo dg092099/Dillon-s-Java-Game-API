@@ -8,22 +8,25 @@ import java.awt.event.KeyEvent;
 import dillon.gameAPI.core.Core;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.PromptEvent;
+import dillon.gameAPI.security.SecurityKey;
 
 /**
  * This class is a replacement for the old gui system's show prompt method.
- * 
+ *
  * @since 1.11
  * @author Dillon - Github dg092099
  *
  */
 public class Prompt extends BasicDialog {
 	private final long promptNumber;
+	private SecurityKey key;
 
 	public Prompt(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront, long pNum,
-			Color resColor) {
-		super(prompt, f, bor, fore, txtColor, alwaysAtFront);
+			Color resColor, SecurityKey k) {
+		super(prompt, f, bor, fore, txtColor, alwaysAtFront, k);
 		promptNumber = pNum;
 		responseColor = resColor;
+		key = k;
 	}
 
 	private String text = "";
@@ -39,7 +42,7 @@ public class Prompt extends BasicDialog {
 				return;
 			}
 			fm = g.getFontMetrics(getFont());
-			int textX = (Core.getWidth() / 2) - fm.stringWidth(text + "_") / 2;
+			int textX = Core.getWidth() / 2 - fm.stringWidth(text + "_") / 2;
 			int lineSpace = (int) (fm.getHeight() * 0.7);
 			int lines = super.prompt.split("\n").length + 1;
 			int textY = super.innerP1Y;
@@ -58,8 +61,8 @@ public class Prompt extends BasicDialog {
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
 		if (keyCode == KeyEvent.VK_ENTER) {
-			GuiSystem.removeGui(this);
-			EventSystem.broadcastMessage(new PromptEvent(text, promptNumber), PromptEvent.class);
+			GuiSystem.removeGui(this, key);
+			EventSystem.broadcastMessage(new PromptEvent(text, promptNumber), PromptEvent.class, key);
 			return;
 		}
 		if (keyCode == KeyEvent.VK_BACK_SPACE && text.length() > 0) {

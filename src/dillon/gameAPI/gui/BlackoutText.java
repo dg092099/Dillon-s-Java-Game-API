@@ -7,10 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import dillon.gameAPI.core.Core;
+import dillon.gameAPI.security.SecurityKey;
 
 /**
  * This is a replacement for the old gui system's blackout method, using text.
- * 
+ *
  * @since 1.11
  * @author Dillon - Github dg092099
  *
@@ -27,9 +28,11 @@ public class BlackoutText implements GuiComponent {
 	private String text;
 	private Font textFont;
 	private int textX, textY;
+	private SecurityKey key;
 
-	public BlackoutText(boolean cl, Color back, Color fore, String txt, Font f) {
+	public BlackoutText(boolean cl, Color back, Color fore, String txt, Font f, SecurityKey k) {
 		closable = cl;
+		key = k;
 		background = back;
 		foreground = fore;
 		text = txt;
@@ -54,8 +57,8 @@ public class BlackoutText implements GuiComponent {
 		if (!rendered) {
 			rendered = true;
 			FontMetrics fm = g.getFontMetrics(textFont);
-			textX = (Core.getWidth() / 2) - (fm.stringWidth(text) / 2);
-			textY = (Core.getHeight() / 2) - (fm.getHeight() / 2);
+			textX = Core.getWidth() / 2 - fm.stringWidth(text) / 2;
+			textY = Core.getHeight() / 2 - fm.getHeight() / 2;
 		}
 		g.setFont(textFont);
 		g.setColor(background);
@@ -77,11 +80,9 @@ public class BlackoutText implements GuiComponent {
 	@Override
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
-		if (closable) {
-			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE) {
-				GuiSystem.removeGui(this);
-			}
-		}
+		if (closable)
+			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE)
+				GuiSystem.removeGui(this, key);
 	}
 
 	@Override

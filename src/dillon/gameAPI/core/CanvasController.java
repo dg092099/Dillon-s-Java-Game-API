@@ -22,19 +22,22 @@ import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
 import dillon.gameAPI.networking.NetworkServer;
+import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.utils.MainUtilities;
 
 /**
  * This class is in control of the game's canvas.
- * 
+ *
  * @author Dillon - Github dg092099
  */
 class CanvasController extends Canvas implements Runnable {
 	private static final long serialVersionUID = -3207927320425492600L;
+	private static SecurityKey key;
 
-	public CanvasController() {
+	public CanvasController(SecurityKey k) {
 		this.setSize(new Dimension(Core.getWidth(), Core.getHeight()));
 		this.setBackground(Color.BLACK);
+		key = k;
 	}
 
 	private long startTime, endTime; // Time when loop starts, ends.
@@ -59,17 +62,17 @@ class CanvasController extends Canvas implements Runnable {
 
 	/**
 	 * This adjusts the current fps limit on the game.
-	 * 
+	 *
 	 * @param newFps
 	 *            The new fps to set it to.
 	 */
-	public synchronized void setFps(int newFps) {
+	public synchronized void setFps(final int newFps) {
 		FPS = newFps;
 	}
 
 	/**
 	 * This returns the current fps limit.
-	 * 
+	 *
 	 * @return current fps limit
 	 */
 	public int getFps() {
@@ -78,7 +81,7 @@ class CanvasController extends Canvas implements Runnable {
 
 	/**
 	 * Gives back the canvas to draw on.
-	 * 
+	 *
 	 * @return The canvas
 	 */
 	public Graphics2D getDrawingCanvas() {
@@ -92,93 +95,99 @@ class CanvasController extends Canvas implements Runnable {
 	public void run() {
 		this.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent evt) {
+			public void mouseClicked(final MouseEvent evt) {
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
-							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON2:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
-							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON3:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
-							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				}
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent evt) {
+			public void mouseEntered(final MouseEvent evt) {
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
-							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON2:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
-							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON3:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
-							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.ENTER, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				}
 			}
 
 			@Override
-			public void mouseExited(MouseEvent evt) {
+			public void mouseExited(final MouseEvent evt) {
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
-							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON2:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
-							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON3:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
-							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.LEAVE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				}
 			}
 
 			@Override
-			public void mousePressed(MouseEvent evt) {
+			public void mousePressed(final MouseEvent evt) {
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
-							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON2:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
-							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON3:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
-							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+							MouseEngineEvent.MouseMode.HOLD, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				}
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent evt) {
+			public void mouseReleased(final MouseEvent evt) {
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
-					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
-							MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					EventSystem
+							.broadcastMessage(
+									new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
+											MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0),
+									MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON2:
-					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
-							MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0), MouseEngineEvent.class);
+					EventSystem
+							.broadcastMessage(
+									new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+											MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0),
+									MouseEngineEvent.class, key);
 					break;
 				case MouseEvent.BUTTON3:
 					EventSystem.broadcastMessage(
 							new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
 									MouseEngineEvent.MouseMode.RELEASE, evt.getX(), evt.getY(), 0),
-							MouseEngineEvent.class);
+							MouseEngineEvent.class, key);
 					break;
 				}
 			}
@@ -186,46 +195,44 @@ class CanvasController extends Canvas implements Runnable {
 		this.addKeyListener(new KeyListener() {
 
 			@Override
-			public void keyPressed(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					if (arg0.isShiftDown()) {
-						Core.shutdown(true);
-					}
-				}
+			public void keyPressed(final KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
+					if (arg0.isShiftDown())
+						Core.shutdown(true, key);
 				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_PRESS),
-						KeyEngineEvent.class);
+						KeyEngineEvent.class, key);
 			}
 
 			@Override
-			public void keyReleased(KeyEvent arg0) {
+			public void keyReleased(final KeyEvent arg0) {
 				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_RELEASE),
-						KeyEngineEvent.class);
+						KeyEngineEvent.class, key);
 			}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {
+			public void keyTyped(final KeyEvent arg0) {
 				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_TYPED),
-						KeyEngineEvent.class);
+						KeyEngineEvent.class, key);
 			}
 		});
 		this.requestFocus();
 		while (running) {
-			int framesInSecond = 1000 / FPS; // The amount of frames in a
-												// second.
+			final int framesInSecond = 1000 / FPS; // The amount of frames in a
+													// second.
 			startTime = System.currentTimeMillis(); // The starting time in the
 													// loop.
 			sendTick();
 			sendRender();
 			endTime = System.currentTimeMillis(); // The ending time in the loop
-			long diff = endTime - startTime;
-			long delta = framesInSecond - diff; // The calculated delta in the
-												// time.
-			if (delta < -50) {
+			final long diff = endTime - startTime;
+			final long delta = framesInSecond - diff; // The calculated delta in
+														// the
+			// time.
+			if (delta < -50)
 				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " ticks.");
-			}
 			try {
 				Thread.sleep(delta);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			}
 		}
 	}
@@ -236,8 +243,8 @@ class CanvasController extends Canvas implements Runnable {
 	public void sendTick() {
 		if (paused)
 			return;
-		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class);
-		MainUtilities.executeQueue();
+		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
+		MainUtilities.executeQueue(key);
 	}
 
 	/**
@@ -264,8 +271,9 @@ class CanvasController extends Canvas implements Runnable {
 	 * This function renders everything.
 	 */
 	public void sendRender() {
-		BufferStrategy buffer = getBufferStrategy(); // The buffer system in the
-														// rendering system.
+		final BufferStrategy buffer = getBufferStrategy(); // The buffer system
+															// in the
+															// rendering system.
 		if (buffer == null) {
 			createBufferStrategy(2);
 			return;
@@ -274,32 +282,32 @@ class CanvasController extends Canvas implements Runnable {
 		graphics.setColor(graphics.getBackground());
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
 		// Start Draw
-		if (background != null) {
+		if (background != null)
 			graphics.drawImage(background, 0, 0, null);
-		}
-		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class);
+		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class, key);
 
 		if (showingSplash) {
 			splashCounter++;
 			if (splashCounter >= FPS * 2)
 				showingSplash = false;
 			try {
-				if (Splash == null) {
-					Splash = ImageIO.read(getClass().getResourceAsStream("splash.png"));
-				}
-				graphics.drawImage((Image) Splash, Core.getWidth() - 100, Core.getHeight() - 50, null);
-			} catch (Exception e) {
+				if (Splash == null)
+					Splash = ImageIO
+							.read(getClass().getClassLoader().getResourceAsStream("dillon/gameAPI/res/splash.png"));
+				graphics.drawImage(Splash, Core.getWidth() - 100, Core.getHeight() - 50, null);
+			} catch (final Exception e) {
 			}
 		}
-		if (NetworkServer.getServerRunning()) {
+		if (NetworkServer.getServerRunning())
 			try {
-				graphics.drawImage(ImageIO.read(getClass().getResourceAsStream("ServerImage.png")),
+				graphics.drawImage(
+						ImageIO.read(
+								getClass().getClassLoader().getResourceAsStream("dillon/gameAPI/res/ServerImage.png")),
 						Core.getWidth() - 30, 5, null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
-				Core.crash(e);
+				Core.crash(e, key);
 			}
-		}
 		// End draw
 		getBufferStrategy().show();
 		graphics.dispose();
@@ -307,17 +315,17 @@ class CanvasController extends Canvas implements Runnable {
 
 	/**
 	 * This sets the new background image.
-	 * 
+	 *
 	 * @param img
 	 *            The new image to put in the background.
 	 */
-	public static void setBackgroundImage(BufferedImage img) {
+	public static void setBackgroundImage(final BufferedImage img) {
 		background = img;
 	}
 
 	/**
 	 * Gets the current background image.
-	 * 
+	 *
 	 * @return The background image.
 	 */
 	public static BufferedImage getBackgroundImage() {
@@ -326,14 +334,14 @@ class CanvasController extends Canvas implements Runnable {
 
 	/**
 	 * This method crashes the game and produces a stacktrace onto the screen.
-	 * 
+	 *
 	 * @param e
 	 *            This is the exception that will be displayed.
 	 */
-	public void crash(Exception e) {
+	public void crash(final Exception e) {
 		stop();
 		Logger.getLogger("Core").severe("Crashing...");
-		Font f = new Font("Courier", Font.BOLD, 18);
+		final Font f = new Font("Courier", Font.BOLD, 18);
 		this.setFont(f);
 		this.setBackground(Color.WHITE);
 		setBackgroundImage(null);
@@ -342,7 +350,7 @@ class CanvasController extends Canvas implements Runnable {
 		graphics.setColor(Color.RED);
 		this.getGraphics().drawString("An error has occured.", 15, 15);
 		this.getGraphics().drawString(e.getMessage(), 15, 30);
-		StackTraceElement[] lines = e.getStackTrace();
+		final StackTraceElement[] lines = e.getStackTrace();
 		String formatted; // The formatted version of the stacktrace.
 		for (int i = 0; i < lines.length; i++) {
 			formatted = lines[i].getClassName() + "#" + lines[i].getMethodName() + " Line: " + lines[i].getLineNumber();
@@ -350,30 +358,9 @@ class CanvasController extends Canvas implements Runnable {
 		}
 	}
 
-	private static int renderMethod = 0; // The current rendering method.
-
-	/**
-	 * This returns the games rendering method.
-	 * 
-	 * @return The rendering method.
-	 */
-	public static int getRenderMethod() {
-		return renderMethod;
-	}
-
-	/**
-	 * This sets the game's rendering method.
-	 * 
-	 * @param i
-	 *            The rendering method
-	 */
-	public static void setRenderMethod(int i) {
-		renderMethod = i;
-	}
-
 	/**
 	 * Gets the current FPS
-	 * 
+	 *
 	 * @return FPS
 	 */
 	public static int getFPS() {
@@ -382,12 +369,12 @@ class CanvasController extends Canvas implements Runnable {
 
 	/**
 	 * Used for debugging a crash.
-	 * 
+	 *
 	 * @return Debug string.
 	 */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("\n\ndillon.gameAPI.core.CanvasController Dump:\n");
 		sb.append("Start Time: " + startTime);
 		sb.append("\n");
@@ -406,8 +393,6 @@ class CanvasController extends Canvas implements Runnable {
 		sb.append("Splash: " + Splash.toString());
 		sb.append("\n");
 		sb.append("Background: " + background.toString());
-		sb.append("\n");
-		sb.append("Render Method: " + renderMethod);
 		return sb.toString();
 	}
 }

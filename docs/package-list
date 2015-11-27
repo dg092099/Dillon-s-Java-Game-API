@@ -6,5 +6,8 @@ dillon.gameAPI.event
 dillon.gameAPI.gui
 dillon.gameAPI.modding
 dillon.gameAPI.networking
+dillon.gameAPI.res
 dillon.gameAPI.scroller
+dillon.gameAPI.security
+dillon.gameAPI.sound
 dillon.gameAPI.utils
