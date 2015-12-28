@@ -21,6 +21,8 @@ import dillon.gameAPI.gui.GuiSystem;
 import dillon.gameAPI.modding.ModdingCore;
 import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
+import dillon.gameAPI.scripting.bridges.GuiFactory;
+import dillon.gameAPI.scripting.bridges.RemoteCallBridge;
 import dillon.gameAPI.scroller.Camera;
 import dillon.gameAPI.scroller.ScrollManager;
 import dillon.gameAPI.security.RequestedAction;
@@ -69,7 +71,7 @@ public class Core {
 			CanvasController.setBackgroundImage(background);
 		new ScrollManager(engineKey);
 		new Camera();
-		new GuiSystem(engineKey);
+		guiSystem = new GuiSystem(engineKey);
 		ModdingCore.sendPostStart();
 	}
 
@@ -195,9 +197,21 @@ public class Core {
 		frame.setLocationRelativeTo(null);
 		ModdingCore.sendInit();
 		frame.setVisible(true);
+		guiFactory = new GuiFactory(engineKey);
+		scriptRemote = new RemoteCallBridge(engineKey);
 	}
 
+	private static GuiFactory guiFactory;
 	private static boolean fullscreen = false;
+	private static RemoteCallBridge scriptRemote;
+
+	public static RemoteCallBridge getRemoteBridge() {
+		return scriptRemote;
+	}
+
+	public static GuiFactory getGuiFactory() {
+		return guiFactory;
+	}
 
 	/**
 	 * Sets if the screen should be fullscreen.
@@ -374,5 +388,11 @@ public class Core {
 		sb.append("Fullscreen: " + fullscreen);
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	private static GuiSystem guiSystem;
+
+	public static GuiSystem getGuiSystem() {
+		return guiSystem;
 	}
 }

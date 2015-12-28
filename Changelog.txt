@@ -1,3 +1,7 @@
+1.14
+-Added a scripting module using javascript.
+-Removed states module.
+--------------------------------------------------------
 1.13
 -Added security module.
 -Added sound module.
