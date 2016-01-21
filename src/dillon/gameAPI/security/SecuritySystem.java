@@ -30,14 +30,17 @@ public class SecuritySystem {
 	 * @return The engine master key.
 	 */
 	public static SecurityKey init() {
-		if (masterKeyRetrieved)
+		if (masterKeyRetrieved) {
 			throw new EngineSecurityError("The security system was already initialized.");
+		}
 		try {
+			// Generate signing keys
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("DSA");
 			kpg.initialize(1024);
 			KeyPair kp = kpg.generateKeyPair();
 			signing = kp.getPrivate();
 			verifying = kp.getPublic();
+			// Create engine and game keys, which supersede all checks.
 			engineKey = new SecurityKey("Engine Master Key", signing);
 			gameKey = new SecurityKey("Game Master Key", signing);
 			masterKeyRetrieved = true;
@@ -55,8 +58,9 @@ public class SecuritySystem {
 	 * @return The key.
 	 */
 	public static SecurityKey getGameKey() {
-		if (gameKeyRetrived)
+		if (gameKeyRetrived) {
 			throw new EngineSecurityError("Key already retrieved.");
+		}
 		gameKeyRetrived = true;
 		active = true;
 		return gameKey;
@@ -73,23 +77,29 @@ public class SecuritySystem {
 	 *            The action requested to execute.
 	 */
 	public static void checkPermission(SecurityKey k, RequestedAction ra) {
-		if (k == null)
-			if (active)
+		if (k == null) {
+			if (active) {
 				throw new EngineSecurityError("A key must be provided.");
-			else
+			} else {
 				return;
-		if (!active)
+			}
+		}
+		if (!active) {
 			return;
-		if (!verify(k))
+		}
+		if (!verify(k)) {
 			throw new EngineSecurityError("The key given is forged incorrectly.");
-		if (k.equals(engineKey))
+		}
+		if (k.equals(engineKey)) {
 			return;
-		for (engineSecurityHandler h : engineSecurityHandlers)
+		}
+		for (engineSecurityHandler h : engineSecurityHandlers) {
 			if (!h.allow(k, ra)) {
 				Logger.getLogger("Security")
 						.severe("Security Violation Key: " + k.getDescription() + " action: " + ra.toString());
 				throw new EngineSecurityError("Security violation: Key: " + k.getKey() + " action: " + ra.toString());
 			}
+		}
 	}
 
 	/**
@@ -140,8 +150,9 @@ public class SecuritySystem {
 		if ((k.equals(engineKey) || k.equals(gameKey)) && verify(k)) {
 			engineSecurityHandlers.add(h);
 			active = true;
-		} else
+		} else {
 			throw new EngineSecurityError("Given key must be the engine key or game key.");
+		}
 	}
 
 	/**
@@ -151,10 +162,11 @@ public class SecuritySystem {
 	 *            The key.
 	 */
 	public static void disableSecurity(SecurityKey k) {
-		if ((k.equals(engineKey) || k.equals(gameKey)) && verify(k))
+		if ((k.equals(engineKey) || k.equals(gameKey)) && verify(k)) {
 			active = false;
-		else
+		} else {
 			throw new EngineSecurityError("Given key must be the engine or game keys.");
+		}
 	}
 
 	/**
@@ -164,10 +176,11 @@ public class SecuritySystem {
 	 *            The key
 	 */
 	public static void enableSecurity(SecurityKey k) {
-		if ((k.equals(engineKey) || k.equals(gameKey)) && verify(k))
+		if ((k.equals(engineKey) || k.equals(gameKey)) && verify(k)) {
 			active = true;
-		else
+		} else {
 			throw new EngineSecurityError("Given key must be the engine or game key.");
+		}
 	}
 
 	/**
@@ -185,8 +198,9 @@ public class SecuritySystem {
 	}
 
 	public static boolean isEngineKey(SecurityKey k) {
-		if (k.equals(engineKey) && verify(k))
+		if (k.equals(engineKey) && verify(k)) {
 			return true;
+		}
 		return false;
 	}
 }

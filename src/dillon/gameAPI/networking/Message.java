@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This object is an object that holds the information for an exchange in the
  * program.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -17,7 +17,7 @@ public class Message implements Serializable {
 
 	/**
 	 * This creates a message
-	 * 
+	 *
 	 * @param msg
 	 *            The string representing the message.
 	 * @param name
@@ -30,7 +30,7 @@ public class Message implements Serializable {
 
 	/**
 	 * Sets the message.
-	 * 
+	 *
 	 * @param msg
 	 *            The message.
 	 */
@@ -40,7 +40,7 @@ public class Message implements Serializable {
 
 	/**
 	 * Gives the message.
-	 * 
+	 *
 	 * @return The message.
 	 */
 	public String getMessage() {
@@ -49,7 +49,7 @@ public class Message implements Serializable {
 
 	/**
 	 * This will return who created the object.
-	 * 
+	 *
 	 * @return The originator.
 	 */
 	public String getOriginator() {
@@ -58,7 +58,7 @@ public class Message implements Serializable {
 
 	/**
 	 * Used to find the ip of the client that created this message.
-	 * 
+	 *
 	 * @return its IP
 	 */
 	public String getIP() {
@@ -67,7 +67,7 @@ public class Message implements Serializable {
 
 	/**
 	 * Internally used only.
-	 * 
+	 *
 	 * @param ip
 	 *            The ip to set.
 	 */

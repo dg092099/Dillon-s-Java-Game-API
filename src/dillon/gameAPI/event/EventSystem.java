@@ -74,15 +74,19 @@ public class EventSystem {
 	 *            The security key.
 	 */
 	public static void broadcastMessage(EEvent e, Class<? extends EEvent> c, SecurityKey k) {
-		SecuritySystem.checkPermission(k, RequestedAction.POST_EVENT);
-		for (EEHandler<?> h : handlers)
+		SecuritySystem.checkPermission(k, RequestedAction.POST_EVENT); // Security
+																		// check.
+		for (EEHandler<?> h : handlers) { // For all handlers
 			try {
+				// Get method to call.
 				Method m = h.getClass().getMethod("handle", e.getClass());
 				m.setAccessible(true);
+				// Invoke it.
 				m.invoke(h, e);
 			} catch (Exception ex) {
 			}
-		ModdingCore.sendEvent(e);
+		}
+		ModdingCore.sendEvent(e); // Send modding module event.
 	}
 
 	/**
@@ -95,15 +99,21 @@ public class EventSystem {
 
 	/**
 	 * Returns the Debugging string for the event system.
+	 * 
+	 * @return The debug information
 	 */
-	@Override
-	public String toString() {
+	public static String getDebug() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n\n dillon.gameAPI.event.EventSystem Dump:\n");
+		String data = "";
+		data += String.format("%-15s %-15s\n", "Key", "Value");
+		data += String.format("%-15s %-15s\n", "---", "-----");
 		for (EEHandler<?> h : handlers) {
-			sb.append("Event handler code: " + h.hashCode());
-			sb.append("Handled event: " + h.getClass());
+			data += String.format("%-15s %-15s\n", "Handler code:", h.hashCode());
+			data += String.format("%-15s %-15s\n", "Handled event:", h.getClass().getName());
+			data += "-------\n";
 		}
+		sb.append(data);
 		return sb.toString();
 	}
 }

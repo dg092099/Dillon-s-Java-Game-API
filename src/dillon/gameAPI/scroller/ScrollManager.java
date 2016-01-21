@@ -39,6 +39,7 @@ public class ScrollManager {
 	 */
 	public static void registerTiles(BufferedImage img, int width, int height, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SET_TILESHEET);
+		// Sets the tilesheet, height and width
 		tilesheet = img;
 		ScrollManager.width = width;
 		ScrollManager.height = height;
@@ -56,18 +57,21 @@ public class ScrollManager {
 		int tilesY = img.getHeight(null) / height; // How many tiles up and
 													// down.
 		tiles = new BufferedImage[tilesX][tilesY];
-		for (int x = 0; x < tilesX; x++)
+		for (int x = 0; x < tilesX; x++) {
 			for (int y = 0; y < tilesY; y++) {
 				BufferedImage img2 = img;
 				if (img2 == null) {
 					System.out.println("Unable to cast.");
 					return;
 				}
+				// Get the individual tiles off the tilesheet.
 				BufferedImage tile = img2.getSubimage(width * x, height * y, width, height);
-				if (tile == null)
+				if (tile == null) {
 					System.out.println("Tile is null.");
+				}
 				tiles[x][y] = tile;
 			}
+		}
 	}
 
 	private static BufferedImage fullMap; // The full map image, the overlay.
@@ -87,15 +91,18 @@ public class ScrollManager {
 			bitMap = (BufferedImage) img;
 			fullMap = new BufferedImage(bitMap.getWidth() * width, bitMap.getHeight() * height,
 					BufferedImage.TYPE_INT_ARGB);
-			for (int x = 0; x < bitMap.getWidth(); x++)
+			for (int x = 0; x < bitMap.getWidth(); x++) {
 				for (int y = 0; y < bitMap.getHeight(); y++) {
 					int red, blue;
 					red = MainUtilities.getRed(bitMap.getRGB(x, y));
 					blue = MainUtilities.getBlue(bitMap.getRGB(x, y));
-					if (red >= 255)
+					if (red >= 255) {
 						continue;
+					}
+					// Blow up individual pixels to the map
 					fullMap.getGraphics().drawImage(getTile(red / 10, blue / 10), x * width, y * height, null);
 				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -104,8 +111,9 @@ public class ScrollManager {
 	private static Image getTile(int i, int j) {
 		int x = i - 1;
 		int y = j - 1;
-		if (tiles == null)
+		if (tiles == null) {
 			System.out.println("Tiles is null.");
+		}
 		return tiles[x][y];
 	}
 
@@ -146,20 +154,23 @@ public class ScrollManager {
 	 * @return colliding
 	 */
 	public static boolean getCollisionAny(double x2, double y2, int width2, int height2) {
-		if (fullMap == null)
+		if (fullMap == null) {
 			return false;
+		}
 		Rectangle r1 = new Rectangle((int) x2, (int) y2, width2, height2);
-		for (int x = 0; x < bitMap.getWidth(); x++)
+		for (int x = 0; x < bitMap.getWidth(); x++) {
 			for (int y = 0; y < bitMap.getHeight(); y++) {
 				int rgb = bitMap.getRGB(x, y);
 				if (MainUtilities.getGreen(rgb) < 128) {
 					int xPos = getTileWidth() * x;
 					int yPos = getTileHeight() * y;
 					Rectangle r2 = new Rectangle(xPos, yPos, getTileWidth(), getTileHeight());
-					if (r2.intersects(r1))
+					if (r2.intersects(r1)) {
 						return true;
+					}
 				}
 			}
+		}
 		return false;
 	}
 

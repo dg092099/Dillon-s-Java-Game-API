@@ -74,20 +74,24 @@ public final class ModdingCore {
 	 */
 	public static void instantateMods(File f, SecurityKey k) {
 		if (f.isDirectory()) {
+			// Create mod policy
 			ModPolicy m = new ModPolicy();
 			Policy.setPolicy(m);
 			System.setSecurityManager(new SecurityManager());
-			for (File f2 : f.listFiles())
-				if (f2.getName().endsWith(".jar"))
+			for (File f2 : f.listFiles()) {
+				if (f2.getName().endsWith(".jar")) {
 					try {
+						// Create sandboxed class loader.
 						SandboxedLoader l = new SandboxedLoader(new URL[] { f2.toURI().toURL() });
 						ArrayList<String> classNames = new ArrayList<String>();
 						ZipInputStream zis = new ZipInputStream(new FileInputStream(f2));
 						ZipEntry ze;
+						// Get all class names in jar.
 						while ((ze = zis.getNextEntry()) != null) {
-							if (ze.getName().endsWith(".class") && !ze.getName().contains("$"))
+							if (ze.getName().endsWith(".class") && !ze.getName().contains("$")) {
 								classNames.add(ze.getName().replaceAll("/", ".").substring(0,
 										ze.getName().length() - ".class".length()));
+							}
 							zis.closeEntry();
 						}
 						zis.close();
@@ -98,14 +102,18 @@ public final class ModdingCore {
 						for (String s : classNames) {
 							Class<?> c = l.loadClass(s);
 							if (c.getAnnotationsByType(Modification.class)[0] != null) {
+								// Found main class.
 								String ModName = c.getAnnotationsByType(Modification.class)[0].name();
 								loaders.put(ModName, l);
 								modClasses.put(ModName, c);
 								modClassObjects.put(ModName, c.newInstance());
 								Method[] methods = c.getMethods();
-								for (Method m2 : methods)
-									if (m2.getName().equals("Instantate"))
+								for (Method m2 : methods) {
+									if (m2.getName().equals("Instantate")) {
+										// Run instantiate
 										m2.invoke(modClassObjects.get(ModName));
+									}
+								}
 							}
 						}
 					} catch (MalformedURLException e) {
@@ -133,6 +141,8 @@ public final class ModdingCore {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+			}
 		}
 	}
 
@@ -143,14 +153,17 @@ public final class ModdingCore {
 		for (String s : modClasses.keySet()) {
 			Class<?> c = modClasses.get(s);
 			Method[] methods = c.getMethods();
-			for (Method m : methods)
-				if (m.getName().equals("init"))
+			for (Method m : methods) {
+				if (m.getName().equals("init")) { // Find method init in any mod
+													// classes
 					try {
-						m.invoke(modClassObjects.get(s));
+						m.invoke(modClassObjects.get(s)); // Invoke it
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+			}
 		}
 	}
 
@@ -161,14 +174,17 @@ public final class ModdingCore {
 		for (String s : modClasses.keySet()) {
 			Class<?> c = modClasses.get(s);
 			Method[] methods = c.getMethods();
-			for (Method m : methods)
-				if (m.getName().equals("postStart"))
+			for (Method m : methods) {
+				if (m.getName().equals("postStart")) { // Find postStart in mod
+														// classes
 					try {
 						m.invoke(modClassObjects.get(s));
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+			}
 		}
 	}
 
@@ -187,15 +203,21 @@ public final class ModdingCore {
 	public static void sendEvent(EEvent e) {
 		for (Class<?> c : eventHandlers) {
 			Method[] methods = c.getMethods();
-			for (Method m : methods)
-				if (m.isAnnotationPresent(EventHandler.class))
+			for (Method m : methods) {
+				if (m.isAnnotationPresent(EventHandler.class)) { // If the
+																	// method
+																	// has the
+																	// annotation
 					try {
 						Class<? extends EEvent> eventType = m.getAnnotation(EventHandler.class).type();
-						if (e.getClass() == eventType)
+						if (e.getClass() == eventType) {
 							m.invoke(c.newInstance(), e);
+						}
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 							| InstantiationException e1) {
 					}
+				}
+			}
 		}
 	}
 
@@ -207,9 +229,11 @@ public final class ModdingCore {
 	 * @return The mod name.
 	 */
 	public static String getNameFromLoader(SandboxedLoader s) {
-		for (String s2 : loaders.keySet())
-			if (loaders.get(s2).equals(s))
+		for (String s2 : loaders.keySet()) {
+			if (loaders.get(s2).equals(s)) {
 				return s2;
+			}
+		}
 		return null;
 	}
 

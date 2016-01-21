@@ -31,6 +31,7 @@ public class BlackoutText implements GuiComponent {
 	private SecurityKey key;
 
 	public BlackoutText(boolean cl, Color back, Color fore, String txt, Font f, SecurityKey k) {
+		// Initiates variables.
 		closable = cl;
 		key = k;
 		background = back;
@@ -57,12 +58,15 @@ public class BlackoutText implements GuiComponent {
 		if (!rendered) {
 			rendered = true;
 			FontMetrics fm = g.getFontMetrics(textFont);
+			// Get where to draw text.
 			textX = Core.getWidth() / 2 - fm.stringWidth(text) / 2;
 			textY = Core.getHeight() / 2 - fm.getHeight() / 2;
 		}
 		g.setFont(textFont);
+		// Create background.
 		g.setColor(background);
 		g.fillRect(0, 0, Core.getWidth(), Core.getHeight());
+		// Draw text
 		g.setColor(foreground);
 		g.drawString(text, textX, textY);
 	}
@@ -80,9 +84,11 @@ public class BlackoutText implements GuiComponent {
 	@Override
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
-		if (closable)
-			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE)
+		if (closable) {
+			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE) {
 				GuiSystem.removeGui(this, key);
+			}
+		}
 	}
 
 	@Override

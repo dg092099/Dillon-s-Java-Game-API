@@ -58,9 +58,11 @@ public class BlackoutImage implements GuiComponent {
 	@Override
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
-		if (closable)
-			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE)
+		if (closable) {
+			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE) {
 				GuiSystem.removeGui(this, key);
+			}
+		}
 	}
 
 	@Override
@@ -85,6 +87,7 @@ public class BlackoutImage implements GuiComponent {
 
 	@Override
 	public String toString() {
-		return "Closable: " + closable + "\nImage: " + img.toString();
+		return String.format("%-10s %-5s\n%-10s %-5s\n%-10s %-5s\n", "Key", "Value", "---", "-----", "Closable:",
+				closable ? "Yes" : "No", "Image:", img != null ? img.toString() : "None");
 	}
 }

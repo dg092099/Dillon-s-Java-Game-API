@@ -27,6 +27,7 @@ public class ScriptSystem {
 	private static ScriptEngine scriptEngine;
 
 	private static void initiate() {
+		// Setup engine
 		scriptEngine = new ScriptEngineManager().getEngineByName("javascript");
 		setup(null, null);
 		Logger.getLogger("Scripting").severe("Javascript Engine active...");
@@ -34,12 +35,15 @@ public class ScriptSystem {
 	}
 
 	private static void setup(SecurityKey key, HashMap<String, Object> obj) {
+		// Put some variables for the API.
 		scriptEngine.put("Core", new CoreBridge());
 		scriptEngine.put("EntityRegistry", new EntityRegistry());
 		scriptEngine.put("SecKey", key);
-		if (obj != null)
-			for (String k : obj.keySet())
+		if (obj != null) {
+			for (String k : obj.keySet()) {
 				scriptEngine.put(k, obj.get(k));
+			}
+		}
 		scriptEngine.put("GuiFactory", Core.getGuiFactory());
 		scriptEngine.put("Camera", new CameraBridge());
 		scriptEngine.put("GuiSystem", Core.getGuiSystem());
@@ -49,8 +53,9 @@ public class ScriptSystem {
 	public static void load(String code, SecurityKey runKey, SecurityKey providedKey,
 			HashMap<String, Object> environment) {
 		SecuritySystem.checkPermission(runKey, RequestedAction.RUN_SCRIPT);
-		if (!started)
+		if (!started) {
 			initiate();
+		}
 		setup(providedKey, environment);
 		try {
 			scriptEngine.eval(code);

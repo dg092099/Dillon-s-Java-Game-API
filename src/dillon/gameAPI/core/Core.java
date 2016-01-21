@@ -39,7 +39,7 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v1.13"; // The engine's
+	public static final String ENGINE_VERSION = "v1.14.1"; // The engine's
 															// version.
 	public static final int TILES = 1; // Constant: Render method, tile.
 	public static final int SIDESCROLLER = 2; // Constant: render method,
@@ -57,9 +57,11 @@ public class Core {
 	 *            The security key for the security module.
 	 */
 	public static void startGame(final int FPS, final BufferedImage background, final SecurityKey key) {
-		if (frame == null)
+		if (frame == null) { // Frame must exist to use it.
 			throw new GeneralRuntimeException("Invalid state: Use setup method first.");
-		SecuritySystem.checkPermission(key, RequestedAction.START_GAME);
+		}
+		SecuritySystem.checkPermission(key, RequestedAction.START_GAME); // Security
+																			// check.
 		Logger.getLogger("Core").info("Starting game.");
 		controller.start();
 		controller.setFps(FPS);
@@ -67,8 +69,11 @@ public class Core {
 		// interfere with other programming.
 		t.setName("Canvas Controller");
 		t.start();
-		if (background != null)
+		if (background != null) {
+			// Set background image.
 			CanvasController.setBackgroundImage(background);
+		}
+		// Setup auxiliary systems.
 		new ScrollManager(engineKey);
 		new Camera();
 		guiSystem = new GuiSystem(engineKey);
@@ -146,21 +151,25 @@ public class Core {
 	 */
 	public static void setup(final int width, final int height, final String title, final Image icon, SecurityKey k)
 			throws IOException {
-		SecuritySystem.checkPermission(k, RequestedAction.SETUP_GAME);
-		engineKey = SecuritySystem.init();
+		SecuritySystem.checkPermission(k, RequestedAction.SETUP_GAME); // Security
+																		// check.
+		engineKey = SecuritySystem.init(); // Obtain engine key
 		TITLE = title;
 		ICON = icon;
 		Logger.getLogger("Core").info("Setting up...");
 		frame = new JFrame(title);
+		// Setup canvas controller and window.
 		controller = new CanvasController(engineKey);
 		frame.getContentPane().setSize(new Dimension(width, height));
 		frame.setTitle(title);
 		frame.setResizable(false);
-		if (icon != null)
+		if (icon != null) {
 			frame.setIconImage(icon);
-		else
+		} else {
 			frame.setIconImage(
 					ImageIO.read(Core.class.getClassLoader().getResourceAsStream("dillon/gameAPI/res/logo.png")));
+		}
+		// Add listeners
 		frame.addWindowListener(new WindowListener() {
 			@Override
 			public void windowActivated(final WindowEvent arg0) {
@@ -171,7 +180,7 @@ public class Core {
 			}
 
 			@Override
-			public void windowClosing(final WindowEvent arg0) {
+			public void windowClosing(final WindowEvent arg0) { // Shutdown
 				shutdown(false, engineKey);
 			}
 
@@ -192,13 +201,18 @@ public class Core {
 			}
 		});
 		controller = new CanvasController(engineKey);
+		// Touch up on window.
 		frame.add(controller);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		ModdingCore.sendInit();
-		frame.setVisible(true);
+		frame.setVisible(true); // Show window
 		guiFactory = new GuiFactory(engineKey);
 		scriptRemote = new RemoteCallBridge(engineKey);
+	}
+
+	public static CanvasController getController() {
+		return controller;
 	}
 
 	private static GuiFactory guiFactory;
@@ -223,7 +237,8 @@ public class Core {
 	 */
 	public static void setFullScreen(final boolean b, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SET_FULLSCREEN);
-		final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices(); // Gets
+																												// devices
 		if (devices[0].isFullScreenSupported()) {
 			fullscreen = b;
 			devices[0].setFullScreenWindow(fullscreen ? frame : null);
@@ -263,6 +278,7 @@ public class Core {
 	public static void crash(final Exception e, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.CRASH_GAME);
 		try {
+			// Crash game.
 			NetworkServer.stopServer(engineKey);
 			NetworkConnection.disconnect(engineKey);
 			EventSystem.override();
@@ -285,7 +301,7 @@ public class Core {
 	 */
 	public static void shutdown(final boolean hard, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SHUTDOWN);
-		if (hard) {
+		if (hard) { // If the game should immediately shutdown.
 			Logger.getLogger("Core").severe("Engine Shutting down...");
 			NetworkServer.stopServer(engineKey);
 			NetworkConnection.disconnect(engineKey);
@@ -375,18 +391,17 @@ public class Core {
 	 *
 	 * @return Debugging string
 	 */
-	@Override
-	public String toString() {
+	public static String getDebug() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("\n\ndillon.gameAPI.core.Core Dump:\n");
-		sb.append("Title: " + TITLE);
-		sb.append("\n");
-		sb.append("Icon: " + ICON.toString());
-		sb.append("\n");
-		sb.append("Frame: " + frame.toString());
-		sb.append("\n");
-		sb.append("Fullscreen: " + fullscreen);
-		sb.append("\n");
+		String data = "";
+		data += String.format("%-13s %-15s\n", "Key", "Value");
+		data += String.format("%-13s %-15s\n", "---", "-----");
+		data += String.format("%-13s %-15s\n", "Title:", TITLE);
+		data += String.format("%-13s %-15s\n", "Icon:", ICON != null ? ICON.toString() : "None");
+		data += String.format("%-13s %-15s\n", "Frame:", frame.toString());
+		data += String.format("%-13s %-15s\n", "Fullscreen", fullscreen ? "Yes" : "No");
+		sb.append(data);
 		return sb.toString();
 	}
 

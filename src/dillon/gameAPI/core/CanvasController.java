@@ -35,6 +35,7 @@ class CanvasController extends Canvas implements Runnable {
 	private static SecurityKey key;
 
 	public CanvasController(SecurityKey k) {
+		// Initially sets up the canvas and loads security key.
 		this.setSize(new Dimension(Core.getWidth(), Core.getHeight()));
 		this.setBackground(Color.BLACK);
 		key = k;
@@ -93,7 +94,7 @@ class CanvasController extends Canvas implements Runnable {
 
 	@Override
 	public void run() {
-		this.addMouseListener(new MouseListener() {
+		this.addMouseListener(new MouseListener() { // Mouse listener
 			@Override
 			public void mouseClicked(final MouseEvent evt) {
 				switch (evt.getButton()) {
@@ -114,6 +115,7 @@ class CanvasController extends Canvas implements Runnable {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
+				// When a mouse enters the window.
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
@@ -132,6 +134,7 @@ class CanvasController extends Canvas implements Runnable {
 
 			@Override
 			public void mouseExited(final MouseEvent evt) {
+				// When the mouse leaves the window.
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
@@ -150,6 +153,7 @@ class CanvasController extends Canvas implements Runnable {
 
 			@Override
 			public void mousePressed(final MouseEvent evt) {
+				// When someone holds the mouse
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
@@ -168,6 +172,7 @@ class CanvasController extends Canvas implements Runnable {
 
 			@Override
 			public void mouseReleased(final MouseEvent evt) {
+				// When someone releases the button.
 				switch (evt.getButton()) {
 				case MouseEvent.BUTTON1:
 					EventSystem
@@ -192,13 +197,16 @@ class CanvasController extends Canvas implements Runnable {
 				}
 			}
 		});
-		this.addKeyListener(new KeyListener() {
+		this.addKeyListener(new KeyListener() { // Key listener
 
 			@Override
 			public void keyPressed(final KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
-					if (arg0.isShiftDown())
+				if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					if (arg0.isShiftDown()) {
+						// Shutdown key combination: Shift+escape
 						Core.shutdown(true, key);
+					}
+				}
 				EventSystem.broadcastMessage(new KeyEngineEvent(arg0, KeyEngineEvent.KeyMode.KEY_PRESS),
 						KeyEngineEvent.class, key);
 			}
@@ -228,8 +236,9 @@ class CanvasController extends Canvas implements Runnable {
 			final long delta = framesInSecond - diff; // The calculated delta in
 														// the
 			// time.
-			if (delta < -50)
+			if (delta < -50) {
 				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " ticks.");
+			}
 			try {
 				Thread.sleep(delta);
 			} catch (final Exception e) {
@@ -241,8 +250,10 @@ class CanvasController extends Canvas implements Runnable {
 	 * This ticks everything that happens.
 	 */
 	public void sendTick() {
-		if (paused)
+		// Sends the updates to the objects.
+		if (paused) {
 			return;
+		}
 		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
 		MainUtilities.executeQueue(key);
 	}
@@ -271,10 +282,12 @@ class CanvasController extends Canvas implements Runnable {
 	 * This function renders everything.
 	 */
 	public void sendRender() {
+		// Causes the render process.
 		final BufferStrategy buffer = getBufferStrategy(); // The buffer system
 															// in the
 															// rendering system.
 		if (buffer == null) {
+			// Then create the buffer strategy.
 			createBufferStrategy(2);
 			return;
 		}
@@ -282,24 +295,28 @@ class CanvasController extends Canvas implements Runnable {
 		graphics.setColor(graphics.getBackground());
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
 		// Start Draw
-		if (background != null)
+		if (background != null) {
 			graphics.drawImage(background, 0, 0, null);
-		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class, key);
+		}
+		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class, key); // Render
 
 		if (showingSplash) {
-			splashCounter++;
-			if (splashCounter >= FPS * 2)
+			splashCounter++; // To stop displaying splash after a while.
+			if (splashCounter >= FPS * 2) {
 				showingSplash = false;
+			}
 			try {
-				if (Splash == null)
+				if (Splash == null) {
 					Splash = ImageIO
 							.read(getClass().getClassLoader().getResourceAsStream("dillon/gameAPI/res/splash.png"));
+				}
 				graphics.drawImage(Splash, Core.getWidth() - 100, Core.getHeight() - 50, null);
 			} catch (final Exception e) {
 			}
 		}
-		if (NetworkServer.getServerRunning())
+		if (NetworkServer.getServerRunning()) {
 			try {
+				// Show networking icon if on.
 				graphics.drawImage(
 						ImageIO.read(
 								getClass().getClassLoader().getResourceAsStream("dillon/gameAPI/res/ServerImage.png")),
@@ -308,6 +325,7 @@ class CanvasController extends Canvas implements Runnable {
 				e.printStackTrace();
 				Core.crash(e, key);
 			}
+		}
 		// End draw
 		getBufferStrategy().show();
 		graphics.dispose();
@@ -339,7 +357,7 @@ class CanvasController extends Canvas implements Runnable {
 	 *            This is the exception that will be displayed.
 	 */
 	public void crash(final Exception e) {
-		stop();
+		stop(); // Halts the game loop
 		Logger.getLogger("Core").severe("Crashing...");
 		final Font f = new Font("Courier", Font.BOLD, 18);
 		this.setFont(f);
@@ -352,7 +370,8 @@ class CanvasController extends Canvas implements Runnable {
 		this.getGraphics().drawString(e.getMessage(), 15, 30);
 		final StackTraceElement[] lines = e.getStackTrace();
 		String formatted; // The formatted version of the stacktrace.
-		for (int i = 0; i < lines.length; i++) {
+		for (int i = 0; i < lines.length; i++) {// Tries to display the crash
+												// details on the screen.
 			formatted = lines[i].getClassName() + "#" + lines[i].getMethodName() + " Line: " + lines[i].getLineNumber();
 			this.getGraphics().drawString(formatted, 15, i * 15 + 45);
 		}
@@ -376,23 +395,19 @@ class CanvasController extends Canvas implements Runnable {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("\n\ndillon.gameAPI.core.CanvasController Dump:\n");
-		sb.append("Start Time: " + startTime);
-		sb.append("\n");
-		sb.append("End Time:" + endTime);
-		sb.append("\n");
-		sb.append("FPS: " + FPS);
-		sb.append("\n");
-		sb.append("Running: " + running);
-		sb.append("\n");
-		sb.append("Paused: " + paused);
-		sb.append("\n");
-		sb.append("Showing spalsh: " + showingSplash);
-		sb.append("\n");
-		sb.append("Splash Counter: " + splashCounter);
-		sb.append("\n");
-		sb.append("Splash: " + Splash.toString());
-		sb.append("\n");
-		sb.append("Background: " + background.toString());
+		String data = "";
+		data = String.format("%-20s %-20s\n", "Key", "Value");
+		data += String.format("%-20s %-20s\n", "---", "-----");
+		data += String.format("%-20s %-20d\n", "Start Time: ", startTime);
+		data += String.format("%-20s %-20d\n", "End Time:", endTime);
+		data += String.format("%-20s %-20d\n", "FPS:", FPS);
+		data += String.format("%-20s %-20s\n", "Running", running ? "Yes" : "No");
+		data += String.format("%-20s %-20s\n", "Paused", paused ? "Yes" : "No");
+		data += String.format("%-20s %-20s\n", "Showing Splash:", showingSplash ? "Yes" : "No");
+		data += String.format("%-20s %-20d\n", "Splash counter:", splashCounter);
+		data += String.format("%-20s %-20s\n", "Splash:", Splash != null ? Splash.toString() : "Not set.");
+		data += String.format("%-20s %-20s\n", "Background:", background != null ? background.toString() : "Not set.");
+		sb.append(data);
 		return sb.toString();
 	}
 }

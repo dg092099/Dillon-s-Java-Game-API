@@ -36,28 +36,32 @@ public class Entity implements Serializable {
 	 */
 	public Entity(Image sprite, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.INSTANTIATE_ENTITY);
-		key = k;
-		spr = (BufferedImage) sprite;
-		x = 0;
-		y = 0;
-		dx = 0;
-		dy = 0;
-		EventSystem.addHandler(new EEHandler<TickEvent>() {
+		key = k; // Security key
+		spr = (BufferedImage) sprite; // The sprite
+		x = 0; // X position
+		y = 0; // Y Position
+		dx = 0; // Direction X
+		dy = 0; // Direction Y
+		EventSystem.addHandler(new EEHandler<TickEvent>() { // Update handler
 			@Override
 			public void handle(TickEvent T) {
 				if (!checkCollisionWithPos(x + dx, y + dy)) {
+					// Move in direction if it won't cause a collision.
 					x += dx;
 					y += dy;
 				}
-				if (gravity)
+				if (gravity) {
+					// Gravity calculations.
 					if (!checkCollisionWithPos(x, y + fallspeed)) {
-						if (!gravityOverride)
+						if (!gravityOverride) {
 							y += fallspeed;
-					} else if (gravityOverride)
+						}
+					} else if (gravityOverride) {
 						gravityOverride = false;
+					}
+				}
 				if (jumping) {
-					System.out.println("Jump pix count: " + jumpPixCount);
-					System.out.println("Max Jump Height: " + jumpHeight);
+					// Jump
 					if (jumpPixCount >= jumpHeight) {
 						jumping = false;
 						jumpPixCount = 0;
@@ -67,27 +71,32 @@ public class Entity implements Serializable {
 						y += 2;
 					}
 				}
-				if (autoMode == 1)
+				if (autoMode == 1) { // Auto pilot mode.
 					if (counter == 0) { // Limiter
 						counter = autoLimit;
 						double diffX = x - target.x; // The difference between
 														// the two x values.
 						double diffY = y - target.y; // The difference between
 														// the two y values.
+						// Find angle to go towards.
 						double angle = Math.atan2(diffX, diffY);
 						dx = Math.sin(angle * autoMultiplier);
 						dy = Math.cos(angle * autoMultiplier);
-					} else
+					} else {
 						counter--;
+					}
+				}
 				calculateZones();
 			}
 		}, key);
-		EventSystem.addHandler(new EEHandler<RenderEvent>() {
+		EventSystem.addHandler(new EEHandler<RenderEvent>() { // Render the
+																// entity.
 			@Override
 			public void handle(RenderEvent evt) {
 				Graphics2D graphics = evt.getGraphics();
 				graphics.drawImage(spr, (int) x, (int) y, null);
 				if (showHealth) {
+					// Show health bar.
 					graphics.setColor(Color.RED);
 					graphics.fillRect((int) x - 30, (int) y - 20, 100, 5);
 					graphics.setColor(Color.GREEN);
@@ -107,7 +116,6 @@ public class Entity implements Serializable {
 	 *            the position
 	 */
 	public void setX(int X) {
-		System.out.println("Setting x");
 		x = X;
 		calculateZones();
 	}
@@ -128,17 +136,18 @@ public class Entity implements Serializable {
 	 *            The y position
 	 */
 	public void setY(int Y) {
-		System.out.println("Setting y");
 		y = Y;
 		calculateZones();
 	}
 
 	private void calculateZones() {
-		for (EntityZoneEvent evt : zoneEvents)
+		for (EntityZoneEvent evt : zoneEvents) {
 			if (x >= evt.getTopLeft()[0] && y >= evt.getTopLeft()[1]
 					&& x <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[0]
-					&& y <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[1])
+					&& y <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[1]) {
 				evt.onAction();
+			}
+		}
 	}
 
 	/**
@@ -377,6 +386,8 @@ public class Entity implements Serializable {
 	public double getDistanceFrom(Entity e) {
 		int diffX = (int) Math.abs(getX() - e.getX());
 		int diffY = (int) Math.abs(getY() - e.getY());
+		// Gets the directional distances between the two to calculate the
+		// actual distance.
 		double xs = Math.pow(diffX, 2);
 		double ys = Math.pow(diffY, 2);
 		double sum = xs + ys;
@@ -395,6 +406,7 @@ public class Entity implements Serializable {
 	public double getDistanceFrom(int x, int y) {
 		int diffX = (int) Math.abs(getX() - x);
 		int diffY = (int) Math.abs(getY() - y);
+		// Similar to above, with different sources though.
 		double xs = Math.pow(diffX, 2);
 		double ys = Math.pow(diffY, 2);
 		return Math.sqrt(xs + ys);
@@ -405,19 +417,25 @@ public class Entity implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Entity))
+		if (!(o instanceof Entity)) {
 			return false;
+		}
 		Entity e = (Entity) o;
-		if (this.getX() != e.getX())
+		if (this.getX() != e.getX()) {
 			return false;
-		if (this.getY() != e.getY())
+		}
+		if (this.getY() != e.getY()) {
 			return false;
-		if (this.getHealth() != e.getHealth())
+		}
+		if (this.getHealth() != e.getHealth()) {
 			return false;
-		if (this.getMaxHealth() != e.getMaxHealth())
+		}
+		if (this.getMaxHealth() != e.getMaxHealth()) {
 			return false;
-		if (!this.spr.equals(e.spr))
+		}
+		if (!this.spr.equals(e.spr)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -428,18 +446,24 @@ public class Entity implements Serializable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n\ndillon.gameAPI.entity.Entity Dump: Entity code " + hashCode() + "\n");
-		sb.append("Sprite: " + spr.toString());
-		sb.append("\nX: " + x + " Y: " + y);
-		sb.append("\nDirection: " + dx + ", " + dy);
-		sb.append("\nAutopilot mode: " + autoMode);
-		sb.append("\nTarget code: " + target != null ? target.hashCode() : "none");
-		sb.append("\nAutopilot limit: " + autoLimit);
-		sb.append("\nAutopilot multiplier: " + autoMultiplier);
-		sb.append("\nHealth: " + health + "/" + MaxHealth);
-		sb.append("\nShowing Health: " + showHealth);
-		sb.append("\nGravity Active: " + gravity);
-		sb.append("\nFall speed: " + fallspeed);
-		sb.append("\nJumping: " + jumping);
+		String data = "";
+		data += String.format("%-25s %-5s\n", "Key", "Value");
+		data += String.format("%-25s %-5s\n", "---", "-----");
+		data += String.format("%-25s %-5s\n", "Sprite:", spr != null ? spr.toString() : "None");
+		data += String.format("%-25s %-5.2f\n", "X Position:", x);
+		data += String.format("%-25s %-5.2f\n", "Y Position:", y);
+		data += String.format("%-25s %-5.2f\n", "X Direction:", dx);
+		data += String.format("%-25s %-5.2f\n", "Y Direction:", dy);
+		data += String.format("%-25s %-5d\n", "Autopilot mode:", autoMode);
+		data += String.format("%-25s %-5s\n", "Target Code:", target != null ? target.hashCode() : "None");
+		data += String.format("%-25s %-5d\n", "Autopilot Limit:", autoLimit);
+		data += String.format("%-25s %-5d\n", "Autopilot Multiplier:", autoMultiplier);
+		data += String.format("%-25s %-5s\n", "Health:", health + "/" + MaxHealth);
+		data += String.format("%-25s %-5s\n", "Showing Health:", showHealth ? "Yes" : "No");
+		data += String.format("%-25s %-5s\n", "Gravity:", gravity ? "Yes" : "No");
+		data += String.format("%-25s %-5d\n", "Falling speed:", fallspeed);
+		data += String.format("%-25s %-5s\n", "Jumping:", jumping ? "Yes" : "No");
+		sb.append(data);
 		return sb.toString();
 	}
 

@@ -25,8 +25,10 @@ public class Camera {
 	public static void setX(int x, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.MOVE_CAMERA);
 		try {
-			if (x > 1 && x < ScrollManager.getFullLayoutDims().getWidth())
+			if (x > 1 && x < ScrollManager.getFullLayoutDims().getWidth()) {
+				// Stops the camera from going too far off screen.
 				xPos = x;
+			}
 		} catch (Exception e) {
 			xPos = 5;
 		}
@@ -43,8 +45,9 @@ public class Camera {
 	public static void setY(int y, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.MOVE_CAMERA);
 		try {
-			if (y > 1 && y < ScrollManager.getFullLayoutDims().getHeight())
+			if (y > 1 && y < ScrollManager.getFullLayoutDims().getHeight()) {
 				yPos = y;
+			}
 		} catch (Exception e) {
 			yPos = 5;
 		}
@@ -66,5 +69,14 @@ public class Camera {
 	 */
 	public static int getYPos() {
 		return yPos;
+	}
+
+	public static String getDebug() {
+		String data = "\n\ndillon.gameAPI.scroller.Camera Debug:\n";
+		data += String.format("%-15s %-5s\n", "Key", "Value");
+		data += String.format("%-15s %-5s\n", "---", "-----");
+		data += String.format("%-15s %-5s\n", "Position X", xPos);
+		data += String.format("%-15s %-5s\n", "Position Y", yPos);
+		return data;
 	}
 }

@@ -49,6 +49,7 @@ public class BasicDialog implements GuiComponent {
 
 	public BasicDialog(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront,
 			SecurityKey k) {
+		// Set variables
 		key = k;
 		this.prompt = prompt;
 		textFont = f;
@@ -73,36 +74,39 @@ public class BasicDialog implements GuiComponent {
 	 *            Graphics
 	 */
 	public void calculateDimensions(Graphics2D g) {
+		// Get center of screen.
 		int CenterX = Math.round(Core.getWidth() / 2);
 		int CenterY = Math.round(Core.getHeight() / 2);
 		g.setFont(textFont);
 		FontMetrics fm = g.getFontMetrics(textFont);
+		// Get longest line to find how far back the dialog should be.
 		int longestLine = Integer.MIN_VALUE;
 		String[] lines = prompt.split("\n");
 		for (String s : lines) {
 			int lineWidth = fm.stringWidth(s);
-			if (lineWidth > longestLine)
+			if (lineWidth > longestLine) {
 				longestLine = lineWidth;
+			}
 		} // Gets the longest line metrically
 		lineSpace = (int) (fm.getHeight() * 0.7);
 
 		outterP1X = CenterX; // Outer box, upper left x
-		outterP1X -= Math.round(longestLine / 2);
+		outterP1X -= Math.round(longestLine / 2); // Offset
 		outterP1X -= 20; // Padding
 		outterP1X -= 10; // Border
 
 		outterP2X = CenterX; // outer box, bottom right x
-		outterP2X += Math.round(longestLine / 2);
+		outterP2X += Math.round(longestLine / 2); // Offset
 		outterP2X += 20; // Padding
 		outterP2X += 10; // Border
 
 		innerP1X = CenterX; // Inner box, upper left x
-		innerP1X -= Math.round(longestLine / 2);
+		innerP1X -= Math.round(longestLine / 2); // Offset
 		innerP1X -= 20; // Padding
 		// No border padding
 
 		innerP2X = CenterX; // Inner box, lower right x
-		innerP2X += Math.round(longestLine / 2);
+		innerP2X += Math.round(longestLine / 2); // Offset
 		innerP2X += 20; // Padding
 
 		// Y values:
@@ -139,6 +143,7 @@ public class BasicDialog implements GuiComponent {
 			calculateDimensions(g);
 			calculated = true;
 		}
+		// Draw
 		g.setColor(borderColor);
 		g.fillRect(outterP1X, outterP1Y, outterP2X - outterP1X, outterP2Y - outterP1Y);
 		g.setColor(foregroundColor);
@@ -162,8 +167,9 @@ public class BasicDialog implements GuiComponent {
 
 	@Override
 	public void onKeyPress(KeyEvent evt) {
-		if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+		if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
 			GuiSystem.removeGui(this, key);
+		}
 	}
 
 	@Override
@@ -188,12 +194,17 @@ public class BasicDialog implements GuiComponent {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\ndillon.gameAPI.gui.BasicDialog Dump: Code " + hashCode());
-		sb.append("\nPrompt: " + prompt);
-		sb.append("\nBorder color: " + borderColor.getRGB());
-		sb.append("\nForeground color: " + foregroundColor.getRGB());
-		sb.append("\nText Color: " + textColor.getRGB());
-		sb.append("\nText Font: " + textFont.getFontName() + " size " + textFont.getSize());
-		sb.append("\nAlways at front: " + alwaysAtFront);
+		String data = "\n";
+		data += String.format("%-20s %-5s\n", "Key", "Value");
+		data += String.format("%-20s %-5s\n", "---", "-----");
+		data += String.format("%-20s %-5s\n", "Prompt", prompt);
+		data += String.format("%-20s %-5d\n", "Border Color:", borderColor.getRGB());
+		data += String.format("%-20s %-5s\n", "Foreground Color:", foregroundColor.getRGB());
+		data += String.format("%-20s %-5s\n", "Text Color:", textColor.getRGB());
+		data += String.format("%-20s %-5s\n", "Text Font:", textFont.getFontName());
+		data += String.format("%-20s %-5s\n", "Text Size:", textFont.getSize());
+		data += String.format("%-20s %-5s\n", "Always at front:", alwaysAtFront ? "Yes" : "No");
+		sb.append(data);
 		return sb.toString();
 	}
 

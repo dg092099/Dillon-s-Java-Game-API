@@ -46,10 +46,12 @@ public class NetworkConnection {
 		SecuritySystem.checkPermission(k, RequestedAction.CONNECT);
 		key = k;
 		try {
+			// Open socket
 			sock = new Socket(host, port);
 			oos = new ObjectOutputStream(sock.getOutputStream());
 			ois = new ObjectInputStream(sock.getInputStream());
 			oos.flush();
+			// Start listener
 			Thread t = new Thread(new listener());
 			running = true;
 			t.start();
@@ -87,8 +89,9 @@ public class NetworkConnection {
 		@Override
 		public void run() {
 			System.out.println("Now listening");
-			while (keepSearching)
+			while (keepSearching) {
 				try {
+					// Receive datagram
 					byte[] data = new byte[2048];
 					pack = new DatagramPacket(data, data.length);
 					socket.receive(pack);
@@ -96,6 +99,7 @@ public class NetworkConnection {
 					addresses.add(new InetSocketAddress(ip.split(":")[0], Integer.parseInt(ip.split(":")[1])));
 				} catch (Exception e) {
 				}
+			}
 		}
 
 		DatagramSocket socket; // The socket to look on.
@@ -125,15 +129,17 @@ public class NetworkConnection {
 	 */
 	public static ArrayList<InetSocketAddress> discoverServers(String gameName, String version, String code) {
 		try {
+			// Reset results
 			addresses = new ArrayList<>();
 			DatagramSocket socket = new DatagramSocket();
 			socket.setBroadcast(true);
 			byte[] data = (gameName + ":" + version + ":" + code).getBytes("UTF-8");
-			System.out.println(gameName + ":" + version + ":" + code);
+			// Send to all computers on LAN
 			DatagramPacket pack = new DatagramPacket(data, data.length, InetAddress.getAllByName("192.168.1.255")[0],
 					9518);
 			socket.send(pack);
 			keepSearching = true;
+			// Begin search.
 			Thread t = new Thread(new timer(socket, pack), "Searching...");
 			t.start();
 			Thread.sleep(3000);
@@ -158,9 +164,11 @@ public class NetworkConnection {
 		SecuritySystem.checkPermission(k, RequestedAction.DISCONNECT);
 		try {
 			running = false;
+			// Send shutdown message
 			Message msg = new Message("SHUTDOWN", "Client");
 			oos.writeObject(msg);
 			oos.flush();
+			// Close socket
 			oos.close();
 			ois.close();
 			sock.close();
@@ -189,11 +197,12 @@ public class NetworkConnection {
 	static class listener implements Runnable {
 		@Override
 		public void run() {
-			while (running)
+			while (running) {
 				try {
-					Message rec = (Message) ois.readObject();
-					if (rec == null)
+					Message rec = (Message) ois.readObject();// Gets message
+					if (rec == null) {
 						continue;
+					}
 					if (rec.getMessage().equals("SHUTDOWN")) {
 						disconnect(key);
 						return;
@@ -203,6 +212,7 @@ public class NetworkConnection {
 							NetworkEvent.class, key);
 				} catch (ClassNotFoundException | IOException e) {
 				}
+			}
 		}
 	}
 
@@ -219,5 +229,16 @@ public class NetworkConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static String getDebug() {
+		String data = "\n\ndillon.gameAPI.networking.NetworkConnection Debug:\n";
+		data += String.format("%-15s %-5s\n", "Key", "Value");
+		data += String.format("%-15s %-5s\n", "---", "-----");
+		data += String.format("%-15s %-5s\n", "IP:",
+				sock != null ? sock.getInetAddress().getHostAddress() : "Disconnected");
+		data += String.format("%-15s %-5s\n", "Searching:", keepSearching ? "Yes" : "No");
+		data += String.format("%-15s %-5s\n", "Listening:", running ? "Yes" : "No");
+		return data;
 	}
 }

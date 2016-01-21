@@ -43,8 +43,9 @@ class Discovery implements Runnable {
 	 */
 	public static String start(String gameName, String versionName, boolean useCode, int port, SecurityKey key) {
 		SecuritySystem.checkPermission(key, RequestedAction.ENABLE_DISCOVERY);
-		if (run)
+		if (run) {
 			return "Already started.";
+		}
 		name = gameName;
 		version = versionName;
 		run = true;
@@ -67,8 +68,9 @@ class Discovery implements Runnable {
 	 */
 	public static void stop(SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.DISABLE_DISCOVERY);
-		if (!run)
+		if (!run) {
 			return;
+		}
 		run = false;
 		try {
 			t.interrupt();
@@ -87,21 +89,24 @@ class Discovery implements Runnable {
 		} catch (SocketException e) {
 			throw new GeneralRuntimeException("Unable to establish lock on port 9518.");
 		}
-		while (run)
+		while (run) {
 			try {
 				byte[] packet = new byte[2048];
 				DatagramPacket pack = new DatagramPacket(packet, packet.length);
 				socket.receive(pack);
 				String s = new String(packet, "UTF-8");
 				s = s.trim();
-				if (!s.split(":")[0].equals(name))
+				if (!s.split(":")[0].equals(name)) {
 					continue;
-				if (!s.split(":")[1].equals(version))
+				}
+				if (!s.split(":")[1].equals(version)) {
 					continue;
+				}
 				if (code != null) {
 				}
-				if (code != null && !s.split(":")[2].equals(code))
+				if (code != null && !s.split(":")[2].equals(code)) {
 					continue;
+				}
 				packet = ("OK-" + InetAddress.getLocalHost().getHostAddress() + ":" + port).getBytes("UTF-8");
 				DatagramPacket response = new DatagramPacket(packet, packet.length, pack.getAddress(), pack.getPort());
 				socket.send(response);
@@ -112,5 +117,18 @@ class Discovery implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public static String getDebug() {
+		String data = "\n\ndillon.gameAPI.networking.Discovery Debug:\n";
+		data += String.format("%-15s %-7s\n", "Key", "Value");
+		data += String.format("%-15s %-7s\n", "---", "-----");
+		data += String.format("%-15s %-7s\n", "Running:", run ? "Yes" : "No");
+		data += String.format("%-15s %-7s\n", "Name:", name != null ? name : "None");
+		data += String.format("%-15s %-7s\n", "Version:", version != null ? version : "None");
+		data += String.format("%-15s %-7s\n", "Code:", code != null ? code : "None");
+		data += String.format("%-15s %-7d\n", "Port:", port);
+		return data;
 	}
 }

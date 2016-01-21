@@ -41,6 +41,7 @@ public class NetworkServer {
 		SecuritySystem.checkPermission(k, RequestedAction.START_NET_SERVER);
 		key = k;
 		try {
+			// Instantiate server
 			server = new ServerSocket(port, 100);
 			runServer = true;
 			Thread t = new Thread(new server());
@@ -74,16 +75,19 @@ public class NetworkServer {
 	static class server implements Runnable {
 		@Override
 		public void run() {
-			while (runServer)
+			while (runServer) {
 				try {
+					// Get remote socket
 					Socket s = server.accept();
 					Logger.getLogger("Networking").info("Got client, " + s.getRemoteSocketAddress().toString());
+					// Pass control to client connectors.
 					ClientConnector cc = new ClientConnector(s, key);
 					connectors.add(cc);
 					EventSystem.broadcastMessage(new NetworkEvent(NetworkEvent.NetworkMode.CONNECT, cc, null),
 							NetworkEvent.class, key);
 				} catch (IOException e) {
 				}
+			}
 		}
 	}
 
@@ -109,8 +113,10 @@ public class NetworkServer {
 	private static void shutdown(SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.STOP_NET_SERVER);
 		try {
-			for (int i = 0; i < connectors.size(); i++)
+			// Shutdown each connector.
+			for (int i = 0; i < connectors.size(); i++) {
 				connectors.get(i).shutdown();
+			}
 			server.close();
 		} catch (Exception e) {
 		}
@@ -145,18 +151,31 @@ public class NetworkServer {
 	 */
 	public static String enableDiscovery(String name, String version, boolean useCode, int port) {
 		String code = Discovery.start(name, version, useCode, port, key);
-		if (code != null)
+		if (code != null) {
 			return code;
+		}
 		return null;
 	}
 
 	/**
 	 * Stops server discovery.
-	 * 
+	 *
 	 * @param key
 	 *            The security key.
 	 */
 	public static void disableDiscovery(SecurityKey key) {
 		Discovery.stop(key);
+	}
+
+	public static String getDebug() {
+		String data = "\n\ndillon.gameAPI.networking.NetworkServer\n";
+		data += String.format("%-15s %-5s\n", "Key", "Value");
+		data += String.format("%-15s %-5s\n", "---", "-----");
+		data += String.format("%-15s %-5s\n", "Running:", runServer ? "Yes" : "No");
+		data += "Connectors:\n";
+		for (ClientConnector cc : connectors) {
+			data = cc.getDebug(data);
+		}
+		return data;
 	}
 }

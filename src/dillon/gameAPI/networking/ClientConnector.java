@@ -39,6 +39,7 @@ public class ClientConnector {
 		oos = new ObjectOutputStream(remote.getOutputStream());
 		oos.flush();
 		continueListen = true;
+		// Start listening
 		Thread t = new Thread(new listener());
 		t.start();
 		key = k;
@@ -60,6 +61,7 @@ public class ClientConnector {
 		Message msg = new Message("SHUTDOWN", "Server");
 		continueListen = false;
 		try {
+			// Send shutdown signal to client.
 			oos.writeObject(msg);
 			oos.flush();
 			oos.close();
@@ -80,6 +82,7 @@ public class ClientConnector {
 	public void send(Message msg) {
 		try {
 			oos.writeObject(msg);
+			oos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,11 +101,13 @@ public class ClientConnector {
 	class listener implements Runnable {
 		@Override
 		public void run() {
-			while (continueListen)
+			while (continueListen) {
 				try {
+					// Get the message.
 					Message rec = (Message) ois.readObject();
-					if (rec == null)
+					if (rec == null) {
 						continue;
+					}
 					System.out.println("Got message.");
 					if (rec.getMessage().equals("SHUTDOWN")) {
 						shutdown();
@@ -116,6 +121,16 @@ public class ClientConnector {
 					e.printStackTrace();
 				} catch (IOException e) {
 				}
+			}
 		}
+	}
+
+	public String getDebug(String input) {
+		input += "dillon.gameAPI.networking.ClientConnector debug:\n";
+		input += String.format("%-13s %-5s\n", "Key", "Value");
+		input += String.format("%-13s %-5s\n", "---", "-----");
+		input += String.format("%-13s %-5s\n", "IP:", remote.getInetAddress().getHostAddress());
+		input += String.format("%-13s %-5d\n", "Remote Port:", remote.getPort());
+		return input;
 	}
 }

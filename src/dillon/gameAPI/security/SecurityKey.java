@@ -14,8 +14,8 @@ import dillon.gameAPI.errors.EngineSecurityError;
  * @since V1.13
  */
 public class SecurityKey {
-	private final byte[] key = new byte[1024];
-	private byte[] signature = new byte[1024];
+	private final byte[] key = new byte[1024]; // The random key
+	private byte[] signature = new byte[1024]; // A signed checksum
 	private String desc;
 	private String id;
 
@@ -30,8 +30,10 @@ public class SecurityKey {
 	public SecurityKey(String d, PrivateKey signing) {
 		try {
 			desc = d;
+			// Generate key
 			SecureRandom sr = new SecureRandom();
 			sr.nextBytes(key);
+			// Sign key
 			Signature sig = Signature.getInstance("SHA1withDSA");
 			sig.initSign(signing);
 			sig.update(key);
@@ -72,8 +74,9 @@ public class SecurityKey {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof SecurityKey))
+		if (!(o instanceof SecurityKey)) {
 			return false;
+		}
 		return id.equals(((SecurityKey) o).id);
 	}
 }
