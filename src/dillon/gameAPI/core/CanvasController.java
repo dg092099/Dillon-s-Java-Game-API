@@ -98,16 +98,16 @@ class CanvasController extends Canvas implements Runnable {
 			@Override
 			public void mouseClicked(final MouseEvent evt) {
 				switch (evt.getButton()) {
-				case MouseEvent.BUTTON1:
+				case MouseEvent.BUTTON1: // Left mouse
 					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.LEFT,
 							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
-				case MouseEvent.BUTTON2:
-					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
+				case MouseEvent.BUTTON2: // Middle button
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
 							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
-				case MouseEvent.BUTTON3:
-					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.MIDDLE,
+				case MouseEvent.BUTTON3: // Right mouse
+					EventSystem.broadcastMessage(new MouseEngineEvent(MouseEngineEvent.MouseButton.RIGHT,
 							MouseEngineEvent.MouseMode.CLICK, evt.getX(), evt.getY(), 0), MouseEngineEvent.class, key);
 					break;
 				}
@@ -236,7 +236,7 @@ class CanvasController extends Canvas implements Runnable {
 			final long delta = framesInSecond - diff; // The calculated delta in
 														// the
 			// time.
-			if (delta < -50) {
+			if (delta < -70) { // Small threshold.
 				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " ticks.");
 			}
 			try {
@@ -255,7 +255,8 @@ class CanvasController extends Canvas implements Runnable {
 			return;
 		}
 		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
-		MainUtilities.executeQueue(key);
+		MainUtilities.executeQueue(key); // Executes things that are to run on
+											// engine thread.
 	}
 
 	/**
@@ -291,7 +292,11 @@ class CanvasController extends Canvas implements Runnable {
 			createBufferStrategy(2);
 			return;
 		}
-		graphics = (Graphics2D) getBufferStrategy().getDrawGraphics();
+		graphics = (Graphics2D) getBufferStrategy().getDrawGraphics(); // Get
+																		// the
+																		// graphics
+																		// to
+																		// use.
 		graphics.setColor(graphics.getBackground());
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
 		// Start Draw

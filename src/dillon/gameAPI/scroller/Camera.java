@@ -6,9 +6,10 @@ import dillon.gameAPI.security.SecuritySystem;
 
 /**
  * This object tells the Scroll manager where the camera is so it can render the
- * correct tiles.
+ * correct tiles. <b>We are using the same one for the newest system.</b>
  *
  * @author Dillon - Github dg092099
+ *
  */
 public class Camera {
 	private static int xPos = 5; // The x position of the camera.

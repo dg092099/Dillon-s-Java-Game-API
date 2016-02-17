@@ -11,6 +11,7 @@ import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
+import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.scroller.ScrollManager;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
@@ -45,14 +46,14 @@ public class Entity implements Serializable {
 		EventSystem.addHandler(new EEHandler<TickEvent>() { // Update handler
 			@Override
 			public void handle(TickEvent T) {
-				if (!checkCollisionWithPos(x + dx, y + dy)) {
+				if (!checkCollisionWithPos(dx, dy)) {
 					// Move in direction if it won't cause a collision.
 					x += dx;
 					y += dy;
 				}
 				if (gravity) {
 					// Gravity calculations.
-					if (!checkCollisionWithPos(x, y + fallspeed)) {
+					if (!checkCollisionWithPos(0, fallspeed)) {
 						if (!gravityOverride) {
 							y += fallspeed;
 						}
@@ -310,7 +311,19 @@ public class Entity implements Serializable {
 	 * @return if it is colliding with something
 	 */
 	public boolean checkCollision() {
+		if (MapManager.getLoadedMap() != null) { // Retain scroll manager
+													// funcitonality.
+			return MapManager.getCollisionAny(this);
+		}
 		return ScrollManager.getCollisionAny(x, y, spr.getWidth(), spr.getHeight());
+	}
+
+	public int getWidth() {
+		return spr.getWidth();
+	}
+
+	public int getHeight() {
+		return spr.getHeight();
 	}
 
 	/**
@@ -322,8 +335,12 @@ public class Entity implements Serializable {
 	 *            tile's y position
 	 * @return colliding
 	 */
-	private boolean checkCollisionWithPos(double posx, double posy) {
-		return ScrollManager.getCollisionAny(posx, posy, spr.getWidth(), spr.getHeight());
+	private boolean checkCollisionWithPos(double relX, double relY) {
+		if (MapManager.getLoadedMap() != null) { // Retain scrollManager
+													// functionality
+			return MapManager.getCollisionPos(this, relX, relY);
+		}
+		return ScrollManager.getCollisionAny(relX, relY, spr.getWidth(), spr.getHeight());
 	}
 
 	private boolean gravity = false; // If gravity affects this entity.
@@ -501,5 +518,28 @@ public class Entity implements Serializable {
 	 */
 	public void removeEvent(EntityZoneEvent e) {
 		zoneEvents.remove(e);
+	}
+
+	private String entityType = "";
+
+	/**
+	 * Gets the entity type.
+	 *
+	 * @return The entity type
+	 * @since V2.0
+	 */
+	public String getType() {
+		return entityType;
+	}
+
+	/**
+	 * Sets the entity type.
+	 *
+	 * @param type
+	 *            The type
+	 * @since V2.0
+	 */
+	public void setType(String type) {
+		entityType = type;
 	}
 }

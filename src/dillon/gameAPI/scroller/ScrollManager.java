@@ -1,6 +1,8 @@
 package dillon.gameAPI.scroller;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -9,6 +11,8 @@ import java.awt.image.BufferedImage;
 import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
+import dillon.gameAPI.gui.BasicDialog;
+import dillon.gameAPI.gui.GuiSystem;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.security.SecuritySystem;
@@ -18,7 +22,10 @@ import dillon.gameAPI.utils.MainUtilities;
  * This class should be used to implement side-scroller like games.
  *
  * @author Dillon - Github dg092099
+ * @deprecated This class will be removed in place of the MapManager class.
+ *             Deprecated since: V2.0
  */
+@Deprecated
 public class ScrollManager {
 
 	private static BufferedImage[][] tiles; // The individual tiles.
@@ -89,7 +96,7 @@ public class ScrollManager {
 		SecuritySystem.checkPermission(k, RequestedAction.SET_LEVEL);
 		try {
 			bitMap = (BufferedImage) img;
-			fullMap = new BufferedImage(bitMap.getWidth() * width, bitMap.getHeight() * height,
+			fullMap = new BufferedImage(bitMap.getWidth() * width + 300, bitMap.getHeight() * height + 300,
 					BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < bitMap.getWidth(); x++) {
 				for (int y = 0; y < bitMap.getHeight(); y++) {
@@ -106,6 +113,10 @@ public class ScrollManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		GuiSystem.startGui(
+				new BasicDialog("The current map format is no longer being used. Please update the maps immediately.",
+						new Font("Calibri", Font.BOLD, 28), Color.red, Color.white, Color.black, true, null),
+				null);
 	}
 
 	private static Image getTile(int i, int j) {

@@ -1,7 +1,7 @@
 package dillon.gameAPI.sound;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -15,10 +15,20 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class PlayableSound {
 	private AudioInputStream sound;
+	private boolean loop;
 
-	public PlayableSound(final InputStream is) {
+	/**
+	 * Instantiates a playable sound.
+	 *
+	 * @param is
+	 *            The input stream.
+	 * @param loop
+	 *            If it should loop.
+	 */
+	public PlayableSound(final BufferedInputStream is, boolean loop) {
 		try {
 			sound = AudioSystem.getAudioInputStream(is);
+			this.loop = loop;
 		} catch (UnsupportedAudioFileException | IOException e) {
 			e.printStackTrace();
 			sound = null;
@@ -27,5 +37,9 @@ public class PlayableSound {
 
 	public AudioInputStream getStream() {
 		return sound;
+	}
+
+	public boolean getLooping() {
+		return loop;
 	}
 }

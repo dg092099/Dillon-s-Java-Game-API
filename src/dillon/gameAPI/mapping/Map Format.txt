@@ -1,0 +1,45 @@
+﻿-Entire file is one huge zip file.
+-All information is entered with a scanner / printwriter
+-All encoded objects have a number prior to indicate the number of objects.
+
+Zip Structure:
+    -Music.au - The background music
+    -Background.png - The background.
+    -data.txt - The map data.
+    -tilesheets folder - Houses all tilesheets. (Tilesheet id in object matches name in folder.)
+    -Version.txt - The version
+
+data.txt Structure:
+    -Tilesheet objects - See tilesheets object
+    -Tiles - See tile objects
+    -Events - See events
+
+
+
+
+-Events:
+    -Type: (string) TOUCH or CLICK
+    -Location x (int)
+    -Location y (int)
+    -Tilesheet (string) Tilesheet id
+    -EntityType: (string)
+
+
+-Tilesheet files:
+    -Width (int)
+    -Height (int)
+    -ID (string)
+
+
+-Tile:
+    -Tilesheet id (string)
+    -World X (int)
+    -World Y (int)
+    -visible (boolean)
+    -solid (boolean)
+    -variable loc x (string)
+    -variable loc y (string)
+    -variable visible (string)
+    -variable solid (string)
+    -sheet pos X (int)
+    -sheet pos Y (int)

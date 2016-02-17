@@ -18,6 +18,7 @@ import dillon.gameAPI.errors.GeneralRuntimeException;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.ShutdownEvent;
 import dillon.gameAPI.gui.GuiSystem;
+import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.modding.ModdingCore;
 import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
@@ -39,8 +40,8 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v1.14.1"; // The engine's
-															// version.
+	public static final String ENGINE_VERSION = "v2.0"; // The engine's
+														// version.
 	public static final int TILES = 1; // Constant: Render method, tile.
 	public static final int SIDESCROLLER = 2; // Constant: render method,
 												// sidescroller.
@@ -74,9 +75,10 @@ public class Core {
 			CanvasController.setBackgroundImage(background);
 		}
 		// Setup auxiliary systems.
-		new ScrollManager(engineKey);
+		new ScrollManager(engineKey); // Pending removal
 		new Camera();
 		guiSystem = new GuiSystem(engineKey);
+		MapManager.initiate(engineKey);
 		ModdingCore.sendPostStart();
 	}
 
@@ -211,6 +213,11 @@ public class Core {
 		scriptRemote = new RemoteCallBridge(engineKey);
 	}
 
+	/**
+	 * Gets the canvas controller.
+	 *
+	 * @return The canvas controller.
+	 */
 	public static CanvasController getController() {
 		return controller;
 	}
@@ -219,10 +226,20 @@ public class Core {
 	private static boolean fullscreen = false;
 	private static RemoteCallBridge scriptRemote;
 
+	/**
+	 * Gets the remote bridge for the scripting module.
+	 *
+	 * @return Bridge
+	 */
 	public static RemoteCallBridge getRemoteBridge() {
 		return scriptRemote;
 	}
 
+	/**
+	 * Gets the gui factory bridge
+	 *
+	 * @return The GuiFactory bridge.
+	 */
 	public static GuiFactory getGuiFactory() {
 		return guiFactory;
 	}
@@ -303,9 +320,10 @@ public class Core {
 		SecuritySystem.checkPermission(k, RequestedAction.SHUTDOWN);
 		if (hard) { // If the game should immediately shutdown.
 			Logger.getLogger("Core").severe("Engine Shutting down...");
-			NetworkServer.stopServer(engineKey);
-			NetworkConnection.disconnect(engineKey);
-			NetworkServer.disableDiscovery(engineKey);
+			NetworkServer.stopServer(engineKey); // Shutdown server.
+			NetworkConnection.disconnect(engineKey); // Cut connection if used.
+			NetworkServer.disableDiscovery(engineKey); // Shuts off discovery if
+														// active.
 			System.exit(0);
 		} else {
 			Logger.getLogger("Core").severe("Engine Shutting down...");

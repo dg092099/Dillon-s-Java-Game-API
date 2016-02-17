@@ -3,6 +3,5 @@
  */
 /**
  * @author Dillon - Github dg092099
- *
  */
 package dillon.gameAPI.scroller;

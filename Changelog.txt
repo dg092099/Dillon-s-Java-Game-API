@@ -1,3 +1,17 @@
+2.0
+-Completely revamped the map system:
+    -Added integrated backgrounds to maps.
+    -Added integrated background music to maps.
+    -Added tile-triggered events
+    -Added support for multiple tilesheets
+    -Completely redone entire map format, no longer a png file, instead a compressed file.
+    *The newest format is described in a txt file in the dillon.gameAPI.mapping package.
+-Fixed bug where clicks aren't registered unless mouse is completely still.
+-Added entity types.
+-Allowed PlayableSound classes have sound loop indefinately.
+--------------------------------------------------------
+END OF VERSION 1.X SERIES
+--------------------------------------------------------
 1.14.1
 -Made more documentation throughout the API.
 --------------------------------------------------------

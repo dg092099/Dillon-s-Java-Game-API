@@ -39,8 +39,9 @@ public class SoundSystem {
 		try {
 			sounds.add(ps);
 			Clip c = AudioSystem.getClip();
-			if (c.isOpen())
+			if (c.isOpen()) {
 				throw new GeneralRuntimeException("The audio system is already in use.");
+			}
 			c.open(ps.getStream());
 			c.setFramePosition(0);
 			c.addLineListener(new LineListener() {
@@ -57,6 +58,9 @@ public class SoundSystem {
 			});
 			c.start();
 			clips.add(c);
+			if (ps.getLooping()) {
+				c.loop(Clip.LOOP_CONTINUOUSLY);
+			}
 		} catch (IOException | LineUnavailableException e) {
 			e.printStackTrace();
 		}
@@ -67,8 +71,9 @@ public class SoundSystem {
 		try {
 			sounds.add(ps);
 			Clip c = AudioSystem.getClip();
-			if (c.isOpen())
+			if (c.isOpen()) {
 				throw new GeneralRuntimeException("The audio system is already in use.");
+			}
 			c.open(ps.getStream());
 			c.setFramePosition(0);
 			LineListener ll = new LineListener() {
@@ -87,8 +92,9 @@ public class SoundSystem {
 			c.addLineListener(ll);
 			c.start();
 			clips.add(c);
-			while (clips.contains(c))
+			while (clips.contains(c)) {
 				TimeUnit.MILLISECONDS.sleep(500);
+			}
 		} catch (IOException | LineUnavailableException | InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -101,9 +107,11 @@ public class SoundSystem {
 	}
 
 	public static void shutdown(SecurityKey k) {
-		if (!SecuritySystem.isEngineKey(k))
+		if (!SecuritySystem.isEngineKey(k)) {
 			throw new EngineSecurityError("Invalid key for operation.");
-		for (Clip c : clips)
+		}
+		for (Clip c : clips) {
 			c.stop();
+		}
 	}
 }

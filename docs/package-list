@@ -3,6 +3,7 @@ dillon.gameAPI.entity
 dillon.gameAPI.errors
 dillon.gameAPI.event
 dillon.gameAPI.gui
+dillon.gameAPI.mapping
 dillon.gameAPI.modding
 dillon.gameAPI.networking
 dillon.gameAPI.res
