@@ -43,7 +43,7 @@ public class BasicDialog implements GuiComponent {
 	private Color borderColor;
 	private Color foregroundColor;
 	private Color textColor;
-	private Font textFont;
+	protected Font textFont;
 	private boolean alwaysAtFront;
 	private SecurityKey key;
 
@@ -59,13 +59,17 @@ public class BasicDialog implements GuiComponent {
 		this.alwaysAtFront = alwaysAtFront;
 	}
 
-	private int outterP1X, outterP1Y;
-	private int outterP2X, outterP2Y;
-	private int innerP1X;
+	protected int outterP1X;
+	protected int outterP1Y;
+	protected int outterP2X;
+	protected int outterP2Y;
+	protected int innerP1X;
 	public int innerP1Y;
-	private int innerP2X, innerP2Y;
-	private int textX, textY;
-	private int lineSpace;
+	protected int innerP2X;
+	protected int innerP2Y;
+	protected int textX;
+	protected int textY;
+	protected int lineSpace;
 
 	/**
 	 * This method finds the dimensions for the two boxes.

@@ -102,16 +102,20 @@ public class GuiSystem {
 		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
 			@Override
 			public void handle(MouseEngineEvent evt) {
-				if (evt.getMouseMode() != MouseEngineEvent.MouseMode.HOLD) {
-					return;
-				}
-				if (evt.getMouseButton() == MouseEngineEvent.MouseButton.LEFT) {
-					for (GuiComponent comp : components) {
-						comp.onMouseClickLeft(evt.getLocation().getX(), evt.getLocation().getY());
+				if (evt.getMouseMode() == MouseEngineEvent.MouseMode.HOLD) {
+					if (evt.getMouseButton() == MouseEngineEvent.MouseButton.LEFT) {
+						System.out.println("Left button");
+						for (GuiComponent comp : components) {
+							comp.onMouseClickLeft(evt.getLocation().getX(), evt.getLocation().getY());
+						}
 					}
-				} else if (evt.getMouseButton() == MouseEngineEvent.MouseButton.RIGHT) {
-					for (GuiComponent comp : components) {
-						comp.onMouseClickRight(evt.getLocation().getX(), evt.getLocation().getY());
+				}
+				if (evt.getMouseMode() == MouseEngineEvent.MouseMode.CLICK) {
+					if (evt.getMouseButton() == MouseEngineEvent.MouseButton.RIGHT) {
+						System.out.println("Right click");
+						for (GuiComponent comp : components) {
+							comp.onMouseClickRight(evt.getLocation().getX(), evt.getLocation().getY());
+						}
 					}
 				}
 				ArrayList<GuiComponent> candidates = new ArrayList<>();

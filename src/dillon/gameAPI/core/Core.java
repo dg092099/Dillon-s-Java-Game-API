@@ -40,7 +40,7 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v2.0.1"; // The engine's
+	public static final String ENGINE_VERSION = "v2.0.2"; // The engine's
 															// version.
 	public static final int TILES = 1; // Constant: Render method, tile.
 	public static final int SIDESCROLLER = 2; // Constant: render method,
