@@ -102,8 +102,7 @@ public class GuiSystem {
 		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
 			@Override
 			public void handle(MouseEngineEvent evt) {
-				if (evt.getMouseMode() != MouseEngineEvent.MouseMode.CLICK
-						&& evt.getMouseMode() != MouseEngineEvent.MouseMode.HOLD) {
+				if (evt.getMouseMode() != MouseEngineEvent.MouseMode.HOLD) {
 					return;
 				}
 				if (evt.getMouseButton() == MouseEngineEvent.MouseButton.LEFT) {

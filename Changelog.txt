@@ -1,3 +1,6 @@
+2.0.1
+-Fixed problem where clicking once may invoke gui on left click methods twice.
+--------------------------------------------------------
 2.0
 -Completely revamped the map system:
     -Added integrated backgrounds to maps.
