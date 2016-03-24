@@ -12,7 +12,6 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
 import dillon.gameAPI.mapping.MapManager;
-import dillon.gameAPI.scroller.ScrollManager;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.security.SecuritySystem;
@@ -315,7 +314,7 @@ public class Entity implements Serializable {
 													// funcitonality.
 			return MapManager.getCollisionAny(this);
 		}
-		return ScrollManager.getCollisionAny(x, y, spr.getWidth(), spr.getHeight());
+		return false;
 	}
 
 	public int getWidth() {
@@ -340,7 +339,7 @@ public class Entity implements Serializable {
 													// functionality
 			return MapManager.getCollisionPos(this, relX, relY);
 		}
-		return ScrollManager.getCollisionAny(relX, relY, spr.getWidth(), spr.getHeight());
+		return false;
 	}
 
 	private boolean gravity = false; // If gravity affects this entity.

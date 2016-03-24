@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * An interface that all gui components need to follow.
- * 
+ *
  * @since 1.11
  * @author Dillon - Github dg092099
  *
@@ -32,4 +32,6 @@ public interface GuiComponent {
 	public int[] getSize();
 
 	public void slide(int x, int y);
+
+	public String getDebug();
 }

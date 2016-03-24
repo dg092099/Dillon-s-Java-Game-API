@@ -212,4 +212,9 @@ public class BasicDialog implements GuiComponent {
 		return sb.toString();
 	}
 
+	@Override
+	public String getDebug() {
+		return toString();
+	}
+
 }

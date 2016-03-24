@@ -87,7 +87,13 @@ public class BlackoutImage implements GuiComponent {
 
 	@Override
 	public String toString() {
-		return String.format("%-10s %-5s\n%-10s %-5s\n%-10s %-5s\n", "Key", "Value", "---", "-----", "Closable:",
-				closable ? "Yes" : "No", "Image:", img != null ? img.toString() : "None");
+		return "\n\ndillon.gameAPI.gui.BlackoutImage Code: " + hashCode() + "\n"
+				+ String.format("%-10s %-5s\n%-10s %-5s\n%-10s %-5s\n", "Key", "Value", "---", "-----", "Closable:",
+						closable ? "Yes" : "No", "Image:", img != null ? img.toString() : "None");
+	}
+
+	@Override
+	public String getDebug() {
+		return toString();
 	}
 }

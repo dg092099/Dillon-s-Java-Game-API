@@ -12,17 +12,27 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.KeyEngineEvent;
 import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.TickEvent;
+import dillon.gameAPI.gui.GuiSystem;
+import dillon.gameAPI.mapping.MapManager;
+import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
 import dillon.gameAPI.security.SecurityKey;
+import dillon.gameAPI.security.SecuritySystem;
 import dillon.gameAPI.utils.MainUtilities;
 
 /**
@@ -298,7 +308,8 @@ class CanvasController extends Canvas implements Runnable {
 																		// to
 																		// use.
 		graphics.setColor(graphics.getBackground());
-		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
+		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight()); // Fill
+																	// background
 		// Start Draw
 		if (background != null) {
 			graphics.drawImage(background, 0, 0, null);
@@ -364,21 +375,64 @@ class CanvasController extends Canvas implements Runnable {
 	public void crash(final Exception e) {
 		stop(); // Halts the game loop
 		Logger.getLogger("Core").severe("Crashing...");
+		graphics = (Graphics2D) getBufferStrategy().getDrawGraphics();
 		final Font f = new Font("Courier", Font.BOLD, 18);
 		this.setFont(f);
 		this.setBackground(Color.WHITE);
 		setBackgroundImage(null);
-		graphics.setColor(Color.BLACK);
+		graphics.setColor(Color.GRAY);
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight());
 		graphics.setColor(Color.RED);
-		this.getGraphics().drawString("An error has occured.", 15, 15);
-		this.getGraphics().drawString(e.getMessage(), 15, 30);
+		graphics.drawString("An error has occured.", 15, 15);
+		graphics.drawString(e.getMessage(), 15, 30);
 		final StackTraceElement[] lines = e.getStackTrace();
 		String formatted; // The formatted version of the stacktrace.
+		int counter = 0;
 		for (int i = 0; i < lines.length; i++) {// Tries to display the crash
 												// details on the screen.
 			formatted = lines[i].getClassName() + "#" + lines[i].getMethodName() + " Line: " + lines[i].getLineNumber();
-			this.getGraphics().drawString(formatted, 15, i * 15 + 45);
+			graphics.drawString(formatted, 30, i * 15 + 45);
+			counter = i + 1;
+		}
+		graphics.drawString("The game has been halted. Please notify the game author of this error.", 15,
+				counter * 15 + 45);
+		try {
+			BufferedImage img = ImageIO
+					.read(CanvasController.class.getClassLoader().getResourceAsStream("dillon/gameAPI/res/crash.png"));
+			graphics.drawImage(img, 15, (counter + 1) * 15 + 45, null);
+		} catch (Exception e1) {
+		}
+		getBufferStrategy().show();
+		graphics.dispose();
+		if (JOptionPane.showConfirmDialog(null, "Do you want to dump the engine?") == JOptionPane.YES_OPTION) {
+			JFileChooser fc = new JFileChooser();
+			fc.setDialogTitle("Choose where to put the dump.");
+			if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				try {
+					Files.deleteIfExists(file.toPath());
+					PrintWriter pw = new PrintWriter(new File(file.getAbsolutePath() + ".txt"));
+					pw.println("The game crashed with the stacktrace:");
+					e.printStackTrace(pw);
+					pw.println("");
+					pw.println(this.toString());
+					pw.println(Core.getDebug());
+					pw.flush();
+					pw.println(EventSystem.getDebug());
+					pw.println(GuiSystem.getDebug());
+					pw.println(dillon.gameAPI.mapping.Camera.getDebug());
+					pw.println(MapManager.getDebug());
+					pw.flush();
+					pw.println(NetworkConnection.getDebug());
+					pw.println(NetworkServer.getDebug());
+					pw.flush();
+					pw.println(SecuritySystem.getDebug());
+					pw.close();
+					JOptionPane.showMessageDialog(null, "Dumped successfully.");
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "An error occured when saving.");
+				}
+			}
 		}
 	}
 

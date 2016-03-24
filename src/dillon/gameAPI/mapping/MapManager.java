@@ -33,7 +33,7 @@ import dillon.gameAPI.sound.SoundSystem;
 
 /**
  * The class that manages all of the mapping package.
- * 
+ *
  * @author Dillon - Github dg092099
  * @since V2.0
  *
@@ -375,4 +375,20 @@ public class MapManager {
 		return false;
 	}
 
+	public static String getDebug() {
+		String str = "\n\ndillon.gameAPI.mapping.MapManager\n";
+		str += String.format("%-10s %-5s\n", "Key", "Value");
+		str += String.format("%-10s %-5d\n", "Version", VERSION);
+		str += String.format("%-10s %-5s\n", "Initialized", initialized ? "Yes" : "No");
+		if (currentMap != null) {
+			str += "Current Map:\n";
+			str += currentMap.toString();
+			str += "\n";
+		}
+		if (backgroundMusic != null) {
+			str += "Background music:\n";
+			str += backgroundMusic.toString();
+		}
+		return str;
+	}
 }

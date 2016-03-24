@@ -79,4 +79,5 @@ public class ScriptSystem {
 		Logger.getLogger("Scripting").severe("A script has errored out: " + ex.getFileName() + " on line: "
 				+ ex.getLineNumber() + " with error: " + ex.getMessage());
 	}
+
 }

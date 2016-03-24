@@ -1,6 +1,6 @@
 package dillon.gameAPI.scripting.bridges;
 
-import dillon.gameAPI.scroller.Camera;
+import dillon.gameAPI.mapping.Camera;
 import dillon.gameAPI.security.SecurityKey;
 
 public class CameraBridge {

@@ -111,4 +111,28 @@ public class BlackoutText implements GuiComponent {
 
 	}
 
+	@Override
+	public String getDebug() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		String str = "";
+		str += "\n\ndillon.gameAPI.gui.BlackoutText Code: " + hashCode() + "\n";
+		str += String.format("%-10s %-5s\n", "Key" + "Value");
+		str += String.format("%-10s %-5s\n", "---" + "-----");
+		str += String.format("$-10s %-5s\n", "Closable", closable ? "Yes" : "No");
+		str += String.format("%-10s %-10s\n", "Background color",
+				background.getRed() + ", " + background.getGreen() + ", " + background.getBlue());
+		str += String.format("%-10s %-10s\n", "Foreground color",
+				foreground.getRed() + ", " + foreground.getGreen() + ", " + foreground.getBlue());
+		str += String.format("%-10s %-5s\n", "Text", text);
+		str += String.format("%-10s %-10s\n", "Font", textFont.getFontName() + " size " + textFont.getSize());
+		str += String.format("%-10s %-5d\n", "Text X", textX);
+		str += String.format("%-10s %-5d\n", "Text Y", textY);
+		str += String.format("%-10s %-5s\n", "Rendered", rendered ? "Yes" : "No");
+		return str;
+	}
+
 }

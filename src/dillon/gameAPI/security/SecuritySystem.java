@@ -203,4 +203,16 @@ public class SecuritySystem {
 		}
 		return false;
 	}
+
+	public static String getDebug() {
+		String str = "\n\ndillon.gameAPI.security.SecuritySystem\n";
+		str += "Engine Key:\n";
+		str += engineKey.toString();
+		str += "Master Key Received: " + (masterKeyRetrieved ? "Yes" : "No") + "\n";
+		str += "Game Key:\n";
+		str += gameKey.toString();
+		str += "Game Key Received: " + (gameKeyRetrived ? "Yes" : "No") + "\n";
+		str += "Active: " + (active ? "Yes" : "No") + "\n";
+		return str;
+	}
 }

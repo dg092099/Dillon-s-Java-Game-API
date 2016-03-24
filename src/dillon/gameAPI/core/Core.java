@@ -18,14 +18,13 @@ import dillon.gameAPI.errors.GeneralRuntimeException;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.ShutdownEvent;
 import dillon.gameAPI.gui.GuiSystem;
+import dillon.gameAPI.mapping.Camera;
 import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.modding.ModdingCore;
 import dillon.gameAPI.networking.NetworkConnection;
 import dillon.gameAPI.networking.NetworkServer;
 import dillon.gameAPI.scripting.bridges.GuiFactory;
 import dillon.gameAPI.scripting.bridges.RemoteCallBridge;
-import dillon.gameAPI.scroller.Camera;
-import dillon.gameAPI.scroller.ScrollManager;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.security.SecuritySystem;
@@ -40,7 +39,7 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v2.0.2"; // The engine's
+	public static final String ENGINE_VERSION = "v2.0.3"; // The engine's
 															// version.
 	public static final int TILES = 1; // Constant: Render method, tile.
 	public static final int SIDESCROLLER = 2; // Constant: render method,
@@ -64,7 +63,7 @@ public class Core {
 		SecuritySystem.checkPermission(key, RequestedAction.START_GAME); // Security
 																			// check.
 		Logger.getLogger("Core").info("Starting game.");
-		controller.start();
+		controller.start(); // Initiate the canvas controller.
 		controller.setFps(FPS);
 		final Thread t = new Thread(controller); // So that the game loop can't
 		// interfere with other programming.
@@ -75,7 +74,6 @@ public class Core {
 			CanvasController.setBackgroundImage(background);
 		}
 		// Setup auxiliary systems.
-		new ScrollManager(engineKey); // Pending removal
 		new Camera();
 		guiSystem = new GuiSystem(engineKey);
 		MapManager.initiate(engineKey);

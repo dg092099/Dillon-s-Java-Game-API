@@ -153,4 +153,20 @@ public class GuiSystem {
 			}
 		}, k);
 	}
+
+	public static String getDebug() {
+		String str = "";
+		str += "\n\ndillon.gameAPI.gui.GuiSystem\n";
+		str += String.format("%-10s %-5s\n", "Key", "Value");
+		str += String.format("%-10s %-5s\n", "---", "-----");
+		str += String.format("%-10s %-5d\n", "Lowest index", lowestIndex);
+		str += String.format("%-10s %-5d\n", "Highest Index", highestIndex);
+		str += String.format("%-10s %-5d\n", "Active comp.", activeGuiComponent);
+		str += "Components:\n";
+		for (GuiComponent c : components) {
+			str += c.getDebug();
+			str += "\n";
+		}
+		return str;
+	}
 }

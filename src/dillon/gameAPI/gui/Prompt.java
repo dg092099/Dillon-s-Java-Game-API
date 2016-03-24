@@ -170,4 +170,17 @@ public class Prompt extends BasicDialog {
 		textX = innerP1X + 20;
 		textY = innerP1Y + 20;
 	}
+
+	@Override
+	public String getDebug() {
+		String str = super.getDebug();
+		str += "\ndillon.gameAPI.gui.Prompt Extending previous BasicDialog Code: " + hashCode() + "\n";
+		str += String.format("%-10s", "Prompt Number") + promptNumber + "\n";
+		str += String.format("%-10s %-10s\n", "Response", text);
+		str += String.format("%-10s %-10s\n", "Response Color",
+				responseColor.getRed() + ", " + responseColor.getGreen() + ", " + responseColor.getBlue());
+		str += String.format("%-10s %-10s\n", "Update", update ? "Yes" : "No");
+		return str;
+	}
+
 }
