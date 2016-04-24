@@ -48,6 +48,9 @@ public class Map {
 	 *            The tilesheet.
 	 */
 	public void addTilesheet(Tilesheet t) {
+		if (t == null) {
+			throw new IllegalArgumentException("The tilesheet must not be null.");
+		}
 		tilesheets.add(t);
 	}
 
@@ -58,6 +61,9 @@ public class Map {
 	 *            The Tile
 	 */
 	public void addTile(Tile t) {
+		if (t == null) {
+			throw new IllegalArgumentException("The tile must not be null.");
+		}
 		tiles.add(t);
 	}
 
@@ -71,9 +77,10 @@ public class Map {
 		for (Tilesheet t : tilesheets) {
 			if (t.getId().equals(id)) {
 				inUse = t;
-				break;
+				return;
 			}
 		}
+		throw new RuntimeException("Missing tilesheet: " + id);
 	}
 
 	/**
@@ -154,7 +161,7 @@ public class Map {
 				return t;
 			}
 		}
-		return null;
+		throw new RuntimeException("Missing tilesheet: " + tilesheetId);
 	}
 
 	HashMap<String, Integer> positionVariables = new HashMap<String, Integer>();
@@ -171,6 +178,9 @@ public class Map {
 	 *            When true, causes re-render of map.
 	 */
 	public void setGlobalPositionVariable(String name, int value, boolean update) {
+		if (name == null) {
+			throw new IllegalArgumentException("The name can't be null.");
+		}
 		if (positionVariables.containsKey(name)) {
 			positionVariables.remove(name);
 		}
@@ -192,6 +202,9 @@ public class Map {
 	 *            Re-renders the map if true.
 	 */
 	public void setGlobalFlagVariable(String name, boolean value, boolean update) {
+		if (name == null) {
+			throw new IllegalArgumentException("The name cannot be null.");
+		}
 		if (flagVariables.containsKey(name)) {
 			flagVariables.remove(name);
 		}

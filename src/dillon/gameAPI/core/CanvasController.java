@@ -36,7 +36,7 @@ import dillon.gameAPI.security.SecuritySystem;
 import dillon.gameAPI.utils.MainUtilities;
 
 /**
- * This class is in control of the game's canvas.
+ * This class is in control of the JFrame's canvas.
  *
  * @author Dillon - Github dg092099
  */
@@ -58,40 +58,44 @@ class CanvasController extends Canvas implements Runnable {
 												// should occur.
 
 	/**
-	 * Preps the loop.
+	 * Starts the game loop.
 	 */
 	public synchronized void start() {
 		running = true;
 	}
 
 	/**
-	 * Terminates the loop
+	 * Terminates the game loop.
 	 */
 	public synchronized void stop() {
 		running = false;
 	}
 
 	/**
-	 * This adjusts the current fps limit on the game.
+	 * This adjusts the current FPS limit on the game.
 	 *
 	 * @param newFps
-	 *            The new fps to set it to.
+	 *            The new FPS to set it to.
 	 */
 	public synchronized void setFps(final int newFps) {
+		if (newFps <= 0) {
+			throw new IllegalArgumentException("The FPS must be more than 0.");
+		}
 		FPS = newFps;
 	}
 
 	/**
-	 * This returns the current fps limit.
+	 * This returns the current FPS limit.
 	 *
-	 * @return current fps limit
+	 * @return current FPS limit
 	 */
 	public int getFps() {
 		return FPS;
 	}
 
 	/**
-	 * Gives back the canvas to draw on.
+	 * Gives back the canvas to draw on. This should not be used outside of this
+	 * package.
 	 *
 	 * @return The canvas
 	 */
@@ -233,7 +237,10 @@ class CanvasController extends Canvas implements Runnable {
 						KeyEngineEvent.class, key);
 			}
 		});
-		this.requestFocus();
+		this.requestFocus(); // Get window focus.
+		long startSecond;
+		startSecond = System.currentTimeMillis();
+		int frames = 0;
 		while (running) {
 			final int framesInSecond = 1000 / FPS; // The amount of frames in a
 													// second.
@@ -253,7 +260,25 @@ class CanvasController extends Canvas implements Runnable {
 				Thread.sleep(delta);
 			} catch (final Exception e) {
 			}
+			if (System.currentTimeMillis() - startSecond >= 1000) {
+				if (frames < getFPS()) {
+					catchUp = getFPS() - frames;
+					for (int i = 0; i < catchUp; i++) {
+						EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
+					}
+				}
+				frames = 0;
+				startSecond = System.currentTimeMillis();
+			} else {
+				frames++;
+			}
 		}
+	}
+
+	private int catchUp = 0;
+
+	public int getCatchUp() {
+		return catchUp;
 	}
 
 	/**
@@ -270,7 +295,7 @@ class CanvasController extends Canvas implements Runnable {
 	}
 
 	/**
-	 * This pauses the update on the engine.
+	 * This pauses the updates on the engine.
 	 */
 	public void pauseUpdate() {
 		paused = true;
@@ -290,7 +315,7 @@ class CanvasController extends Canvas implements Runnable {
 	private static Image background; // The background image.
 
 	/**
-	 * This function renders everything.
+	 * This function has the screen rendered to.
 	 */
 	public void sendRender() {
 		// Causes the render process.
@@ -318,7 +343,7 @@ class CanvasController extends Canvas implements Runnable {
 
 		if (showingSplash) {
 			splashCounter++; // To stop displaying splash after a while.
-			if (splashCounter >= FPS * 2) {
+			if (splashCounter >= FPS * 2) { // Two Seconds.
 				showingSplash = false;
 			}
 			try {
@@ -348,10 +373,10 @@ class CanvasController extends Canvas implements Runnable {
 	}
 
 	/**
-	 * This sets the new background image.
+	 * This sets the background image.
 	 *
 	 * @param img
-	 *            The new image to put in the background.
+	 *            The image to put in the background.
 	 */
 	public static void setBackgroundImage(final BufferedImage img) {
 		background = img;
@@ -373,6 +398,9 @@ class CanvasController extends Canvas implements Runnable {
 	 *            This is the exception that will be displayed.
 	 */
 	public void crash(final Exception e) {
+		if (e == null) {
+			throw new IllegalArgumentException("The exception must not be null.");
+		}
 		stop(); // Halts the game loop
 		Logger.getLogger("Core").severe("Crashing...");
 		graphics = (Graphics2D) getBufferStrategy().getDrawGraphics();
@@ -404,7 +432,10 @@ class CanvasController extends Canvas implements Runnable {
 		}
 		getBufferStrategy().show();
 		graphics.dispose();
-		if (JOptionPane.showConfirmDialog(null, "Do you want to dump the engine?") == JOptionPane.YES_OPTION) {
+		if (JOptionPane.showConfirmDialog(null, "Do you want to dump the engine?") == JOptionPane.YES_OPTION) { // Print
+																												// all
+																												// debug
+																												// information.
 			JFileChooser fc = new JFileChooser();
 			fc.setDialogTitle("Choose where to put the dump.");
 			if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -437,7 +468,7 @@ class CanvasController extends Canvas implements Runnable {
 	}
 
 	/**
-	 * Gets the current FPS
+	 * Gets the current FPS limit.
 	 *
 	 * @return FPS
 	 */

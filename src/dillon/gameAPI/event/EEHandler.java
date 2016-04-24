@@ -16,4 +16,11 @@ public interface EEHandler<T extends EEvent> {
 	 *            Event
 	 */
 	public void handle(T evt);
+
+	/**
+	 * Get the priority of the handler.
+	 *
+	 * @return The priority
+	 */
+	public int getPriority();
 }

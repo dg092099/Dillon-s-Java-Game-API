@@ -49,6 +49,12 @@ public class BasicDialog implements GuiComponent {
 
 	public BasicDialog(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront,
 			SecurityKey k) {
+		if (prompt == null) {
+			throw new IllegalArgumentException("The prompt must not be null.");
+		}
+		if (bor == null || fore == null || txtColor == null) {
+			throw new IllegalArgumentException("The colors must be specified.");
+		}
 		// Set variables
 		key = k;
 		this.prompt = prompt;
@@ -77,7 +83,7 @@ public class BasicDialog implements GuiComponent {
 	 * @param g
 	 *            Graphics
 	 */
-	public void calculateDimensions(Graphics2D g) {
+	protected void calculateDimensions(Graphics2D g) {
 		// Get center of screen.
 		int CenterX = Math.round(Core.getWidth() / 2);
 		int CenterY = Math.round(Core.getHeight() / 2);

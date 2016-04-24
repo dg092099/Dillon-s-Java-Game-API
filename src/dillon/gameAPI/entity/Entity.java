@@ -10,41 +10,87 @@ import java.util.ArrayList;
 import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
+import dillon.gameAPI.event.State;
 import dillon.gameAPI.event.TickEvent;
 import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.security.SecuritySystem;
+import dillon.gameAPI.utils.Animation;
 
 /**
- * This class stores the position, direction and sprite of each entity.
+ * This class stores the position, direction and sprite of an entity.
  *
  * @author Dillon - Github dg092099
  */
 public class Entity implements Serializable {
 	private static final long serialVersionUID = 1176042239171972455L;
-	private BufferedImage spr; // The sprite object for this entity.
+	private BufferedImage[] spr; // The sprite object for this entity.
 	private SecurityKey key;
+	private int frameNum = 0;
+	private int frameSpeed = 2;
+	private State appearsIn;
+	private final EEHandler<TickEvent> tickEvent;
+	private final EEHandler<RenderEvent> renderEvent;
+	private Animation playingAnimation;
+	private int zIndex = 0;
+	private int currentFrame = 0;
+
+	/**
+	 * Plays an animation once, overrides sprite animation.
+	 *
+	 * @param a
+	 *            The animation
+	 */
+	public void playAnimation(Animation a) {
+		if (a != null && a.isFinished()) {
+			throw new IllegalArgumentException("The animation must not be already finished.");
+		}
+		playingAnimation = a;
+	}
 
 	/**
 	 * This method creates an entity.
 	 *
 	 * @param sprite
-	 *            The image to use.
+	 *            The images to use.
 	 * @param k
 	 *            The security key.
+	 *
 	 */
-	public Entity(Image sprite, SecurityKey k) {
+	public Entity(Image[] sprite, SecurityKey k) {
+		if (sprite == null) {
+			throw new IllegalArgumentException("The sprite array must not be null. It can be an empty array.");
+		}
+		if (sprite.length == 0) {
+			BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+			sprite = new Image[1];
+			sprite[0] = img;
+		}
+		for (int i = 0; i < sprite.length; i++) {
+			if (sprite[i] == null) {
+				BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+				sprite[i] = img;
+			}
+		}
 		SecuritySystem.checkPermission(k, RequestedAction.INSTANTIATE_ENTITY);
 		key = k; // Security key
-		spr = (BufferedImage) sprite; // The sprite
+		spr = (BufferedImage[]) sprite; // The sprite
 		x = 0; // X position
 		y = 0; // Y Position
 		dx = 0; // Direction X
 		dy = 0; // Direction Y
-		EventSystem.addHandler(new EEHandler<TickEvent>() { // Update handler
+		zIndex = 0;
+		EventSystem.addHandler(tickEvent = new EEHandler<TickEvent>() { // Update
+																		// handler
 			@Override
 			public void handle(TickEvent T) {
+				if (appearsIn != null && EventSystem.getState() != null) {
+					if (!EventSystem.getState().equals(appearsIn)) {
+						// Event system is in a state, but not this one.
+						return;
+					}
+				}
 				if (!checkCollisionWithPos(dx, dy)) {
 					// Move in direction if it won't cause a collision.
 					x += dx;
@@ -87,14 +133,50 @@ public class Entity implements Serializable {
 					}
 				}
 				calculateZones();
+
+				if (playingAnimation == null) { // Use normal sprite animation
+					if (currentFrame >= frameSpeed) {
+						currentFrame = 0;
+						int index = frameNum + 1;
+						if (index == spr.length) {
+							index = 0;
+						}
+						frameNum = index;
+					} else {
+						currentFrame++;
+					}
+				}
+				if (playingAnimation != null && playingAnimation.isFinished()) {
+					playingAnimation = null; // Animation over, destroy it.
+				}
+				if (playingAnimation != null && !playingAnimation.isFinished()) {
+					playingAnimation.tick(); // Send update to animation.
+				}
+			}
+
+			@Override
+			public int getPriority() {
+				return zIndex;
 			}
 		}, key);
-		EventSystem.addHandler(new EEHandler<RenderEvent>() { // Render the
-																// entity.
+		EventSystem.addHandler(renderEvent = new EEHandler<RenderEvent>() { // Render
+																			// the
+			// entity.
+
 			@Override
 			public void handle(RenderEvent evt) {
+				if (appearsIn != null && EventSystem.getState() != null) {
+					if (!EventSystem.getState().equals(appearsIn)) {
+						// Don't render, it's in the wrong state.
+						return;
+					}
+				}
 				Graphics2D graphics = evt.getGraphics();
-				graphics.drawImage(spr, (int) x, (int) y, null);
+				if (playingAnimation != null) {
+					graphics.drawImage(playingAnimation.getCurrentFrame(), (int) x, (int) y, null);
+				} else {
+					graphics.drawImage(spr[frameNum], (int) x, (int) y, null);
+				}
 				if (showHealth) {
 					// Show health bar.
 					graphics.setColor(Color.RED);
@@ -103,7 +185,39 @@ public class Entity implements Serializable {
 					graphics.fillRect((int) x - 30, (int) y - 20, (int) (health / MaxHealth * 100), 5);
 				}
 			}
+
+			@Override
+			public int getPriority() {
+				return zIndex;
+			}
 		}, key);
+	}
+
+	private boolean destroyed = false;
+
+	/**
+	 * Removes the entity's event handlers, allowing the entity to be safely
+	 * destroyed.
+	 */
+	public void destroy() {
+		if (destroyed) {
+			return;
+		}
+		EventSystem.removeHandler(renderEvent);
+		EventSystem.removeHandler(tickEvent);
+		destroyed = true;
+	}
+
+	/**
+	 * Instantiate an entity.
+	 *
+	 * @param img
+	 *            The sprite.
+	 * @param k
+	 *            The security key
+	 */
+	public Entity(BufferedImage img, SecurityKey k) {
+		this(new Image[] { img }, k);
 	}
 
 	private double x, y; // The entity's position values.
@@ -140,6 +254,9 @@ public class Entity implements Serializable {
 		calculateZones();
 	}
 
+	/**
+	 * This detects when the entity is in a certain area.
+	 */
 	private void calculateZones() {
 		for (EntityZoneEvent evt : zoneEvents) {
 			if (x >= evt.getTopLeft()[0] && y >= evt.getTopLeft()[1]
@@ -179,6 +296,9 @@ public class Entity implements Serializable {
 	 *            The angle
 	 */
 	public void setDirection(double angle) {
+		if (angle < 0 || angle > 360) {
+			angle %= 360;
+		}
 		dx = Math.sin(angle);
 		dy = Math.cos(angle);
 	}
@@ -193,15 +313,26 @@ public class Entity implements Serializable {
 	}
 
 	/**
-	 * Sets the current sprite
+	 * Sets the current sprite.
 	 *
 	 * @param img
-	 *            The sprite.
+	 *            The sprites.
 	 */
-	public void setSprite(Image img) {
-		spr = (BufferedImage) img;
+	public void setSprite(Image[] img) {
+		spr = (BufferedImage[]) img;
 	}
 
+	/**
+	 * Sets the current sprite.
+	 *
+	 * @param img
+	 *            The sprite
+	 */
+	public void setSprite(Image img) {
+		this.setSprite(new Image[] { img });
+	}
+
+	public static final int NO_AUTOPILOT = -1;
 	public static final int AUTOPILOT_DIRECT = 1; // Constant: autopilot type
 													// direct
 	private int autoMode = -1; // The autopilot mode.
@@ -223,6 +354,13 @@ public class Entity implements Serializable {
 	 *            A value needed to normalize the angles.
 	 */
 	public void setAutoPilot(int mode, Entity target, int limit, int speedMultiplier) {
+		if (mode == 1) {
+			if (target == null) {
+				throw new IllegalArgumentException("The entity to follow must not be null.");
+			}
+		} else if (mode != -1) {
+			throw new IllegalArgumentException("Invalid autopilot mode.");
+		}
 		autoMode = mode;
 		this.target = target;
 		autoLimit = limit;
@@ -318,11 +456,11 @@ public class Entity implements Serializable {
 	}
 
 	public int getWidth() {
-		return spr.getWidth();
+		return spr[0].getWidth();
 	}
 
 	public int getHeight() {
-		return spr.getHeight();
+		return spr[0].getHeight();
 	}
 
 	/**
@@ -400,6 +538,9 @@ public class Entity implements Serializable {
 	 * @return The distance.
 	 */
 	public double getDistanceFrom(Entity e) {
+		if (e == null) {
+			throw new IllegalArgumentException("The entity must not be null.");
+		}
 		int diffX = (int) Math.abs(getX() - e.getX());
 		int diffY = (int) Math.abs(getY() - e.getY());
 		// Gets the directional distances between the two to calculate the
@@ -429,10 +570,13 @@ public class Entity implements Serializable {
 	}
 
 	/**
-	 * Determines if the two entiites are the same.
+	 * Determines if the two entities are the same.
 	 */
 	@Override
 	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
 		if (!(o instanceof Entity)) {
 			return false;
 		}
@@ -487,8 +631,9 @@ public class Entity implements Serializable {
 	 * A zone event.
 	 *
 	 * @author Dillon - Github dg092099
-	 *
+	 * @deprecated Use touch events in mapping package.
 	 */
+	@Deprecated
 	public static abstract class EntityZoneEvent {
 		public abstract int[] getTopLeft();
 
@@ -504,8 +649,13 @@ public class Entity implements Serializable {
 	 *
 	 * @param e
 	 *            Event handler
+	 * @deprecated
 	 */
+	@Deprecated
 	public void addEvent(EntityZoneEvent e) {
+		if (e == null) {
+			throw new IllegalArgumentException("The event must not be null.");
+		}
 		zoneEvents.add(e);
 	}
 
@@ -514,8 +664,13 @@ public class Entity implements Serializable {
 	 *
 	 * @param e
 	 *            Event handler
+	 * @deprecated
 	 */
+	@Deprecated
 	public void removeEvent(EntityZoneEvent e) {
+		if (e == null) {
+			throw new IllegalArgumentException("The event handler must not be null.");
+		}
 		zoneEvents.remove(e);
 	}
 
@@ -539,6 +694,64 @@ public class Entity implements Serializable {
 	 * @since V2.0
 	 */
 	public void setType(String type) {
+		if (type == null) {
+			throw new IllegalArgumentException("The type must not be null. You may use an empty string.");
+		}
 		entityType = type;
+	}
+
+	/**
+	 * @return the frameSpeed
+	 */
+	public int getFrameSpeed() {
+		return frameSpeed;
+	}
+
+	/**
+	 * Set the frame speed.
+	 *
+	 * @param frameSpeed
+	 *            The frameSpeed to use. Use -1 to stop animation.
+	 */
+	public void setFrameSpeed(int frameSpeed) {
+		if (frameSpeed < 0) {
+			throw new IllegalArgumentException("The frame speed must not be less than 0.");
+		}
+		this.frameSpeed = frameSpeed;
+	}
+
+	/**
+	 * Get the state to appear in.
+	 *
+	 * @return State that the entity appears in.
+	 */
+	public State getAppearsIn() {
+		return appearsIn;
+	}
+
+	/**
+	 * Sets the state that the entity should appear in. If null, it will appear
+	 * in any state.
+	 *
+	 * @param appearsIn
+	 *            The state to appear in.
+	 */
+	public void setAppearsIn(State appearsIn) {
+		this.appearsIn = appearsIn;
+	}
+
+	/**
+	 * @return The zIndex
+	 */
+	public int getzIndex() {
+		return zIndex;
+	}
+
+	/**
+	 * @param zIndex
+	 *            the zIndex to set
+	 */
+	public void setzIndex(int zIndex) {
+		this.zIndex = zIndex;
 	}
 }

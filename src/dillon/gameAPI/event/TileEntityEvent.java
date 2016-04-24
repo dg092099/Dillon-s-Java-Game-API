@@ -39,6 +39,12 @@ public class TileEntityEvent extends EEvent {
 	}
 
 	public TileEntityEvent(Tile target, TileEvent.TileEventType eventType) {
+		if (target == null) {
+			throw new IllegalArgumentException("The tile must not be null.");
+		}
+		if (eventType == null) {
+			throw new IllegalArgumentException("The event type must be specified.");
+		}
 		affected = target;
 		eventSubtype = eventType;
 	}

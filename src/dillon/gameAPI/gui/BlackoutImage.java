@@ -26,6 +26,9 @@ public class BlackoutImage implements GuiComponent {
 	private SecurityKey key;
 
 	public BlackoutImage(boolean cl, Image i, SecurityKey k) {
+		if (i == null) {
+			throw new IllegalArgumentException("The image cannot be null.");
+		}
 		closable = cl;
 		img = i;
 	}

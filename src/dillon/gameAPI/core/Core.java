@@ -39,14 +39,12 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v2.0.3"; // The engine's
+	public static final String ENGINE_VERSION = "v2.1.0"; // The engine's
 															// version.
-	public static final int TILES = 1; // Constant: Render method, tile.
-	public static final int SIDESCROLLER = 2; // Constant: render method,
-												// sidescroller.
+	public static int WIDTH, HEIGHT;
 
 	/**
-	 * This method starts the game with the specified background and fps. <b>Use
+	 * This method starts the game with the specified background and FPS. <b>Use
 	 * setup method before this method.</b>
 	 *
 	 * @param FPS
@@ -62,6 +60,9 @@ public class Core {
 		}
 		SecuritySystem.checkPermission(key, RequestedAction.START_GAME); // Security
 																			// check.
+		if (FPS <= 0) {
+			throw new IllegalArgumentException("FPS must be more than 0.");
+		}
 		Logger.getLogger("Core").info("Starting game.");
 		controller.start(); // Initiate the canvas controller.
 		controller.setFps(FPS);
@@ -92,6 +93,24 @@ public class Core {
 	}
 
 	/**
+	 * Sets the title of the frame.
+	 *
+	 * @param newTitle
+	 *            The title.
+	 */
+	public static void setTitle(String newTitle) {
+		if (frame == null) {
+			throw new IllegalArgumentException("You didn't start the game. You can't set the title.");
+		}
+		if (newTitle == null) {
+			throw new IllegalArgumentException("newTitle must not be null. If needed, use an empty string.");
+		}
+		if (frame != null && newTitle != null) {
+			frame.setTitle(newTitle);
+		}
+	}
+
+	/**
 	 * Unpauses the game.
 	 *
 	 * @param k
@@ -103,7 +122,7 @@ public class Core {
 	}
 
 	/**
-	 * The background color.
+	 * Returns the background color of the canvas.
 	 *
 	 * @return The background color.
 	 */
@@ -114,9 +133,9 @@ public class Core {
 	/**
 	 * This returns the title you specified for the game.
 	 *
-	 * @return Name
+	 * @return Title
 	 */
-	public String getTitle() {
+	public static String getTitle() {
 		return TITLE;
 	}
 
@@ -125,8 +144,18 @@ public class Core {
 	 *
 	 * @return taskbar icon
 	 */
-	public Image getIcon() {
+	public static Image getIcon() {
 		return ICON;
+	}
+
+	/**
+	 * Sets the program icon.
+	 *
+	 * @param img
+	 *            The icon
+	 */
+	public static void setIcon(BufferedImage img) {
+		frame.setIconImage(img);
 	}
 
 	private static SecurityKey engineKey;
@@ -135,11 +164,11 @@ public class Core {
 	 * This method sets up the jframe.
 	 *
 	 * @param width
-	 *            width of jframe.
+	 *            Width of jframe.
 	 * @param height
-	 *            height of jframe.
+	 *            Height of jframe.
 	 * @param title
-	 *            title of game.
+	 *            Title of game.
 	 * @param icon
 	 *            Icon to use in the corner of the program - optional, the
 	 *            engine has its own, but it's ugly so use your own.
@@ -153,21 +182,32 @@ public class Core {
 			throws IOException {
 		SecuritySystem.checkPermission(k, RequestedAction.SETUP_GAME); // Security
 																		// check.
+		if (width <= 0 || height <= 0) {
+			throw new IllegalArgumentException("Width and height must be larger than 0.");
+		}
+		if (title == null) {
+			throw new IllegalArgumentException("Title must not be null, use an empty string if necesary.");
+		}
+		WIDTH = width;
+		HEIGHT = height;
 		engineKey = SecuritySystem.init(); // Obtain engine key
+		// Set important variables.
 		TITLE = title;
 		ICON = icon;
 		Logger.getLogger("Core").info("Setting up...");
-		frame = new JFrame(title);
+		frame = new JFrame(TITLE);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		// Setup canvas controller and window.
-		controller = new CanvasController(engineKey);
 		frame.getContentPane().setSize(new Dimension(width, height));
+		controller = new CanvasController(engineKey);
 		frame.setTitle(title);
 		frame.setResizable(false);
 		if (icon != null) {
 			frame.setIconImage(icon);
 		} else {
 			frame.setIconImage(
-					ImageIO.read(Core.class.getClassLoader().getResourceAsStream("dillon/gameAPI/res/logo.png")));
+					ImageIO.read(Core.class.getClassLoader().getResourceAsStream("dillon/gameAPI/res/logo.png"))); // Default
 		}
 		// Add listeners
 		frame.addWindowListener(new WindowListener() {
@@ -200,6 +240,7 @@ public class Core {
 			public void windowOpened(final WindowEvent arg0) {
 			}
 		});
+		// Setup canvas controller.
 		controller = new CanvasController(engineKey);
 		// Touch up on window.
 		frame.add(controller);
@@ -212,7 +253,7 @@ public class Core {
 	}
 
 	/**
-	 * Gets the canvas controller.
+	 * Gets the canvas controller. This can only be used in this package.
 	 *
 	 * @return The canvas controller.
 	 */
@@ -234,7 +275,7 @@ public class Core {
 	}
 
 	/**
-	 * Gets the gui factory bridge
+	 * Gets the GUI factory bridge
 	 *
 	 * @return The GuiFactory bridge.
 	 */
@@ -262,7 +303,7 @@ public class Core {
 	}
 
 	/**
-	 * Returns jframe width
+	 * Returns JFrame width
 	 *
 	 * @return width
 	 */
@@ -271,7 +312,7 @@ public class Core {
 	}
 
 	/**
-	 * Returns jframe height
+	 * Returns JFrame height
 	 *
 	 * @return height
 	 */
@@ -292,11 +333,14 @@ public class Core {
 	 */
 	public static void crash(final Exception e, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.CRASH_GAME);
+		if (e == null) {
+			throw new IllegalArgumentException("e must not be null.");
+		}
 		try {
 			// Crash game.
 			NetworkServer.stopServer(engineKey);
 			NetworkConnection.disconnect(engineKey);
-			EventSystem.override();
+			EventSystem.override(); // Shutdown system
 			controller.crash(e);
 		} catch (final Exception e2) {
 			e2.printStackTrace();
@@ -304,13 +348,17 @@ public class Core {
 		}
 	}
 
+	public static int getCatchUp() {
+		return controller.getCatchUp();
+	}
+
 	/**
 	 * This method will shutdown the game. This occurs when the x is clicked,
 	 * the key combination shift + escape is used, or the game crashes.
 	 *
 	 * @param hard
-	 *            Determines if the api would yield to the event system for
-	 *            shutdown, or if it will shutdown directly.
+	 *            Determines if the API would yield to the event system for
+	 *            shutdown, or if it will shutdown immediately.
 	 * @param k
 	 *            The security key.
 	 */
@@ -325,6 +373,7 @@ public class Core {
 			System.exit(0);
 		} else {
 			Logger.getLogger("Core").severe("Engine Shutting down...");
+			// Send message on event system.
 			EventSystem.broadcastMessage(new ShutdownEvent(), ShutdownEvent.class, engineKey);
 			controller.stop();
 			Logger.getLogger("Core").severe("Stopping server...");
@@ -340,12 +389,15 @@ public class Core {
 	 * on.
 	 *
 	 * @param fps
-	 *            The new fps limit.
+	 *            The new FPS limit.
 	 * @param k
 	 *            The security key.
 	 */
 	public static void setFPS(final int fps, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SET_FPS);
+		if (fps <= 0) {
+			throw new IllegalArgumentException("FPS must be more than 0.");
+		}
 		controller.setFps(fps);
 	}
 
@@ -359,6 +411,10 @@ public class Core {
 	 */
 	public static synchronized void setBackColor(final Color c, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SET_BACKGROUND_COLOR);
+		if (c == null) {
+			throw new IllegalArgumentException(
+					"Background color must not be null. Use Color.black for a blank background.");
+		}
 		controller.setBackground(c);
 	}
 
@@ -381,7 +437,7 @@ public class Core {
 	}
 
 	/**
-	 * Gets the current fps.
+	 * Gets the current FPS.
 	 *
 	 * @return FPS
 	 */

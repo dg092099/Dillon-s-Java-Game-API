@@ -63,6 +63,11 @@ public class GuiFactory {
 					EventSystem.removeHandler(this);
 				}
 			}
+
+			@Override
+			public int getPriority() {
+				return 0;
+			}
 		}, facKey);
 		return p;
 	}

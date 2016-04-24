@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 /**
  * Event for when a key is pressed. Only metadata: The raw java.awt key event,
  * and a mode.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -32,13 +32,19 @@ public class KeyEngineEvent extends EEvent {
 
 	/**
 	 * Instantates an key event.
-	 * 
+	 *
 	 * @param evt
 	 *            The key event.
 	 * @param mode
 	 *            The type of event.
 	 */
 	public KeyEngineEvent(KeyEvent evt, KeyMode mode) {
+		if (evt == null) {
+			throw new IllegalArgumentException("The key event must not be null.");
+		}
+		if (mode == null) {
+			throw new IllegalArgumentException("The mode needs to be specified.");
+		}
 		this.evt = evt;
 		this.mode = mode;
 	}

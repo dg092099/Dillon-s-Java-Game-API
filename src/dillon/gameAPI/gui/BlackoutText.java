@@ -32,6 +32,15 @@ public class BlackoutText implements GuiComponent {
 
 	public BlackoutText(boolean cl, Color back, Color fore, String txt, Font f, SecurityKey k) {
 		// Initiates variables.
+		if (back == null || fore == null) {
+			throw new IllegalArgumentException("The colors must not be null.");
+		}
+		if (txt == null) {
+			throw new IllegalArgumentException("The text must not be null. It can be an empty string.");
+		}
+		if (f == null) {
+			throw new IllegalArgumentException("The font cannot be null.");
+		}
 		closable = cl;
 		key = k;
 		background = back;

@@ -30,6 +30,9 @@ public class Prompt extends BasicDialog {
 	public Prompt(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront, long pNum,
 			Color resColor, SecurityKey k) {
 		super(prompt, f, bor, fore, txtColor, alwaysAtFront, k);
+		if (responseColor == null) {
+			throw new IllegalArgumentException("The response color must not be null.");
+		}
 		promptNumber = pNum;
 		responseColor = resColor;
 		key = k;

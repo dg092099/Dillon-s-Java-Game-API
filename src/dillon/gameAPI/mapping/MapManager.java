@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -50,6 +51,12 @@ public class MapManager {
 	 * @return The map
 	 */
 	public static Map derriveMapFromFile(InputStream is) {
+		try {
+			if (is == null || is.available() <= 0) {
+				throw new IllegalArgumentException("Invalid input stream.");
+			}
+		} catch (IOException e) {
+		}
 		ZipInputStream zis = null;
 		Scanner input = null;
 		Map m = new Map();
@@ -231,6 +238,15 @@ public class MapManager {
 		}
 	}
 
+	public static void unloadMap() {
+		currentMap = null;
+		Core.setBackgroundImage(null, null);
+		if (backgroundMusic != null) {
+			SoundSystem.stopSound(backgroundMusic, null);
+			backgroundMusic = null;
+		}
+	}
+
 	private static boolean initialized = false;
 	private static SecurityKey key;
 
@@ -253,6 +269,11 @@ public class MapManager {
 					evt.getGraphics().drawImage(currentMap.getRender(), 0 - Camera.getXPos(), 0 - Camera.getYPos(),
 							null);
 				}
+			}
+
+			@Override
+			public int getPriority() {
+				return 10;
 			}
 		}, key);
 		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
@@ -285,6 +306,11 @@ public class MapManager {
 					}
 				}
 			}
+
+			@Override
+			public int getPriority() {
+				return 10;
+			}
 		}, null);
 
 	}
@@ -306,6 +332,9 @@ public class MapManager {
 	 * @return If it collides with a tile.
 	 */
 	public static boolean getCollisionAny(Entity e) {
+		if (e == null) {
+			throw new IllegalArgumentException("Entity must not be null.");
+		}
 		int x = (int) e.getX(), y = (int) e.getY();
 		int width = e.getWidth(), height = e.getHeight();
 		Rectangle r1 = new Rectangle(x, y, width, height);
@@ -334,6 +363,12 @@ public class MapManager {
 	 *            The entity
 	 */
 	private static void fireTouch(Tile t, Entity e) {
+		if (t == null) {
+			throw new IllegalArgumentException("Tile must not be null.");
+		}
+		if (e == null) {
+			throw new IllegalArgumentException("Entity must not be null.");
+		}
 		for (TileEvent evt : currentMap.getTileEvents()) {
 			if (evt.getAffectedTile().equals(t)) {
 				if (e.getType().equals(evt.getEntityType()) || evt.getEntityType().isEmpty()) {
@@ -356,6 +391,9 @@ public class MapManager {
 	 * @return collision
 	 */
 	public static boolean getCollisionPos(Entity e, double relX, double relY) {
+		if (e == null) {
+			throw new IllegalArgumentException("Entity must not be null.");
+		}
 		int x = (int) e.getX() + (int) relX, y = (int) e.getY() + (int) relY;
 		int width = e.getWidth(), height = e.getHeight();
 		Rectangle r1 = new Rectangle(x, y, width, height);

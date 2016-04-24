@@ -2,7 +2,7 @@ package dillon.gameAPI.event;
 
 /**
  * Fires when a prompt is answered. Metadata: message, id
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -31,7 +31,7 @@ public class PromptEvent extends EEvent {
 
 	/**
 	 * Initializes a prompt event.
-	 * 
+	 *
 	 * @param msg
 	 *            The message
 	 * @param id

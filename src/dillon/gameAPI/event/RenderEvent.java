@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 
 /**
  * Fires to indicate that a rendering event should take place.
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -26,11 +26,14 @@ public class RenderEvent extends EEvent {
 
 	/**
 	 * Instantates the event.
-	 * 
+	 *
 	 * @param g2
 	 *            The graphics object
 	 */
 	public RenderEvent(Graphics2D g2) {
+		if (g2 == null) {
+			throw new IllegalArgumentException("Graphics must be provided.");
+		}
 		graphics = g2;
 	}
 

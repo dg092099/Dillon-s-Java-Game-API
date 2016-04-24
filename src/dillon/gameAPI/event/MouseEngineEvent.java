@@ -4,7 +4,7 @@ import java.awt.Point;
 
 /**
  * Fires when a mouse event occurs. Metadata: mode, button, and point
- * 
+ *
  * @author Dillon - Github dg092099
  *
  */
@@ -50,7 +50,7 @@ public class MouseEngineEvent extends EEvent {
 
 	/**
 	 * Instantates a mouse event.
-	 * 
+	 *
 	 * @param button
 	 *            The mouse button used.
 	 * @param mode
@@ -63,6 +63,15 @@ public class MouseEngineEvent extends EEvent {
 	 *            unused.
 	 */
 	public MouseEngineEvent(MouseButton button, MouseMode mode, int x, int y, int scrollAmt) {
+		if (button == null) {
+			throw new IllegalArgumentException("The mouse button must not be null.");
+		}
+		if (mode == null) {
+			throw new IllegalArgumentException("The mode must not be null.");
+		}
+		if (x < 0 || y < 0) {
+			throw new IllegalArgumentException("The mouse coordinates must not be negative.");
+		}
 		mouseButton = button;
 		mouseMode = mode;
 		location = new Point(x, y);

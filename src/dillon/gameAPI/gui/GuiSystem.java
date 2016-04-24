@@ -38,6 +38,9 @@ public class GuiSystem {
 	public static void startGui(GuiComponent gc, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SHOW_GUI); // Security
 																		// Check
+		if (gc == null) {
+			throw new IllegalArgumentException("The gui component must not be null.");
+		}
 		components.add(gc);
 		// Adjust zIndex.
 		int zIndex = gc.getZIndex();
@@ -60,6 +63,9 @@ public class GuiSystem {
 	 */
 	public static void removeGui(GuiComponent gc, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SHOW_GUI);
+		if (gc == null) {
+			throw new IllegalArgumentException("The gui must not be null.");
+		}
 		components.remove(gc);
 		// Adjust zIndex
 		lowestIndex = Integer.MAX_VALUE;
@@ -89,6 +95,11 @@ public class GuiSystem {
 					comp.render(g);
 				}
 			}
+
+			@Override
+			public int getPriority() {
+				return 0;
+			}
 		}, k);
 		EventSystem.addHandler(new EEHandler<TickEvent>() {
 			@Override
@@ -97,6 +108,11 @@ public class GuiSystem {
 					// Update each component.
 					comp.onUpdate();
 				}
+			}
+
+			@Override
+			public int getPriority() {
+				return 0;
 			}
 		}, k);
 		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
@@ -139,6 +155,11 @@ public class GuiSystem {
 					activeGuiComponent = -1;
 				}
 			}
+
+			@Override
+			public int getPriority() {
+				return 0;
+			}
 		}, k);
 		EventSystem.addHandler(new EEHandler<KeyEngineEvent>() {
 			@Override
@@ -150,6 +171,11 @@ public class GuiSystem {
 				if (activeGuiComponent != -1) {
 					components.get(activeGuiComponent).onKeyPress(e);
 				}
+			}
+
+			@Override
+			public int getPriority() {
+				return 0;
 			}
 		}, k);
 	}

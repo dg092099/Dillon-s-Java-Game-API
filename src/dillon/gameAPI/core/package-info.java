@@ -1,5 +1,5 @@
 /**
- * This package contains the Core file, which administers the window.
+ * This package contains all vital classes to run the game API.
  */
 /**
  * @author Dillon - Github dg092099

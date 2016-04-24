@@ -1,5 +1,7 @@
 package dillon.gameAPI.utils;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import dillon.gameAPI.errors.EngineSecurityError;
@@ -57,17 +59,20 @@ public class MainUtilities {
 
 	/**
 	 * Executes the queue. Only works when invoked by the canvas controller.
-	 * 
+	 *
 	 * @param k
 	 *            The security key.
 	 */
 	public static synchronized void executeQueue(SecurityKey k) {
-		if (!SecuritySystem.isEngineKey(k))
+		if (!SecuritySystem.isEngineKey(k)) {
 			throw new EngineSecurityError("Invalid key for operation.");
-		if (queue.size() == 0)
+		}
+		if (queue.size() == 0) {
 			return;
-		for (int i = 0; i < queue.size(); i++)
+		}
+		for (int i = 0; i < queue.size(); i++) {
 			queue.get(i).run();
+		}
 		queue.clear();
 	}
 
@@ -102,5 +107,26 @@ public class MainUtilities {
 	 */
 	public static int getGreen(int rgb) {
 		return rgb >> 8 & 0xFF;
+	}
+
+	public static BufferedImage[] splitSpriteSheet(BufferedImage img, int x, int y) {
+		if (img.getWidth(null) % x != 0 || img.getHeight(null) % y != 0) {
+			throw new IllegalArgumentException(
+					"The given sheet is not compatable with the given tile width and height.");
+		}
+		ArrayList<Image> images = new ArrayList<Image>();
+		int xTiles = img.getWidth(null) / x;
+		int yTiles = img.getHeight(null) / y;
+		for (int y2 = 0; y2 < yTiles; y2++) {
+			for (int x2 = 0; x2 < xTiles; x2++) {
+				BufferedImage image = img;
+				images.add(image.getSubimage(x2 * x, y2 * y, x, y));
+			}
+		}
+		BufferedImage[] rImg = new BufferedImage[images.size()];
+		for (int i = 0; i < images.size(); i++) {
+			rImg[i] = (BufferedImage) images.get(i);
+		}
+		return rImg;
 	}
 }

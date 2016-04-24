@@ -15,11 +15,14 @@ import dillon.gameAPI.security.SecuritySystem;
  *
  */
 public class EventSystem {
-	private static ArrayList<EEHandler<?>> handlers = new ArrayList<EEHandler<?>>(); // The
-																						// handlers
-																						// for
-																						// the
-																						// events.
+	private static volatile ArrayList<EEHandler<?>> handlers = new ArrayList<EEHandler<?>>(); // The
+	// handlers
+	// for
+	// the
+	// events.
+	private static State currentState = null;
+	private static transient volatile ArrayList<EEHandler<?>> toAdd = new ArrayList<EEHandler<?>>();
+	private static transient volatile ArrayList<EEHandler<?>> toRemove = new ArrayList<EEHandler<?>>();
 
 	/**
 	 * Adds a handler to get events.
@@ -30,8 +33,25 @@ public class EventSystem {
 	 *            The security key.
 	 */
 	public static void addHandler(EEHandler<? extends EEvent> h, SecurityKey k) {
+		toAdd.add(h);
+	}
+
+	private static void addHandlerAfterWait(EEHandler<? extends EEvent> h, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.RECEIVE_EVENT);
-		handlers.add(h);
+		if (h == null) {
+			throw new IllegalArgumentException("Event handler must not be null.");
+		}
+		int index = h.getPriority();
+		if (handlers.isEmpty()) {
+			handlers.add(h);
+		} else {
+			for (int i = 0; i < handlers.size(); i++) {
+				if (handlers.get(i).getPriority() >= index) {
+					handlers.add(i, h);
+					break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -41,6 +61,13 @@ public class EventSystem {
 	 *            The handler
 	 */
 	public static void removeHandler(EEHandler<? extends EEvent> h) {
+		if (h == null) {
+			throw new IllegalArgumentException("Event handler must not be null.");
+		}
+		toRemove.add(h);
+	}
+
+	private static void removeAfterWait(EEHandler<? extends EEvent> h) {
 		handlers.remove(h);
 	}
 
@@ -76,8 +103,35 @@ public class EventSystem {
 	public static void broadcastMessage(EEvent e, Class<? extends EEvent> c, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.POST_EVENT); // Security
 																		// check.
-		for (EEHandler<?> h : handlers) { // For all handlers
+		if (e == null) {
+			throw new IllegalArgumentException("The event must not be null.");
+		}
+		if (c == null) {
+			throw new IllegalArgumentException("The class must be specified.");
+		}
+		if (!toAdd.isEmpty()) {
+			for (int i = 0; i < toAdd.size(); i++) {
+				if (toAdd.get(i) != null) {
+					addHandlerAfterWait(toAdd.get(i), k);
+				}
+			}
+		}
+		if (!toRemove.isEmpty()) {
+			for (int i = 0; i < toRemove.size(); i++) {
+				if (toRemove.get(i) != null) {
+					removeAfterWait(toRemove.get(i));
+				}
+			}
+		}
+		if (currentState != null) {
+			currentState.sendEvent(e);
+		}
+		for (int i = 0; i < handlers.size(); i++) { // For all handlers
 			try {
+				if (i < 0 || i > handlers.size() || handlers.get(i) == null) {
+					continue;
+				}
+				EEHandler<? extends EEvent> h = handlers.get(i);
 				// Get method to call.
 				Method m = h.getClass().getMethod("handle", e.getClass());
 				m.setAccessible(true);
@@ -99,7 +153,7 @@ public class EventSystem {
 
 	/**
 	 * Returns the Debugging string for the event system.
-	 * 
+	 *
 	 * @return The debug information
 	 */
 	public static String getDebug() {
@@ -115,5 +169,14 @@ public class EventSystem {
 		}
 		sb.append(data);
 		return sb.toString();
+	}
+
+	public static void setState(State st) {
+		currentState = st;
+		st.initiate();
+	}
+
+	public static State getState() {
+		return currentState;
 	}
 }
