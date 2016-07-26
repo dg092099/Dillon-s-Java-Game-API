@@ -36,6 +36,10 @@ public class EventSystem {
 		toAdd.add(h);
 	}
 
+	public static void addHandlerDirectly(EEHandler<? extends EEvent> h) {
+		handlers.add(h);
+	}
+
 	private static void addHandlerAfterWait(EEHandler<? extends EEvent> h, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.RECEIVE_EVENT);
 		if (h == null) {
@@ -52,6 +56,7 @@ public class EventSystem {
 				}
 			}
 		}
+		toAdd.remove(h);
 	}
 
 	/**
@@ -69,6 +74,7 @@ public class EventSystem {
 
 	private static void removeAfterWait(EEHandler<? extends EEvent> h) {
 		handlers.remove(h);
+		toRemove.remove(h);
 	}
 
 	/**

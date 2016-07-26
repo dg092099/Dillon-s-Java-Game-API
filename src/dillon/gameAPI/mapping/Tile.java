@@ -129,6 +129,7 @@ public class Tile {
 		copy.xPos = xPos;
 		copy.yPos = yPos;
 		copy.img = img;
+		copy.updateImage();
 		return copy;
 	}
 
@@ -158,6 +159,7 @@ public class Tile {
 						sheetPosY * parentTilesheet.getTileHeight(), parentTilesheet.getTileWidth(),
 						parentTilesheet.getTileHeight());
 				img = tileImg;
+				System.out.println(img.getHeight());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

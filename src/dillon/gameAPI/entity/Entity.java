@@ -132,8 +132,6 @@ public class Entity implements Serializable {
 						counter--;
 					}
 				}
-				calculateZones();
-
 				if (playingAnimation == null) { // Use normal sprite animation
 					if (currentFrame >= frameSpeed) {
 						currentFrame = 0;
@@ -231,7 +229,6 @@ public class Entity implements Serializable {
 	 */
 	public void setX(int X) {
 		x = X;
-		calculateZones();
 	}
 
 	/**
@@ -251,20 +248,6 @@ public class Entity implements Serializable {
 	 */
 	public void setY(int Y) {
 		y = Y;
-		calculateZones();
-	}
-
-	/**
-	 * This detects when the entity is in a certain area.
-	 */
-	private void calculateZones() {
-		for (EntityZoneEvent evt : zoneEvents) {
-			if (x >= evt.getTopLeft()[0] && y >= evt.getTopLeft()[1]
-					&& x <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[0]
-					&& y <= evt.getTopLeft()[0] + evt.getWidthAndHeight()[1]) {
-				evt.onAction();
-			}
-		}
 	}
 
 	/**

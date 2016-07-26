@@ -5,6 +5,20 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import dillon.gameAPI.core.Core;
+import dillon.gameAPI.errors.TileException;
+import dillon.gameAPI.event.EventSystem;
+import dillon.gameAPI.event.TileEntityEvent;
+import dillon.gameAPI.scripting.bridges.CameraBridge;
+import dillon.gameAPI.scripting.bridges.CoreBridge;
+import dillon.gameAPI.scripting.bridges.EntityRegistry;
 
 /**
  * This class contains all of the information regarding how a map should be.
@@ -20,6 +34,82 @@ public class Map {
 	private ArrayList<Tile> tiles = new ArrayList<Tile>();
 	private ArrayList<TileEvent> tileEvents = new ArrayList<TileEvent>();
 	private Tilesheet inUse;
+	private ScriptEngine scriptEngine;
+
+	public Map() {
+		scriptEngine = new ScriptEngineManager().getEngineByName("javascript");
+		scriptEngine.put("Core", new CoreBridge());
+		scriptEngine.put("EntityRegistry", new EntityRegistry());
+		scriptEngine.put("GuiFactory", Core.getGuiFactory());
+		scriptEngine.put("Camera", new CameraBridge());
+		scriptEngine.put("GuiSystem", Core.getGuiSystem());
+		scriptEngine.put("RemoteCall", Core.getRemoteBridge());
+		scriptEngine.put("Map", this);
+	}
+
+	/**
+	 * This method is used internally to convert the maps.
+	 *
+	 * @param x
+	 *            X position
+	 * @param y
+	 *            Y position
+	 * @param tilesheet
+	 *            The tilesheet name
+	 * @param type
+	 *            The type 1 - Touch; 2 - Click
+	 */
+	public void executeLegacyEvent(int x, int y, String tilesheet, int type) {
+		Tile t = this.getTile(x, y, tilesheet);
+		switch (type) {
+		case 1:
+			EventSystem.broadcastMessage(new TileEntityEvent(t, TileEvent.TileEventType.TOUCH), TileEntityEvent.class,
+					null);
+			break;
+		case 2:
+			EventSystem.broadcastMessage(new TileEntityEvent(t, TileEvent.TileEventType.CLICK), TileEntityEvent.class,
+					null);
+			break;
+		default:
+			throw new IllegalArgumentException("The type must be 1 or 2.");
+		}
+	}
+
+	/**
+	 * Puts a script for use in the map.
+	 *
+	 * @param script
+	 *            The script.
+	 */
+	public void putScript(String script) {
+		try {
+			scriptEngine.eval(script);
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			Logger.getLogger("Map").severe(
+					"There was a problem running the script: " + e.getMessage() + " on line: " + e.getLineNumber());
+		}
+	}
+
+	/**
+	 * Invokes a script method.
+	 *
+	 * @param methodName
+	 *            The method name.
+	 */
+	public void invokeScriptMethod(String methodName) {
+		Invocable i = (Invocable) scriptEngine;
+		try {
+			i.invokeFunction(methodName);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			Logger.getLogger("Map").severe("Method " + methodName + " has been referenced, but does not exist.");
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			Logger.getLogger("Map").severe(
+					"Method " + methodName + " has an error: " + e.getMessage() + " on line: " + e.getLineNumber());
+		}
+	}
 
 	/**
 	 * Sets the background music.
@@ -176,7 +266,9 @@ public class Map {
 	 *            The new value
 	 * @param update
 	 *            When true, causes re-render of map.
+	 * @deprecated Use scripts instead.
 	 */
+	@Deprecated
 	public void setGlobalPositionVariable(String name, int value, boolean update) {
 		if (name == null) {
 			throw new IllegalArgumentException("The name can't be null.");
@@ -200,7 +292,9 @@ public class Map {
 	 *            The new value
 	 * @param update
 	 *            Re-renders the map if true.
+	 * @deprecated Use scripts instead.
 	 */
+	@Deprecated
 	public void setGlobalFlagVariable(String name, boolean value, boolean update) {
 		if (name == null) {
 			throw new IllegalArgumentException("The name cannot be null.");
@@ -244,28 +338,6 @@ public class Map {
 	}
 
 	/**
-	 * Gets the global location value.
-	 *
-	 * @param name
-	 *            The name.
-	 * @return The value
-	 */
-	public int getGlobalLocationValue(String name) {
-		return positionVariables.get(name);
-	}
-
-	/**
-	 * Gets the global flag value.
-	 *
-	 * @param name
-	 *            The name.
-	 * @return The value
-	 */
-	public boolean getGlobalFlagValue(String name) {
-		return flagVariables.get(name);
-	}
-
-	/**
 	 * Gets the rendering of the map.
 	 *
 	 * @return The render.
@@ -281,5 +353,161 @@ public class Map {
 	 */
 	public ArrayList<TileEvent> getTileEvents() {
 		return tileEvents;
+	}
+
+	// Scripting Commands
+	/**
+	 * This method spawns a tile and gives it to whatever spawned it. Note: When
+	 * manipulating tiles this class' render method should be called to invoke
+	 * the change.
+	 *
+	 * @param x
+	 *            The x position.
+	 * @param y
+	 *            The y position.
+	 * @param tilesheet
+	 *            The tilesheet.
+	 * @param sheetX
+	 *            The sheet's x position.
+	 * @param sheetY
+	 *            The sheet's y position.
+	 * @return The tile.
+	 */
+	public Tile spawnTile(int x, int y, String tilesheet, int sheetX, int sheetY) {
+		Tile t = new Tile();
+		if (getTilesheetByName(tilesheet) == null) {
+			throw new TileException("The tilesheet being referenced is missing.", x, y, tilesheet);
+		}
+		t.setParentTilesheet(getTilesheetByName(tilesheet));
+		t.setTilesheetId(tilesheet);
+		t.setxPos(x);
+		t.setyPos(y);
+		t.setSheetPosX(sheetX);
+		t.setSheetPosY(sheetY);
+		t.updateImage();
+		tiles.add(t);
+		render();
+		return t;
+	}
+
+	/**
+	 * Gets the tile at the position.
+	 *
+	 * @param x
+	 *            The x position
+	 * @param y
+	 *            The y position
+	 * @param tilesheet
+	 *            The tilesheet
+	 * @return The tile.
+	 */
+	public Tile getTile(int x, int y, String tilesheet) {
+		if (getTilesheetByName(tilesheet) == null) {
+			throw new TileException("The referenced tilesheet is missing.", x, y, tilesheet);
+		}
+		for (Tile t : tiles) {
+			if (t.getxPos() == x && t.getyPos() == y && t.getTilesheetId().equals(tilesheet)) {
+				return t;
+			}
+		}
+		Logger.getLogger(Map.class.getName()).severe("The script has referenced a tile that doesn't exist.");
+		return null;
+	}
+
+	/**
+	 * Remove tile by x, y, and tilesheet.
+	 *
+	 * @param x
+	 *            The x position
+	 * @param y
+	 *            The y position.
+	 * @param tilesheet
+	 *            The tilesheet
+	 */
+	public void removeTile(int x, int y, String tilesheet) {
+		if (getTilesheetByName(tilesheet) == null) {
+			throw new TileException("The referenced tilesheet is missing.", x, y, tilesheet);
+		}
+		ArrayList<Integer> toRemove = new ArrayList<Integer>();
+		for (int i = 0; i < tiles.size(); i++) {
+			Tile t = tiles.get(i);
+			if (t.getxPos() == x && t.getyPos() == y && t.getTilesheetId().equals(tilesheet)) {
+				toRemove.add(i);
+			}
+		}
+		for (Integer i : toRemove) {
+			tiles.remove(i);
+		}
+		render();
+	}
+
+	/**
+	 * Remove tile by tile.
+	 *
+	 * @param t
+	 *            The tile
+	 */
+	public void removeTile(Tile t) {
+		tiles.remove(t);
+	}
+
+	/**
+	 * Adds a tile event for a tile. The event is added automatically.
+	 *
+	 * @param type
+	 *            The type of event. TOUCH or CLICK
+	 * @param t
+	 *            The tile.
+	 * @param entityType
+	 *            The entity type
+	 * @param methodName
+	 *            The method name to call.
+	 * @return The event.
+	 */
+	public TileEvent addEvent(String type, Tile t, String entityType, String methodName) {
+		TileEvent evt = new TileEvent();
+		evt.setAffectedTile(t);
+		evt.setEntityType(entityType);
+		evt.setEventType(TileEvent.TileEventType.valueOf(type));
+		evt.setMethod(methodName);
+		this.addTileEvent(evt);
+		return evt;
+	}
+
+	/**
+	 * Get the TileEvent instance under the method name.
+	 *
+	 * @param methodName
+	 *            The name
+	 * @return The event.
+	 */
+	public TileEvent getEvent(String methodName) {
+		for (TileEvent evt : tileEvents) {
+			if (evt.getMethod().equals(methodName)) {
+				return evt;
+			}
+		}
+		Logger.getLogger("Mapping").severe("A script has tried to access an event that doesn't exist.");
+		return null;
+	}
+
+	/**
+	 * Removes a TileEvent object from game play.
+	 *
+	 * @param methodName
+	 *            The method.
+	 */
+	public void removeEvent(String methodName) {
+		int index = -1;
+		for (int i = 0; i < tileEvents.size(); i++) {
+			if (tileEvents.get(i).getMethod().equals(methodName)) {
+				index = i;
+			}
+		}
+		if (index == -1) {
+			Logger.getLogger("Mapping").severe("A script has tried to access an event that doesn't exist.");
+		} else {
+			tileEvents.remove(index);
+		}
 	}
 }

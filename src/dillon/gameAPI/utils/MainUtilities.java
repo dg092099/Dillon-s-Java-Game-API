@@ -2,6 +2,7 @@ package dillon.gameAPI.utils;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
 import dillon.gameAPI.errors.EngineSecurityError;
@@ -109,6 +110,17 @@ public class MainUtilities {
 		return rgb >> 8 & 0xFF;
 	}
 
+	/**
+	 * This method takes a spritesheet and separates it into different images.
+	 *
+	 * @param img
+	 *            The sprite sheet
+	 * @param x
+	 *            The width of the tiles.
+	 * @param y
+	 *            The height of the tiles.
+	 * @return The images.
+	 */
 	public static BufferedImage[] splitSpriteSheet(BufferedImage img, int x, int y) {
 		if (img.getWidth(null) % x != 0 || img.getHeight(null) % y != 0) {
 			throw new IllegalArgumentException(
@@ -128,5 +140,25 @@ public class MainUtilities {
 			rImg[i] = (BufferedImage) images.get(i);
 		}
 		return rImg;
+	}
+
+	/**
+	 * Returns true if a file is in a directory.
+	 *
+	 * @param dir
+	 *            The parent directory
+	 * @param filename
+	 *            The file in the directory.
+	 * @return If the file is in the directory.
+	 */
+	public static boolean isFileInDirectory(File dir, String filename) {
+		if (dir.isDirectory()) {
+			for (File f : dir.listFiles()) {
+				if (f.getName().equals(filename)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -64,10 +64,10 @@ public class Tilesheet {
 		int height = 0;
 		for (Tile t : parentMap.getTiles()) {
 			if (t.getTilesheetId().equals(this.getId())) {
-				if (parentMap.getGlobalLocationValue(t.getVarLocationX()) > width) {
+				if (t.getxPos() > width) {
 					width = t.getxPos();
 				}
-				if (parentMap.getGlobalLocationValue(t.getVarLocationY()) > height) {
+				if (t.getyPos() > height) {
 					height = t.getyPos();
 				}
 			}
@@ -80,9 +80,9 @@ public class Tilesheet {
 		Graphics2D g = render.createGraphics();
 		for (Tile t : parentMap.getTiles()) {
 			if (t.getTilesheetId().equals(this.getId())) {
-				int realPosX = parentMap.getGlobalLocationValue(t.getVarLocationX()) * getTileWidth();
-				int realPosY = parentMap.getGlobalLocationValue(t.getVarLocationY()) * getTileHeight();
-				if (parentMap.getGlobalFlagValue(t.getVisibleVar())) {
+				int realPosX = t.getxPos() * getTileWidth();
+				int realPosY = t.getyPos() * getTileHeight();
+				if (t.isVisible()) {
 					g.drawImage(t.getTile(), realPosX, realPosY, null);
 				}
 			}

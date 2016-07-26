@@ -39,7 +39,7 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v2.1.0"; // The engine's
+	public static final String ENGINE_VERSION = "v2.2.0"; // The engine's
 															// version.
 	public static int WIDTH, HEIGHT;
 
@@ -348,6 +348,11 @@ public class Core {
 		}
 	}
 
+	/**
+	 * Gets how far behind the program is.
+	 *
+	 * @return The amount of updates.
+	 */
 	public static int getCatchUp() {
 		return controller.getCatchUp();
 	}
@@ -479,6 +484,11 @@ public class Core {
 
 	private static GuiSystem guiSystem;
 
+	/**
+	 * Gets the GUI system object.
+	 *
+	 * @return The object.
+	 */
 	public static GuiSystem getGuiSystem() {
 		return guiSystem;
 	}

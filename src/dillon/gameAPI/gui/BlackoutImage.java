@@ -45,7 +45,7 @@ public class BlackoutImage implements GuiComponent {
 
 	@Override
 	public void render(Graphics2D g) {
-		g.drawImage(img, 0, 0, null);
+		g.drawImage(img, 0, 0, Core.getWidth(), Core.getHeight(), null);
 	}
 
 	@Override

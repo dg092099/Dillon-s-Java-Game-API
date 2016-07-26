@@ -9,6 +9,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import dillon.gameAPI.core.Core;
+import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.scripting.bridges.CameraBridge;
 import dillon.gameAPI.scripting.bridges.CoreBridge;
 import dillon.gameAPI.scripting.bridges.EntityRegistry;
@@ -48,6 +49,9 @@ public class ScriptSystem {
 		scriptEngine.put("Camera", new CameraBridge());
 		scriptEngine.put("GuiSystem", Core.getGuiSystem());
 		scriptEngine.put("RemoteCall", Core.getRemoteBridge());
+		if (MapManager.getLoadedMap() != null) {
+			scriptEngine.put("Map", MapManager.getLoadedMap());
+		}
 	}
 
 	public static void load(String code, SecurityKey runKey, SecurityKey providedKey,

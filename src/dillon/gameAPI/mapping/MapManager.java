@@ -25,9 +25,8 @@ import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
-import dillon.gameAPI.event.TileEntityEvent;
+import dillon.gameAPI.gui.BlackoutImage;
 import dillon.gameAPI.gui.GuiSystem;
-import dillon.gameAPI.mapping.TileEvent.TileEventType;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.sound.PlayableSound;
 import dillon.gameAPI.sound.SoundSystem;
@@ -40,7 +39,7 @@ import dillon.gameAPI.sound.SoundSystem;
  *
  */
 public class MapManager {
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
 	private static Map currentMap = null;
 
 	/**
@@ -49,7 +48,9 @@ public class MapManager {
 	 * @param is
 	 *            The input stream.
 	 * @return The map
+	 * @deprecated Use the MapLoader class.
 	 */
+	@Deprecated
 	public static Map derriveMapFromFile(InputStream is) {
 		try {
 			if (is == null || is.available() <= 0) {
@@ -214,6 +215,30 @@ public class MapManager {
 	private static PlayableSound backgroundMusic;
 
 	/**
+	 * This will load the map in the input stream.
+	 *
+	 * @param is
+	 *            The input stream.
+	 * @return The map object.
+	 */
+	public static Map loadMap(InputStream is) {
+		BlackoutImage blimg = null;
+		try {
+			blimg = new BlackoutImage(false, ImageIO.read(MapManager.class.getClassLoader()
+					.getResourceAsStream("dillon/gameAPI/res/MapTransitionDefault.png")), null);
+			GuiSystem.startGui(blimg, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Map m = MapLoader.load(is);
+		loadMap(m);
+		if (blimg != null) {
+			GuiSystem.removeGui(blimg, null);
+		}
+		return m;
+	}
+
+	/**
 	 * Sets the current map.
 	 *
 	 * @param m
@@ -238,6 +263,9 @@ public class MapManager {
 		}
 	}
 
+	/**
+	 * This causes the game to unload the current map.
+	 */
 	public static void unloadMap() {
 		currentMap = null;
 		Core.setBackgroundImage(null, null);
@@ -262,7 +290,7 @@ public class MapManager {
 		}
 		key = engineKey;
 		initialized = true;
-		EventSystem.addHandler(new EEHandler<RenderEvent>() {
+		EventSystem.addHandlerDirectly(new EEHandler<RenderEvent>() {
 			@Override
 			public void handle(RenderEvent evt) {
 				if (currentMap != null) {
@@ -275,8 +303,8 @@ public class MapManager {
 			public int getPriority() {
 				return 10;
 			}
-		}, key);
-		EventSystem.addHandler(new EEHandler<MouseEngineEvent>() {
+		});
+		EventSystem.addHandlerDirectly(new EEHandler<MouseEngineEvent>() {
 			@Override
 			public void handle(MouseEngineEvent evt) {
 				if (GuiSystem.getActiveComponent() != -1) {
@@ -285,8 +313,7 @@ public class MapManager {
 				if (currentMap == null) {
 					return;
 				}
-				if (evt.getMouseMode().equals(MouseEngineEvent.MouseMode.CLICK)
-						|| evt.getMouseMode().equals(MouseEngineEvent.MouseMode.HOLD)) {
+				if (evt.getMouseMode().equals(MouseEngineEvent.MouseMode.HOLD)) {
 					int locationX = (int) (evt.getLocation().getX() + Camera.getXPos());
 					int locationY = (int) (evt.getLocation().getY() + Camera.getYPos());
 					for (TileEvent event : currentMap.getTileEvents()) {
@@ -297,9 +324,7 @@ public class MapManager {
 							int realY = tilesheet.getTileHeight() * event.getAffectedTile().getyPos();
 							if (locationX >= realX && locationX <= realX + tilesheet.getTileWidth()) {
 								if (locationY >= realY && locationY <= realY + tilesheet.getTileHeight()) {
-									EventSystem.broadcastMessage(
-											new TileEntityEvent(event.getAffectedTile(), TileEventType.CLICK),
-											TileEntityEvent.class, null);
+									currentMap.invokeScriptMethod(event.getMethod());
 								}
 							}
 						}
@@ -311,7 +336,7 @@ public class MapManager {
 			public int getPriority() {
 				return 10;
 			}
-		}, null);
+		});
 
 	}
 
@@ -372,8 +397,7 @@ public class MapManager {
 		for (TileEvent evt : currentMap.getTileEvents()) {
 			if (evt.getAffectedTile().equals(t)) {
 				if (e.getType().equals(evt.getEntityType()) || evt.getEntityType().isEmpty()) {
-					EventSystem.broadcastMessage(new TileEntityEvent(t, TileEventType.TOUCH), TileEntityEvent.class,
-							null);
+					currentMap.invokeScriptMethod(evt.getMethod());
 				}
 			}
 		}

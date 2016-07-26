@@ -19,10 +19,6 @@ public class Dice {
 	}
 
 	public Dice(int[] outcomes, int[] weights) {
-		int total = 0;
-		for (int i : weights) {
-			total += i;
-		}
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		for (int i = 0; i < outcomes.length; i++) {
 			for (int k = 0; k < weights[i]; k++) {

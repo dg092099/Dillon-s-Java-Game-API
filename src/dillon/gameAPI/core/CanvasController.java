@@ -277,6 +277,11 @@ class CanvasController extends Canvas implements Runnable {
 
 	private int catchUp = 0;
 
+	/**
+	 * Get how far behind the program is.
+	 *
+	 * @return The amount of updates.
+	 */
 	public int getCatchUp() {
 		return catchUp;
 	}
