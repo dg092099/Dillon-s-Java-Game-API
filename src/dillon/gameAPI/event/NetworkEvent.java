@@ -42,7 +42,7 @@ public class NetworkEvent extends EEvent {
 	}
 
 	/**
-	 * Instantates a network event.
+	 * Instantiates a network event.
 	 *
 	 * @param Mode
 	 *            What it's doing.
@@ -66,6 +66,12 @@ public class NetworkEvent extends EEvent {
 		message = msg;
 	}
 
+	/**
+	 * The action that is happening on the network.
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
 	public static enum NetworkMode {
 		DISCONNECT, CONNECT, MESSAGE, DEBUG_ENABLE
 	}

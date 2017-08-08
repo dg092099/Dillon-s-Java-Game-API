@@ -1,12 +1,12 @@
 package dillon.gameAPI.event;
 
 /**
- * Indicates when everything should tick.
+ * Indicates when everything should update.
  * 
  * @author Dillon - Github dg092099
  *
  */
-public class TickEvent extends EEvent {
+public class UpdateEvent extends EEvent {
 
 	@Override
 	public String getType() {

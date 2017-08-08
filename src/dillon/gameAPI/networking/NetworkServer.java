@@ -123,8 +123,7 @@ public class NetworkServer {
 	}
 
 	/**
-	 * Attempts to shutdown the server. Called automatically while game shuts
-	 * down.
+	 * Attempts to shutdown the server. Called automatically while game shuts down.
 	 *
 	 * @param k
 	 *            The security key
@@ -145,8 +144,7 @@ public class NetworkServer {
 	 * @param useCode
 	 *            If the server should use a code.
 	 * @param port
-	 *            The port the game's on. Not what port it uses to allow
-	 *            discovery.
+	 *            The port the game's on. Not what port it uses to allow discovery.
 	 * @return The code if one is asked for, if not, null is returned.
 	 */
 	public static String enableDiscovery(String name, String version, boolean useCode, int port) {

@@ -32,12 +32,11 @@ public class Animation {
 	 * @param frames
 	 *            The frames (Must be more than 2.)
 	 * @param animationSpeed
-	 *            The amount of updates that must execute to proceed the
-	 *            animation.
+	 *            The amount of updates that must execute to proceed the animation.
 	 * @param loops
-	 *            The amount of times that the animation loops. 1 For doesn't
-	 *            loop. -1 for always loops. 0 causes issues with the animation
-	 *            finishing before it happens (Don't set it to that).
+	 *            The amount of times that the animation loops. 1 For doesn't loop.
+	 *            -1 for always loops. 0 causes issues with the animation finishing
+	 *            before it happens (Don't set it to that).
 	 */
 	public Animation(BufferedImage[] frames, int animationSpeed, int loops) {
 		if (frames.length < 2) {

@@ -66,6 +66,14 @@ public class SoundSystem {
 		}
 	}
 
+	/**
+	 * Play a sound, but wait for it to end.
+	 * 
+	 * @param ps
+	 *            The sound.
+	 * @param k
+	 *            The security key.
+	 */
 	public static void playAndBlock(PlayableSound ps, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.PLAY_SOUND);
 		try {
@@ -100,12 +108,26 @@ public class SoundSystem {
 		}
 	}
 
+	/**
+	 * Stops the sound.
+	 * 
+	 * @param ps
+	 *            The sound.
+	 * @param k
+	 *            The security key.
+	 */
 	public static void stopSound(PlayableSound ps, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.STOP_SOUND);
 		int index = sounds.indexOf(ps);
 		clips.get(index).stop();
 	}
 
+	/**
+	 * Wrap up all clips to exit.
+	 * 
+	 * @param k
+	 *            The security key.
+	 */
 	public static void shutdown(SecurityKey k) {
 		if (!SecuritySystem.isEngineKey(k)) {
 			throw new EngineSecurityError("Invalid key for operation.");

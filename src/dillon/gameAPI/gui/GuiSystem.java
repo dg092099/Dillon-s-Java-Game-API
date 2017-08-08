@@ -10,7 +10,7 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.KeyEngineEvent;
 import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
-import dillon.gameAPI.event.TickEvent;
+import dillon.gameAPI.event.UpdateEvent;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
 import dillon.gameAPI.security.SecuritySystem;
@@ -81,10 +81,21 @@ public class GuiSystem {
 		}
 	}
 
+	/**
+	 * Get the component that has the mouse control.
+	 * 
+	 * @return A component.
+	 */
 	public static int getActiveComponent() {
 		return activeGuiComponent;
 	}
 
+	/**
+	 * Instantiates and sets up the GUI system.
+	 * 
+	 * @param k
+	 *            A security key
+	 */
 	public GuiSystem(SecurityKey k) {
 		EventSystem.addHandler(new EEHandler<RenderEvent>() {
 			@Override
@@ -101,9 +112,9 @@ public class GuiSystem {
 				return 0;
 			}
 		}, k);
-		EventSystem.addHandler(new EEHandler<TickEvent>() {
+		EventSystem.addHandler(new EEHandler<UpdateEvent>() {
 			@Override
-			public void handle(TickEvent evt) {
+			public void handle(UpdateEvent evt) {
 				for (GuiComponent comp : components) {
 					// Update each component.
 					comp.onUpdate();
@@ -120,7 +131,6 @@ public class GuiSystem {
 			public void handle(MouseEngineEvent evt) {
 				if (evt.getMouseMode() == MouseEngineEvent.MouseMode.HOLD) {
 					if (evt.getMouseButton() == MouseEngineEvent.MouseButton.LEFT) {
-						System.out.println("Left button");
 						for (GuiComponent comp : components) {
 							comp.onMouseClickLeft(evt.getLocation().getX(), evt.getLocation().getY());
 						}
@@ -128,12 +138,12 @@ public class GuiSystem {
 				}
 				if (evt.getMouseMode() == MouseEngineEvent.MouseMode.CLICK) {
 					if (evt.getMouseButton() == MouseEngineEvent.MouseButton.RIGHT) {
-						System.out.println("Right click");
 						for (GuiComponent comp : components) {
 							comp.onMouseClickRight(evt.getLocation().getX(), evt.getLocation().getY());
 						}
 					}
 				}
+				// Change over the upper most gui.
 				ArrayList<GuiComponent> candidates = new ArrayList<>();
 				Point p = evt.getLocation();
 				for (GuiComponent comp : components) {

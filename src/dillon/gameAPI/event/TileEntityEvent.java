@@ -9,6 +9,7 @@ import dillon.gameAPI.mapping.TileEvent;
  * @author Dillon - Github dg092099
  * @since V2.0
  */
+@Deprecated
 public class TileEntityEvent extends EEvent {
 
 	@Override

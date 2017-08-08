@@ -19,10 +19,10 @@ import dillon.gameAPI.security.SecuritySystem;
  */
 public class MainUtilities {
 	/**
-	 * This method will get the inverse of the coordinate according to the
-	 * image's height. This is used to invert the x position of the camera
-	 * because the image is rendered from the top left corner. This makes it so
-	 * that when it is rendered, it is in the correct position.
+	 * This method will get the inverse of the coordinate according to the image's
+	 * height. This is used to invert the x position of the camera because the image
+	 * is rendered from the top left corner. This makes it so that when it is
+	 * rendered, it is in the correct position.
 	 *
 	 * @param x
 	 *            The value to invert

@@ -51,9 +51,9 @@ public class SecuritySystem {
 	}
 
 	/**
-	 * Gets the game's master key. Can be called only once. Even if you don't
-	 * use the security features, still get the key to lockout this method, so
-	 * someone else can't.
+	 * Gets the game's master key. Can be called only once. Even if you don't use
+	 * the security features, still get the key to lockout this method, so someone
+	 * else can't.
 	 *
 	 * @return The key.
 	 */
@@ -138,8 +138,8 @@ public class SecuritySystem {
 	private final static ArrayList<engineSecurityHandler> engineSecurityHandlers = new ArrayList<engineSecurityHandler>();
 
 	/**
-	 * This adds a engine security handler to the system. The key must be the
-	 * engine or game key.
+	 * This adds a engine security handler to the system. The key must be the engine
+	 * or game key.
 	 *
 	 * @param h
 	 *            The handler.

@@ -26,7 +26,7 @@ import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.KeyEngineEvent;
 import dillon.gameAPI.event.MouseEngineEvent;
 import dillon.gameAPI.event.RenderEvent;
-import dillon.gameAPI.event.TickEvent;
+import dillon.gameAPI.event.UpdateEvent;
 import dillon.gameAPI.gui.GuiSystem;
 import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.networking.NetworkConnection;
@@ -44,6 +44,12 @@ class CanvasController extends Canvas implements Runnable {
 	private static final long serialVersionUID = -3207927320425492600L;
 	private static SecurityKey key;
 
+	/**
+	 * Sets up the canvas.
+	 * 
+	 * @param k
+	 *            The Security Key
+	 */
 	public CanvasController(SecurityKey k) {
 		// Initially sets up the canvas and loads security key.
 		this.setSize(new Dimension(Core.getWidth(), Core.getHeight()));
@@ -79,6 +85,7 @@ class CanvasController extends Canvas implements Runnable {
 	 */
 	public synchronized void setFps(final int newFps) {
 		if (newFps <= 0) {
+			// Can't have a FPS less than or equal to 0.
 			throw new IllegalArgumentException("The FPS must be more than 0.");
 		}
 		FPS = newFps;
@@ -254,17 +261,17 @@ class CanvasController extends Canvas implements Runnable {
 														// the
 			// time.
 			if (delta < -70) { // Small threshold.
-				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " ticks.");
+				Logger.getLogger("Core").warning("The game is behind by " + Math.abs(delta) + " updates.");
 			}
 			try {
 				Thread.sleep(delta);
 			} catch (final Exception e) {
 			}
-			if (System.currentTimeMillis() - startSecond >= 1000) {
+			if (System.currentTimeMillis() - startSecond >= 1000) { // Try to catch up.
 				if (frames < getFPS()) {
 					catchUp = getFPS() - frames;
 					for (int i = 0; i < catchUp; i++) {
-						EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
+						EventSystem.broadcastMessage(new UpdateEvent(), UpdateEvent.class, key);
 					}
 				}
 				frames = 0;
@@ -294,7 +301,7 @@ class CanvasController extends Canvas implements Runnable {
 		if (paused) {
 			return;
 		}
-		EventSystem.broadcastMessage(new TickEvent(), TickEvent.class, key);
+		EventSystem.broadcastMessage(new UpdateEvent(), UpdateEvent.class, key);
 		MainUtilities.executeQueue(key); // Executes things that are to run on
 											// engine thread.
 	}
@@ -341,7 +348,7 @@ class CanvasController extends Canvas implements Runnable {
 		graphics.fillRect(0, 0, Core.getWidth(), Core.getHeight()); // Fill
 																	// background
 		// Start Draw
-		if (background != null) {
+		if (background != null) { // Draw background image if applicable.
 			graphics.drawImage(background, 0, 0, null);
 		}
 		EventSystem.broadcastMessage(new RenderEvent(graphics), RenderEvent.class, key); // Render
@@ -352,7 +359,7 @@ class CanvasController extends Canvas implements Runnable {
 				showingSplash = false;
 			}
 			try {
-				if (Splash == null) {
+				if (Splash == null) { // Load image.
 					Splash = ImageIO
 							.read(getClass().getClassLoader().getResourceAsStream("dillon/gameAPI/res/splash.png"));
 				}
@@ -397,7 +404,7 @@ class CanvasController extends Canvas implements Runnable {
 	}
 
 	/**
-	 * This method crashes the game and produces a stacktrace onto the screen.
+	 * This method crashes the game and produces a stack trace onto the screen.
 	 *
 	 * @param e
 	 *            This is the exception that will be displayed.

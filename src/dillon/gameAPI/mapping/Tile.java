@@ -159,7 +159,6 @@ public class Tile {
 						sheetPosY * parentTilesheet.getTileHeight(), parentTilesheet.getTileWidth(),
 						parentTilesheet.getTileHeight());
 				img = tileImg;
-				System.out.println(img.getHeight());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

@@ -27,6 +27,28 @@ public class Prompt extends BasicDialog {
 	private final long promptNumber;
 	private SecurityKey key;
 
+	/**
+	 * Instantiates the prompt.
+	 * 
+	 * @param prompt
+	 *            The prompt.
+	 * @param f
+	 *            The font to render for the prompt.
+	 * @param bor
+	 *            The border color.
+	 * @param fore
+	 *            The foreground color.
+	 * @param txtColor
+	 *            The text color.
+	 * @param alwaysAtFront
+	 *            Whether or not the gui is always on top.
+	 * @param pNum
+	 *            The prompt number.
+	 * @param resColor
+	 *            The response number.
+	 * @param k
+	 *            The security key.
+	 */
 	public Prompt(String prompt, Font f, Color bor, Color fore, Color txtColor, boolean alwaysAtFront, long pNum,
 			Color resColor, SecurityKey k) {
 		super(prompt, f, bor, fore, txtColor, alwaysAtFront, k);
@@ -71,12 +93,12 @@ public class Prompt extends BasicDialog {
 	@Override
 	public void onKeyPress(KeyEvent evt) {
 		int keyCode = evt.getKeyCode();
-		if (keyCode == KeyEvent.VK_ENTER) {
+		if (keyCode == KeyEvent.VK_ENTER) { // Submit
 			GuiSystem.removeGui(this, key);
 			EventSystem.broadcastMessage(new PromptEvent(text, promptNumber), PromptEvent.class, key);
 			return;
 		}
-		if (keyCode == KeyEvent.VK_ESCAPE) {
+		if (keyCode == KeyEvent.VK_ESCAPE) { // Cancel
 			GuiSystem.removeGui(this, key);
 			EventSystem.broadcastMessage(new PromptEvent("", promptNumber), PromptEvent.class, key);
 			return;
@@ -84,7 +106,7 @@ public class Prompt extends BasicDialog {
 		if (keyCode == KeyEvent.VK_CONTROL) {
 			return;
 		}
-		if (keyCode == KeyEvent.VK_V && evt.isControlDown()) {
+		if (keyCode == KeyEvent.VK_V && evt.isControlDown()) { // Paste
 			try {
 				String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null)
 						.getTransferData(DataFlavor.stringFlavor);
@@ -95,7 +117,7 @@ public class Prompt extends BasicDialog {
 				e.printStackTrace();
 			}
 		}
-		if (keyCode == KeyEvent.VK_BACK_SPACE && text.length() > 0) {
+		if (keyCode == KeyEvent.VK_BACK_SPACE && text.length() > 0) { // Backspace
 			text = text.substring(0, text.length() - 1);
 			update = true;
 			return;

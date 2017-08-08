@@ -13,11 +13,25 @@ public class Dice {
 	private final Random r;
 	private final int[] results;
 
+	/**
+	 * Instantiates a dice with the specified outcomes.
+	 * 
+	 * @param outcomes
+	 *            The outcomes.
+	 */
 	public Dice(int... outcomes) {
 		results = outcomes;
 		r = new Random();
 	}
 
+	/**
+	 * Instantiates a dice with the outcomes and weights.
+	 * 
+	 * @param outcomes
+	 *            The outcomes.
+	 * @param weights
+	 *            The weights.
+	 */
 	public Dice(int[] outcomes, int[] weights) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		for (int i = 0; i < outcomes.length; i++) {

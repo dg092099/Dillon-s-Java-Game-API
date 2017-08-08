@@ -36,10 +36,24 @@ public class EventSystem {
 		toAdd.add(h);
 	}
 
+	/**
+	 * Adds the handler regardless of priority.
+	 * 
+	 * @param h
+	 *            The event.
+	 */
 	public static void addHandlerDirectly(EEHandler<? extends EEvent> h) {
 		handlers.add(h);
 	}
 
+	/**
+	 * This function will add the handlers on the next update.
+	 * 
+	 * @param h
+	 *            The event.
+	 * @param k
+	 *            The security key.
+	 */
 	private static void addHandlerAfterWait(EEHandler<? extends EEvent> h, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.RECEIVE_EVENT);
 		if (h == null) {
@@ -72,6 +86,12 @@ public class EventSystem {
 		toRemove.add(h);
 	}
 
+	/**
+	 * Removes the handler after the next update.
+	 * 
+	 * @param h
+	 *            The handler.
+	 */
 	private static void removeAfterWait(EEHandler<? extends EEvent> h) {
 		handlers.remove(h);
 		toRemove.remove(h);
@@ -115,14 +135,14 @@ public class EventSystem {
 		if (c == null) {
 			throw new IllegalArgumentException("The class must be specified.");
 		}
-		if (!toAdd.isEmpty()) {
+		if (!toAdd.isEmpty()) { // Add in the last of the handlers.
 			for (int i = 0; i < toAdd.size(); i++) {
 				if (toAdd.get(i) != null) {
 					addHandlerAfterWait(toAdd.get(i), k);
 				}
 			}
 		}
-		if (!toRemove.isEmpty()) {
+		if (!toRemove.isEmpty()) { // Remove the handlers that should not receive this.
 			for (int i = 0; i < toRemove.size(); i++) {
 				if (toRemove.get(i) != null) {
 					removeAfterWait(toRemove.get(i));
@@ -177,11 +197,22 @@ public class EventSystem {
 		return sb.toString();
 	}
 
+	/**
+	 * Sets the current event state.
+	 * 
+	 * @param st
+	 *            The state.
+	 */
 	public static void setState(State st) {
 		currentState = st;
 		st.initiate();
 	}
 
+	/**
+	 * Gets the current event state.
+	 * 
+	 * @return The event state.
+	 */
 	public static State getState() {
 		return currentState;
 	}

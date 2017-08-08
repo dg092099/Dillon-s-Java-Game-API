@@ -28,15 +28,16 @@ import dillon.gameAPI.scripting.bridges.EntityRegistry;
  *
  */
 public class Map {
-	private ArrayList<Tilesheet> tilesheets = new ArrayList<Tilesheet>();
-	private BufferedImage backgroundImage;
-	private File backgroundMusicFile;
-	private ArrayList<Tile> tiles = new ArrayList<Tile>();
-	private ArrayList<TileEvent> tileEvents = new ArrayList<TileEvent>();
-	private Tilesheet inUse;
-	private ScriptEngine scriptEngine;
+	private ArrayList<Tilesheet> tilesheets = new ArrayList<Tilesheet>(); // Tilesheets
+	private BufferedImage backgroundImage; // Background image
+	private File backgroundMusicFile; // Background music.
+	private ArrayList<Tile> tiles = new ArrayList<Tile>(); // Tiles
+	private ArrayList<TileEvent> tileEvents = new ArrayList<TileEvent>(); // Tile events.
+	private Tilesheet inUse; // In use tilesheet.
+	private ScriptEngine scriptEngine; // The script engine.
 
 	public Map() {
+		// Initialize the script engine.
 		scriptEngine = new ScriptEngineManager().getEngineByName("javascript");
 		scriptEngine.put("Core", new CoreBridge());
 		scriptEngine.put("EntityRegistry", new EntityRegistry());
@@ -59,6 +60,7 @@ public class Map {
 	 * @param type
 	 *            The type 1 - Touch; 2 - Click
 	 */
+	@Deprecated
 	public void executeLegacyEvent(int x, int y, String tilesheet, int type) {
 		Tile t = this.getTile(x, y, tilesheet);
 		switch (type) {
@@ -283,8 +285,7 @@ public class Map {
 	}
 
 	/**
-	 * Similar to setGlobalPositionVariable, but uses the solid and visible
-	 * flags.
+	 * Similar to setGlobalPositionVariable, but uses the solid and visible flags.
 	 *
 	 * @param name
 	 *            The name
@@ -358,8 +359,8 @@ public class Map {
 	// Scripting Commands
 	/**
 	 * This method spawns a tile and gives it to whatever spawned it. Note: When
-	 * manipulating tiles this class' render method should be called to invoke
-	 * the change.
+	 * manipulating tiles this class' render method should be called to invoke the
+	 * change.
 	 *
 	 * @param x
 	 *            The x position.

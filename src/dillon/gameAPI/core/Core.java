@@ -39,7 +39,7 @@ public class Core {
 	private static String TITLE; // The game's title.
 	private static Image ICON; // The icon for the game.
 	private static JFrame frame; // The JFrame window.
-	public static final String ENGINE_VERSION = "v2.2.0"; // The engine's
+	public static final String ENGINE_VERSION = "v2.2.1"; // The engine's
 															// version.
 	public static int WIDTH, HEIGHT;
 
@@ -292,12 +292,12 @@ public class Core {
 	 *            The security key.
 	 */
 	public static void setFullScreen(final boolean b, SecurityKey k) {
-		SecuritySystem.checkPermission(k, RequestedAction.SET_FULLSCREEN);
+		SecuritySystem.checkPermission(k, RequestedAction.SET_FULLSCREEN); //Check permission
 		final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices(); // Gets
 																												// devices
 		if (devices[0].isFullScreenSupported()) {
 			fullscreen = b;
-			devices[0].setFullScreenWindow(fullscreen ? frame : null);
+			devices[0].setFullScreenWindow(fullscreen ? frame : null); //Set fullscreen.
 		}
 
 	}
@@ -332,19 +332,19 @@ public class Core {
 	 *            The security key.
 	 */
 	public static void crash(final Exception e, SecurityKey k) {
-		SecuritySystem.checkPermission(k, RequestedAction.CRASH_GAME);
+		SecuritySystem.checkPermission(k, RequestedAction.CRASH_GAME); // Crash
 		if (e == null) {
 			throw new IllegalArgumentException("e must not be null.");
 		}
 		try {
 			// Crash game.
-			NetworkServer.stopServer(engineKey);
-			NetworkConnection.disconnect(engineKey);
-			EventSystem.override(); // Shutdown system
+			NetworkServer.stopServer(engineKey); //Stops the server.
+			NetworkConnection.disconnect(engineKey); //Shutsdown any connections.
+			EventSystem.override(); // Shutdown event system.
 			controller.crash(e);
 		} catch (final Exception e2) {
 			e2.printStackTrace();
-			System.exit(0);
+			System.exit(-1);
 		}
 	}
 
@@ -370,12 +370,8 @@ public class Core {
 	public static void shutdown(final boolean hard, SecurityKey k) {
 		SecuritySystem.checkPermission(k, RequestedAction.SHUTDOWN);
 		if (hard) { // If the game should immediately shutdown.
-			Logger.getLogger("Core").severe("Engine Shutting down...");
-			NetworkServer.stopServer(engineKey); // Shutdown server.
-			NetworkConnection.disconnect(engineKey); // Cut connection if used.
-			NetworkServer.disableDiscovery(engineKey); // Shuts off discovery if
-														// active.
-			System.exit(0);
+			Logger.getLogger("Core").severe("Hard shutdown...");
+			System.exit(-2);
 		} else {
 			Logger.getLogger("Core").severe("Engine Shutting down...");
 			// Send message on event system.
@@ -390,8 +386,7 @@ public class Core {
 	}
 
 	/**
-	 * This method sets the maximum frames per second that this game should run
-	 * on.
+	 * This method sets the maximum frames per second that this game should run on.
 	 *
 	 * @param fps
 	 *            The new FPS limit.

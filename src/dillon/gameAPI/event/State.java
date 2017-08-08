@@ -11,8 +11,9 @@ import java.util.UUID;
  * @since V2.1.0
  */
 public abstract class State {
-	private volatile ArrayList<EEHandler<? extends EEvent>> handlers = new ArrayList<EEHandler<? extends EEvent>>();
-	private final String identifier;
+	private volatile ArrayList<EEHandler<? extends EEvent>> handlers = new ArrayList<EEHandler<? extends EEvent>>(); // the
+																														// events.
+	private final String identifier; // An identifier.
 
 	public State() {
 		identifier = UUID.randomUUID().toString();
@@ -39,6 +40,13 @@ public abstract class State {
 
 	private boolean ready = false;
 
+	/**
+	 * Should be used after it is loaded to ensure that the state is ready to
+	 * receive events.
+	 * 
+	 * @param r
+	 *            If it is ready.
+	 */
 	public void setReady(boolean r) {
 		ready = r;
 	}

@@ -154,8 +154,7 @@ public class NetworkConnection {
 	}
 
 	/**
-	 * Tries to disconnect from the server. Automatically executes on game
-	 * shutdown.
+	 * Tries to disconnect from the server. Automatically executes on game shutdown.
 	 *
 	 * @param k
 	 *            The security key.

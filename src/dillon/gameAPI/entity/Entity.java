@@ -5,13 +5,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import dillon.gameAPI.event.EEHandler;
 import dillon.gameAPI.event.EventSystem;
 import dillon.gameAPI.event.RenderEvent;
 import dillon.gameAPI.event.State;
-import dillon.gameAPI.event.TickEvent;
+import dillon.gameAPI.event.UpdateEvent;
 import dillon.gameAPI.mapping.MapManager;
 import dillon.gameAPI.security.RequestedAction;
 import dillon.gameAPI.security.SecurityKey;
@@ -30,7 +29,7 @@ public class Entity implements Serializable {
 	private int frameNum = 0;
 	private int frameSpeed = 2;
 	private State appearsIn;
-	private final EEHandler<TickEvent> tickEvent;
+	private final EEHandler<UpdateEvent> tickEvent;
 	private final EEHandler<RenderEvent> renderEvent;
 	private Animation playingAnimation;
 	private int zIndex = 0;
@@ -81,10 +80,10 @@ public class Entity implements Serializable {
 		dx = 0; // Direction X
 		dy = 0; // Direction Y
 		zIndex = 0;
-		EventSystem.addHandler(tickEvent = new EEHandler<TickEvent>() { // Update
-																		// handler
+		EventSystem.addHandler(tickEvent = new EEHandler<UpdateEvent>() { // Update
+																			// handler
 			@Override
-			public void handle(TickEvent T) {
+			public void handle(UpdateEvent T) {
 				if (appearsIn != null && EventSystem.getState() != null) {
 					if (!EventSystem.getState().equals(appearsIn)) {
 						// Event system is in a state, but not this one.
@@ -610,53 +609,6 @@ public class Entity implements Serializable {
 		return sb.toString();
 	}
 
-	/**
-	 * A zone event.
-	 *
-	 * @author Dillon - Github dg092099
-	 * @deprecated Use touch events in mapping package.
-	 */
-	@Deprecated
-	public static abstract class EntityZoneEvent {
-		public abstract int[] getTopLeft();
-
-		public abstract int[] getWidthAndHeight();
-
-		public abstract void onAction();
-	}
-
-	public ArrayList<EntityZoneEvent> zoneEvents = new ArrayList<>();
-
-	/**
-	 * Adds an event handler.
-	 *
-	 * @param e
-	 *            Event handler
-	 * @deprecated
-	 */
-	@Deprecated
-	public void addEvent(EntityZoneEvent e) {
-		if (e == null) {
-			throw new IllegalArgumentException("The event must not be null.");
-		}
-		zoneEvents.add(e);
-	}
-
-	/**
-	 * Removes an event handler.
-	 *
-	 * @param e
-	 *            Event handler
-	 * @deprecated
-	 */
-	@Deprecated
-	public void removeEvent(EntityZoneEvent e) {
-		if (e == null) {
-			throw new IllegalArgumentException("The event handler must not be null.");
-		}
-		zoneEvents.remove(e);
-	}
-
 	private String entityType = "";
 
 	/**
@@ -713,8 +665,8 @@ public class Entity implements Serializable {
 	}
 
 	/**
-	 * Sets the state that the entity should appear in. If null, it will appear
-	 * in any state.
+	 * Sets the state that the entity should appear in. If null, it will appear in
+	 * any state.
 	 *
 	 * @param appearsIn
 	 *            The state to appear in.

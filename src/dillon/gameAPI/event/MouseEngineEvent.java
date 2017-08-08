@@ -78,10 +78,22 @@ public class MouseEngineEvent extends EEvent {
 		this.scrollAmount = scrollAmt;
 	}
 
+	/**
+	 * The mouse button that was clicked/released
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
 	public static enum MouseButton {
 		LEFT, RIGHT, MIDDLE, SCROLL
 	}
 
+	/**
+	 * The action that the mouse has made.
+	 * 
+	 * @author Dillon - Github dg092099
+	 *
+	 */
 	public static enum MouseMode {
 		CLICK, RELEASE, HOLD, ENTER, LEAVE
 	}

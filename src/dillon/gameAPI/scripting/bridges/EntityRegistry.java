@@ -6,7 +6,8 @@ import dillon.gameAPI.entity.Entity;
 
 /**
  * This allows for transfers of entities between the program and scripts. This
- * is because I haven't implemented a way for the script to load images yet.
+ * is because I haven't implemented a way for the script to load images yet;
+ * assuming it is possible.
  *
  * @author Dillon - Github dg092099
  *
